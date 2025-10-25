@@ -1,0 +1,12 @@
+[00:00:01.369] Server  LOG     
+[00:00:01.370] Server  LOG        We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+[00:00:01.371] Server  LOG        The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+[00:00:01.371] Server  LOG        	- include was updated to add '.next\dev/types/**/*.ts'
+[00:00:01.371] Server  LOG        	- include was updated to add '.next\dev/types/**/*.ts'
+[00:00:01.371] Server  LOG     
+[00:00:01.583] Server  LOG      ✓ Ready in 1114ms
+[00:00:13.359] Server  LOG      ○ Compiling / ...
+[00:00:16.426] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:16.697] Browser WARN    Image with src "http://localhost:3000/vercel.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:02:04.988] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
