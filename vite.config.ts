@@ -1,26 +1,35 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc'; // switched from react-swc to standard react plugin
-import path from 'path';
+import react from '@vitejs/plugin-react-swc';
+import path, { resolve } from 'path';
 import { componentTagger } from 'lovable-tagger';
 
 export default defineConfig(({ mode }) => ({
-  server: {
-    host: '::',
-    port: 3001,
-  },
-  proxy: {
-    '/api': {
-      target: 'http://localhost:5000',
-      changeOrigin: true,
-      secure: false,
-      rewrite: (path) => path.replace(/^\/api/, ''),
-    },
-  },
   plugins: [react(), mode === 'development' && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src'),
+      '@': resolve(__dirname, 'src'),
     },
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+  },
+  server: {
+    host: true,
+    port: 3001,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
+  preview: {
+    port: 3001,
+    strictPort: true,
   },
   define: {
     'process.env': process.env,

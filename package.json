@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "build:dev": "vite build --mode development",
+    "predeploy": "npm run build",
+    "deploy": "netlify deploy --prod",
     "lint": "eslint .",
     "preview": "vite preview"
   },
