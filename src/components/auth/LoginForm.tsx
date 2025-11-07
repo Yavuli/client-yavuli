@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -21,9 +22,18 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { error } = await signIn(email, password);
+      const { data, error } = await signIn(email, password);
       if (error) throw error;
-      navigate('/');
+      
+      // Show welcome message
+      if (data?.user?.user_metadata?.full_name) {
+        toast.success(`Welcome back, ${data.user.user_metadata.full_name.split(' ')[0]}!`);
+      } else {
+        toast.success('Successfully logged in!');
+      }
+      
+      // Redirect to explore page
+      navigate('/explore');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to sign in');
     } finally {
