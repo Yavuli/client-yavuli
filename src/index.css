@@ -2,69 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    /* Yavuli Light Theme - Fresh Student Marketplace */
-    --background: 210 100% 98%;
-    --foreground: 222 47% 11%;
+    /* Light Orange/Apricot Theme */
+    --background: 30 100% 98%;
+    --foreground: 25 25% 20%;
+    --card: 30 100% 99%;
+    --card-foreground: 25 25% 20%;
+    --popover: 30 100% 99%;
+    --popover-foreground: 25 25% 20%;
+    --primary: 35 90% 70%;
+    --primary-foreground: 35 40% 10%;
+    --secondary: 45 85% 75%;
+    --secondary-foreground: 45 30% 10%;
+    --muted: 30 50% 94%;
+    --muted-foreground: 30 15% 45%;
+    --accent: 35 90% 96%;
+    --accent-foreground: 35 30% 30%;
+    --destructive: 0 70% 65%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 40% 90%;
+    --input: 30 40% 92%;
+    --ring: 35 90% 70%;
+    --radius: 0.5rem;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    /* Gradients & Patterns */
+    --gradient-hero: linear-gradient(120deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    --gradient-cta: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
+    --pattern-dotted: radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px);
+    --pattern-lined: repeating-linear-gradient(45deg, hsl(var(--border)), hsl(var(--border)) 1px, transparent 1px, transparent 10px);
+    --pattern-cross: repeating-conic-gradient(hsl(var(--border)) 0% 25%, transparent 0% 50%) 50% / 20px 20px;
+  }
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-
-    /* Navy primary */
-    --primary: 222 75% 10%;
-    --primary-foreground: 210 40% 98%;
-
-    /* Light secondary */
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-
-    /* Muted backgrounds */
-    --muted: 210 30% 94%;
-    --muted-foreground: 220 9% 46%;
-
-    /* Teal accent */
-    --accent: 174 100% 35%;
-    --accent-foreground: 0 0% 100%;
-
-    /* Neon green for CTAs */
-    --success: 158 100% 50%;
-    --success-foreground: 222 47% 11%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 174 100% 35%;
-
-    --radius: 0.75rem;
-
-    /* Custom marketplace colors */
-    --navy: 222 75% 10%;
-    --teal: 174 100% 35%;
-    --neon-green: 158 100% 50%;
-    --slate: 220 9% 46%;
-    
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(174 100% 35%) 0%, hsl(158 100% 50%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(210 100% 98%) 0%, hsl(210 40% 96%) 100%);
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(222 75% 10% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(222 75% 10% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(222 75% 10% / 0.1);
-    --shadow-glow: 0 0 20px hsl(174 100% 35% / 0.3);
-    
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .dark {
+    /* Dark theme with orange accents */
+    --background: 25 15% 12%;
+    --foreground: 30 30% 97%;
+    --card: 25 15% 15%;
+    --card-foreground: 30 30% 97%;
+    --popover: 25 15% 15%;
+    --popover-foreground: 30 30% 97%;
+    --primary: 35 90% 70%;
+    --primary-foreground: 35 40% 10%;
+    --secondary: 45 85% 75%;
+    --secondary-foreground: 45 30% 10%;
+    --muted: 25 15% 25%;
+    --muted-foreground: 30 15% 65%;
+    --accent: 35 90% 20%;
+    --accent-foreground: 35 30% 90%;
+    --destructive: 0 70% 65%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 25 15% 30%;
+    --input: 25 15% 32%;
+    --ring: 35 90% 70%;
   }
 }
 
@@ -72,8 +62,12 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes fadeInBackground {
+  from { background-color: transparent; }
+  to { background-color: hsl(var(--accent)); }
 }
