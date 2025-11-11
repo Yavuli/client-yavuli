@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,9 @@ import { Card } from "@/components/ui/card";
 import { Upload, Plus } from "lucide-react";
 
 const Sell = () => {
+  const photosInputRef = useRef<HTMLInputElement>(null);
+  const billInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -24,13 +28,23 @@ const Sell = () => {
             <div className="space-y-3">
               <Label htmlFor="photos">Product Photos *</Label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-accent transition-colors cursor-pointer flex items-center justify-center bg-muted/30">
+                <div 
+                  className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-accent transition-colors cursor-pointer flex items-center justify-center bg-muted/30"
+                  onClick={() => photosInputRef.current?.click()}
+                >
                   <div className="text-center">
                     <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-xs text-muted-foreground">Upload</p>
                   </div>
                 </div>
               </div>
+              <Input 
+                ref={photosInputRef} 
+                type="file" 
+                className="hidden" 
+                accept="image/*" 
+                multiple 
+              />
             </div>
 
             {/* Title */}
@@ -118,7 +132,7 @@ const Sell = () => {
                 <Input
                   id="city"
                   placeholder="e.g., Delhi"
-                  className="focus:ring-accent"
+                  className="focus:ring-.accent"
                 />
               </div>
 
@@ -156,13 +170,22 @@ const Sell = () => {
             {/* Bill Upload */}
             <div className="space-y-2">
               <Label>Bill / Receipt (Optional)</Label>
-              <div className="border-2 border-dashed border-border rounded-lg p-6 hover:border-accent transition-colors cursor-pointer bg-muted/30">
+              <div 
+                className="border-2 border-dashed border-border rounded-lg p-6 hover:border-accent transition-colors cursor-pointer bg-muted/30"
+                onClick={() => billInputRef.current?.click()}
+              >
                 <div className="text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">Upload bill or purchase receipt</p>
                   <p className="text-xs text-muted-foreground mt-1">Helps build trust with buyers</p>
                 </div>
               </div>
+              <Input 
+                ref={billInputRef} 
+                type="file" 
+                className="hidden" 
+                accept="image/*,application/pdf" 
+              />
             </div>
 
             {/* Submit */}

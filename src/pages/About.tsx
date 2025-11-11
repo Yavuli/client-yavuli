@@ -19,14 +19,11 @@ const About = () => {
           <Card className="p-8 space-y-6 animate-fade-up">
             <h2 className="text-2xl font-bold">Our Story</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Yavuli was born from a simple observation: college students have unique needs and limited budgets. 
-              We created a trusted marketplace exclusively for the student community in India, where you can buy, 
-              sell, or exchange items and services with verified peers.
+              Yavuli was born from a simple idea — students helping students.
+              We noticed that college life comes with limited budgets, unique needs, and endless creativity. So, we built a platform that brings all of it together — a safe, smart, and sustainable marketplace made exclusively for students across India.
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Our platform ensures safety through college email verification, making every transaction trustworthy. 
-              Whether you're looking for textbooks, electronics, furniture, or services, Yavuli connects you with 
-              fellow students who understand your needs.
+              From second-hand textbooks and dorm furniture to gadgets and creative services — Yavuli makes it easy to buy, sell, or exchange what you need, all within your verified college community.
             </p>
           </Card>
 
@@ -37,8 +34,7 @@ const About = () => {
               </div>
               <h3 className="text-xl font-semibold">Verified & Safe</h3>
               <p className="text-muted-foreground">
-                Every user is verified through their college email. Trade with confidence knowing 
-                you're dealing with real students.
+                Every member of Yavuli is verified through their college email, ensuring a trusted environment where real students connect and trade confidently.
               </p>
             </Card>
 
@@ -48,8 +44,7 @@ const About = () => {
               </div>
               <h3 className="text-xl font-semibold">Student Community</h3>
               <p className="text-muted-foreground">
-                Built by students, for students. Connect with peers from colleges across India 
-                and build your own circle of value.
+                Built by students, for students, Yavuli is more than a marketplace — it’s a growing community of learners, creators, and entrepreneurs who believe in collaboration and value-sharing.
               </p>
             </Card>
 
@@ -59,8 +54,7 @@ const About = () => {
               </div>
               <h3 className="text-xl font-semibold">Easy Trading</h3>
               <p className="text-muted-foreground">
-                Simple, intuitive interface makes buying and selling effortless. List items in 
-                minutes and start trading immediately.
+                List what you want to sell or offer in just a few clicks. Our intuitive design makes trading effortless — because college life is busy enough already.
               </p>
             </Card>
 
@@ -70,20 +64,18 @@ const About = () => {
               </div>
               <h3 className="text-xl font-semibold">Smart Pricing</h3>
               <p className="text-muted-foreground">
-                Get the best deals from motivated student sellers. Find quality items at 
-                prices that fit your budget.
+                Find quality items at fair prices. Every deal is powered by real student needs, not inflated rates — so you save more and waste less.
               </p>
             </Card>
           </div>
 
-          <Card className="p-8 bg-gradient-hero text-white text-center space-y-4 animate-fade-up">
-            <h2 className="text-2xl font-bold">Our Mission</h2>
-            <p className="text-white/90 text-lg max-w-2xl mx-auto">
-              "Buy what you need. Sell what you don't. Build your own circle of value."
+          <Card className="p-8 text-center space-y-4 animate-fade-up">
+            <h2 className="text-2xl font-bold text-primary">Our Mission</h2>
+            <p className="text-lg max-w-2xl mx-auto text-muted-foreground">
+              “Buy what you need. Sell what you don’t. Build your own circle of value.”
             </p>
-            <p className="text-white/80">
-              Empowering students to make smarter choices while building a sustainable, 
-              trusted community marketplace.
+            <p className="text-muted-foreground">
+              We’re on a mission to empower every student to make smarter choices, support sustainable living, and build a trusted community that thrives on sharing and connection.
             </p>
           </Card>
         </div>
