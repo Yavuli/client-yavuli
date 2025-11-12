@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Heart, Eye, ArrowLeft } from 'lucide-react';
 import dummyListings from "@/data/dummyListings.json";
+import Navbar from "@/components/Navbar";
 
 const mockProducts = dummyListings;
 
@@ -53,32 +54,7 @@ const Explore = () => {
 
   return (
     <div className="bg-background min-h-screen">
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold"><span className="text-red-500">Ya</span><span className="text-green-500">vu</span><span className="text-blue-500">li</span></Link>
-          <div className="flex items-center space-x-4">
-            <Input placeholder="Search products, books, services..." className="w-64 hidden md:block" />
-            <Button asChild variant="ghost">
-              <Link to="/explore">Explore</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/sell">Sell</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/about">About</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/contact">Contact</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/login">Sign In</Link>
-            </Button>
-            <Button asChild>
-              <Link to="/signup">Sign Up</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="container mx-auto px-4 py-8">
         <Link to="/" className="inline-block mb-4">
