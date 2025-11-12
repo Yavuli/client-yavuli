@@ -197,7 +197,7 @@ const Sell = () => {
 
             {/* Submit */}
             <div className="flex gap-4 pt-4">
-              <Button className="flex-1 bg-gradient-hero text-white hover:shadow-glow">
+              <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 transition-shadow duration-300 ease-in-out shadow-lg hover:shadow-glow">
                 <Plus className="h-4 w-4 mr-2" />
                 Publish Listing
               </Button>

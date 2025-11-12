@@ -21,7 +21,7 @@ const LandingPage = () => {
               <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-shadow duration-300 ease-in-out shadow-lg hover:shadow-glow">Start Selling</Button>
             </Link>
             <Link to="/explore">
-              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-accent hover:text-accent-foreground animate-pulse">Explore Listings</Button>
+              <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-accent hover:text-accent-foreground">Explore Listings</Button>
             </Link>
           </div>
         </div>
@@ -66,31 +66,6 @@ const LandingPage = () => {
             <div className="bg-card p-8 rounded-lg shadow-md text-center flex-1">
               <h3 className="text-2xl font-bold mb-2">3️⃣ Chat & Complete</h3>
               <p className="text-muted-foreground">Secure communication and payments.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Technology Stack Section */}
-      <section className="py-16 md:py-24 bg-background">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Built with Confidence</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
-            <div className="bg-card p-6 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-2">Frontend</h3>
-              <p className="text-muted-foreground">React + Tailwind CSS for frontend precision.</p>
-            </div>
-            <div className="bg-card p-6 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-2">Backend</h3>
-              <p className="text-muted-foreground">Node.js, Express, and Supabase for backend reliability.</p>
-            </div>
-            <div className="bg-card p-6 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-2">Deployment</h3>
-              <p className="text-muted-foreground">Vercel for the frontend and Render for the backend.</p>
-            </div>
-            <div className="bg-card p-6 rounded-lg shadow-md">
-              <h3 className="text-2xl font-bold mb-2">Security</h3>
-              <p className="text-muted-foreground">JWT, HTTPS, and 2FA for robust security.</p>
             </div>
           </div>
         </div>

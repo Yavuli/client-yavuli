@@ -170,7 +170,7 @@ const Explore = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProducts.map(product => (
                 <Link to={`/product/${product.id}`} key={product.id}>
-                  <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 group">
+                  <div className="bg-card rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group hover:scale-105">
                     <div className="relative">
                       <img src={product.images[0]} alt={product.title} className="w-full h-48 object-cover" />
                       <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold">
@@ -178,7 +178,7 @@ const Explore = () => {
                       </div>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-semibold text-lg truncate group-hover:text-primary">{product.title}</h3>
+                      <h3 className="font-semibold text-lg truncate">{product.title}</h3>
                       <p className="font-bold text-xl mt-1">₹{product.price.toLocaleString()}</p>
                       <p className="text-sm text-muted-foreground mt-2">{product.location_city}, {product.college_name}</p>
                       <div className="flex items-center justify-between text-sm text-muted-foreground mt-4">
