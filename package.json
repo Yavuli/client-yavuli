@@ -7,6 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+<<<<<<< HEAD
+=======
+    "predeploy": "npm run build",
+    "deploy": "netlify deploy --prod",
+>>>>>>> 2a0a4efb02c84718b6d415fdbc9673868d2d846c
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -39,8 +44,17 @@
     "@radix-ui/react-toggle": "^1.1.9",
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
+<<<<<<< HEAD
     "@supabase/supabase-js": "^2.76.1",
     "@tanstack/react-query": "^5.90.7",
+=======
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.76.1",
+    "@tanstack/react-query": "^5.90.5",
+    "axios": "^1.12.2",
+>>>>>>> 2a0a4efb02c84718b6d415fdbc9673868d2d846c
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -53,11 +67,18 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.61.1",
+<<<<<<< HEAD
     "react-icons": "^5.5.0",
+=======
+>>>>>>> 2a0a4efb02c84718b6d415fdbc9673868d2d846c
     "react-resizable-panels": "^2.1.9",
     "react-router-dom": "^6.30.1",
     "recharts": "^2.15.4",
     "sonner": "^1.7.4",
+<<<<<<< HEAD
+=======
+    "supabase": "^2.53.6",
+>>>>>>> 2a0a4efb02c84718b6d415fdbc9673868d2d846c
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.9",
@@ -81,5 +102,12 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
     "vite": "^7.1.12"
+<<<<<<< HEAD
+=======
+  },
+    "engines": {
+    "node": ">=20.19.0",
+    "npm": ">=10.0.0"
+>>>>>>> 2a0a4efb02c84718b6d415fdbc9673868d2d846c
   }
 }

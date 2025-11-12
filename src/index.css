@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+<<<<<<< HEAD
 @layer base {
   :root {
     /* Light Orange/Apricot Theme */
@@ -55,6 +56,71 @@
     --border: 25 15% 30%;
     --input: 25 15% 32%;
     --ring: 35 90% 70%;
+=======
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Yavuli Light Theme - Fresh Student Marketplace */
+    --background: 210 100% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Navy primary */
+    --primary: 222 75% 10%;
+    --primary-foreground: 210 40% 98%;
+
+    /* Light secondary */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    /* Muted backgrounds */
+    --muted: 210 30% 94%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Teal accent */
+    --accent: 174 100% 35%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Neon green for CTAs */
+    --success: 158 100% 50%;
+    --success-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 174 100% 35%;
+
+    --radius: 0.75rem;
+
+    /* Custom marketplace colors */
+    --navy: 222 75% 10%;
+    --teal: 174 100% 35%;
+    --neon-green: 158 100% 50%;
+    --slate: 220 9% 46%;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(174 100% 35%) 0%, hsl(158 100% 50%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(210 100% 98%) 0%, hsl(210 40% 96%) 100%);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(222 75% 10% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(222 75% 10% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(222 75% 10% / 0.1);
+    --shadow-glow: 0 0 20px hsl(174 100% 35% / 0.3);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+>>>>>>> 2a0a4efb02c84718b6d415fdbc9673868d2d846c
   }
 }
 
@@ -62,12 +128,19 @@
   * {
     @apply border-border;
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a0a4efb02c84718b6d415fdbc9673868d2d846c
   body {
     @apply bg-background text-foreground;
   }
 }
+<<<<<<< HEAD
 
 @keyframes fadeInBackground {
   from { background-color: transparent; }
   to { background-color: hsl(var(--accent)); }
 }
+=======
+>>>>>>> 2a0a4efb02c84718b6d415fdbc9673868d2d846c
