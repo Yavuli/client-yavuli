@@ -55,7 +55,7 @@ const Explore = () => {
     <div className="bg-background min-h-screen">
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold">Yavuli</Link>
+          <Link to="/" className="text-2xl font-bold"><span className="text-red-500">Ya</span><span className="text-green-500">vu</span><span className="text-blue-500">li</span></Link>
           <div className="flex items-center space-x-4">
             <Input placeholder="Search products, books, services..." className="w-64 hidden md:block" />
             <Button asChild variant="ghost">

@@ -11,7 +11,7 @@ const LandingPage = () => {
       >
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">
-            Trade Smarter, Safer, and Simpler — Only at Yavuli.
+            Trade Smarter, Safer, and Simpler — Only at <span className="text-red-500">Ya</span><span className="text-green-500">vu</span><span className="text-blue-500">li</span>.
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             The trusted marketplace built by students, for students — verified by college email, powered by modern tech.
@@ -31,7 +31,7 @@ const LandingPage = () => {
       {/* Why Yavuli? Section */}
       <section className="py-16 md:py-24 bg-background" style={{ backgroundImage: "var(--pattern-dotted)", backgroundSize: "20px 20px" }}>
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why Yavuli?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why <span className="text-red-500">Ya</span><span className="text-green-500">vu</span><span className="text-blue-500">li</span>?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[ 
               { title: "Verified College Users Only", description: "Ensuring a safe and trusted community for all transactions." },
@@ -74,7 +74,7 @@ const LandingPage = () => {
       {/* Join the Student Revolution CTA */}
       <section className="py-16 md:py-24 text-center text-white" style={{ backgroundImage: "var(--gradient-cta)" }}>
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Yavuli is redefining campus commerce.</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4"><span className="text-red-500">Ya</span><span className="text-green-500">vu</span><span className="text-blue-500">li</span> is redefining campus commerce.</h2>
           <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8">Safe, simple, and built for you.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">Get Started</Button>
@@ -88,8 +88,8 @@ const LandingPage = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-2">Yavuli</h3>
-              <p className="text-sm">Made with 💛 by students — Yavuli, founded by Kishlaya and team.</p>
+              <h3 className="text-lg font-bold mb-2"><span className="text-red-500">Ya</span><span className="text-green-500">vu</span><span className="text-blue-500">li</span></h3>
+              <p className="text-sm">Made with 💛 by students — <span className="text-red-500">Ya</span><span className="text-green-500">vu</span><span className="text-blue-500">li</span>, founded by Kishlaya and team.</p>
             </div>
             <div>
               <h3 className="text-lg font-bold mb-2">Quick Links</h3>
