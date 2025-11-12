@@ -5,13 +5,20 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, MessageSquare, Building } from "lucide-react";
+import { Mail, MessageSquare, Building, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container mx-auto px-4 py-12">
+        <Link to="/" className="inline-block mb-4">
+          <Button variant="ghost">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
+        </Link>
         <div className="max-w-4xl mx-auto">
           <div className="text-center space-y-4 mb-12 animate-fade-in">
             <h1 className="text-4xl font-bold text-primary">Get in Touch</h1>

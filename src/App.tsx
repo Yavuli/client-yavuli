@@ -6,7 +6,9 @@ import Login from "./pages/Login";
 import Explore from "./pages/Explore";
 import About from "./pages/About";
 import Sell from "./pages/Sell";
-import Contact from "./pages/Contact"; // Import the new Contact page
+import Contact from "./pages/Contact";
+import ProductDetails from "./pages/ProductDetails";
+import Cart from "./pages/Cart";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +23,9 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/about" element={<About />} />
           <Route path="/sell" element={<Sell />} />
-          <Route path="/contact" element={<Contact />} /> {/* Add the new route */}
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </Router>
     </QueryClientProvider>

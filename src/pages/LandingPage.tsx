@@ -7,7 +7,7 @@ const LandingPage = () => {
       {/* Hero Section */}
       <section
         className="relative flex flex-col items-center justify-center min-h-screen px-4 text-center bg-cover bg-center"
-        style={{ backgroundImage: "var(--gradient-hero)" }}
+        style={{ backgroundImage: "url('https://img.freepik.com/premium-vector/white-wall-with-blue-shopping-cart-black-mouse-with-empty-tags-laptop-white-surface_1174726-9278.jpg?semt=ais_hybrid&w=740&q=80')" }}
       >
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">
@@ -103,7 +103,7 @@ const LandingPage = () => {
           <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8">Safe, simple, and built for you.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">Get Started</Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">Learn More</Button>
+            <Button size="lg" variant="outline" className="border-white bg-white text-black hover:bg-white/90">Learn More</Button>
           </div>
         </div>
       </section>

@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Upload, Plus } from "lucide-react";
+import { Upload, Plus, ArrowLeft } from "lucide-react";
+import { Link } from 'react-router-dom';
 
 const Sell = () => {
   const photosInputRef = useRef<HTMLInputElement>(null);
@@ -18,6 +19,12 @@ const Sell = () => {
       
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
+          <Link to="/explore" className="inline-block mb-4">
+            <Button variant="ghost">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Explore
+            </Button>
+          </Link>
           <div className="mb-8 animate-fade-in">
             <h1 className="text-3xl font-bold mb-2">List Your Product</h1>
             <p className="text-muted-foreground">Fill in the details to sell your item on Yavuli</p>

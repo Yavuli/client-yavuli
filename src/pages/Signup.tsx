@@ -4,11 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { ArrowLeft } from "lucide-react";
 
 const Signup = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-lg p-8 space-y-6 bg-card rounded-lg shadow-md">
+        <Link to="/" className="inline-block mb-4">
+          <Button variant="ghost">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
+        </Link>
         <div className="text-center">
           <h1 className="text-4xl font-bold">Join Yavuli</h1>
           <p className="text-muted-foreground mt-2">Create your student marketplace account</p>

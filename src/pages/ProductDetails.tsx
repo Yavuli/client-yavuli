@@ -1,10 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Eye, Heart, ShoppingCart, MessageCircle, Calendar, Package, Receipt } from "lucide-react";
+import { MapPin, Eye, Heart, ShoppingCart, MessageCircle, Calendar, Package, Receipt, ArrowLeft } from "lucide-react";
 import dummyListings from "@/data/dummyListings.json";
 
 const ProductDetails = () => {
@@ -27,6 +27,12 @@ const ProductDetails = () => {
       <Navbar />
       
       <div className="container mx-auto px-4 py-6">
+        <Link to="/explore" className="inline-block mb-4">
+          <Button variant="ghost">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Explore
+          </Button>
+        </Link>
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Image Gallery */}
           <div className="space-y-4 animate-fade-in">
@@ -91,13 +97,17 @@ const ProductDetails = () => {
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-              <Button className="flex-1 bg-gradient-hero text-white hover:shadow-glow">
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Add to Cart
-              </Button>
-              <Button variant="outline" className="flex-1 border-accent text-accent hover:bg-accent hover:text-white">
-                Buy Now
-              </Button>
+              <Link to="/cart" className="flex-1">
+                <Button size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Add to Cart
+                </Button>
+              </Link>
+              <Link to="/cart" className="flex-1">
+                <Button size="lg" variant="outline" className="w-full border-primary text-primary hover:bg-accent hover:text-accent-foreground">
+                  Buy Now
+                </Button>
+              </Link>
             </div>
             
             <Button variant="outline" className="w-full">

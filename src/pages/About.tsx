@@ -1,6 +1,8 @@
 import Navbar from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
-import { ShoppingBag, Shield, Users, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ShoppingBag, Shield, Users, TrendingUp, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const About = () => {
   return (
@@ -8,6 +10,12 @@ const About = () => {
       <Navbar />
       
       <div className="container mx-auto px-4 py-12">
+        <Link to="/" className="inline-block mb-4">
+          <Button variant="ghost">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
+        </Link>
         <div className="max-w-4xl mx-auto space-y-12">
           <div className="text-center space-y-4 animate-fade-in">
             <h1 className="text-4xl font-bold text-primary">About Yavuli</h1>
