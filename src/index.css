@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
     /* Yavuli Light Theme - Fresh Student Marketplace */
@@ -62,9 +58,43 @@ All colors MUST be HSL.
     --shadow-md: 0 4px 6px -1px hsl(222 75% 10% / 0.1);
     --shadow-lg: 0 10px 15px -3px hsl(222 75% 10% / 0.1);
     --shadow-glow: 0 0 20px hsl(174 100% 35% / 0.3);
-    
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    /* Yavuli Dark Theme - For Welcome Page */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 174 100% 35%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 174 100% 35%;
+
+    /* Custom dark colors */
+    --navy: 222 75% 10%;
+    --teal: 174 100% 35%;
+    --neon-green: 158 100% 50%;
+    --slate: 215 20% 65%;
   }
 }
 
@@ -75,5 +105,60 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Welcome.css - Add this to your Welcome.css file */
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-20px); 
+  }
+}
+
+@keyframes gradient {
+  0% { 
+    background-position: 0% 50%; 
+  }
+  50% { 
+    background-position: 100% 50%; 
+  }
+  100% { 
+    background-position: 0% 50%; 
+  }
+}
+
+@keyframes scale-in {
+  0% { 
+    transform: scaleX(0); 
+  }
+  100% { 
+    transform: scaleX(1); 
+  }
+}
+
+.welcome-gradient {
+  background-size: 200% 200%;
+  animation: gradient 4s ease infinite;
+}
+
+.welcome-scale-in {
+  animation: scale-in 1s ease-out 0.5s forwards;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s ease-out forwards;
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -10,6 +10,7 @@ import Sell from "./pages/Sell";
 import Callback from "./components/auth/Callback";
 import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
+import Favorites from "./pages/Favourites";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -23,9 +24,9 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
+      <Toaster />
       <CartProvider>
       <TooltipProvider>
-      <Toaster />
       <Sonner />
       <BrowserRouter>
         <Routes>
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/callback" element={<Callback />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/favourites" element={<Favorites />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />

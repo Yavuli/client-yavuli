@@ -84,9 +84,11 @@ const Navbar = () => {
           <div className="flex items-center gap-2">
             {user ? (
               <>
-                <Button variant="ghost" size="icon" className="relative hidden md:flex hover:bg-accent/10 hover:text-accent">
-                  <Heart className="h-5 w-5" />
-                </Button>
+                <Link to="/favorites">
+                  <Button variant="ghost" size="icon" className="relative hidden md:flex hover:bg-accent/10 hover:text-accent">
+                    <Heart className="h-5 w-5" />
+                  </Button>
+                </Link>
                 
                 <Link to="/cart">
                   <Button variant="ghost" size="icon" className="relative hover:bg-accent/10 hover:text-accent">
@@ -128,12 +130,12 @@ const Navbar = () => {
                         <span>Profile</span>
                       </DropdownMenuItem>
                     </Link>
-                    <Link to="/profile/favorites">
-                      <DropdownMenuItem className="cursor-pointer">
+                    <DropdownMenuItem asChild>
+                      <Link to="/favorites" className="cursor-pointer">
                         <Heart className="mr-2 h-4 w-4" />
-                        <span>Favorites</span>
-                      </DropdownMenuItem>
-                    </Link>
+                        <span>My Favorites</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
                       className="cursor-pointer text-destructive focus:text-destructive"
@@ -194,26 +196,89 @@ const Navbar = () => {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-card animate-fade-in">
           <div className="container mx-auto px-4 py-4 space-y-3">
-            <Link to="/explore" className="block py-2 text-sm font-medium hover:text-accent transition-colors">
+            <Link 
+              to="/explore" 
+              className="block py-2 text-sm font-medium hover:text-accent transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
               Explore
             </Link>
-            <Link to="/sell" className="block py-2 text-sm font-medium hover:text-accent transition-colors">
+            <Link 
+              to="/sell" 
+              className="block py-2 text-sm font-medium hover:text-accent transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
               Sell
             </Link>
-            <Link to="/about" className="block py-2 text-sm font-medium hover:text-accent transition-colors">
+            <Link 
+              to="/about" 
+              className="block py-2 text-sm font-medium hover:text-accent transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
               About
             </Link>
-            <Link to="/contact" className="block py-2 text-sm font-medium hover:text-accent transition-colors">
+            <Link 
+              to="/contact" 
+              className="block py-2 text-sm font-medium hover:text-accent transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
               Contact
             </Link>
-            <div className="border-t border-border pt-3 space-y-2">
-              <Link to="/profile" className="block py-2 text-sm hover:text-accent transition-colors">
-                My Profile
-              </Link>
-              <Link to="/login" className="block py-2 text-sm text-destructive hover:text-accent transition-colors">
-                Sign In
-              </Link>
-            </div>
+            
+            {/* User-specific mobile links */}
+            {user ? (
+              <>
+                <div className="border-t border-border pt-3 space-y-2">
+                  <Link 
+                    to="/profile" 
+                    className="block py-2 text-sm hover:text-accent transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Profile
+                  </Link>
+                  <Link 
+                    to="/favorites" 
+                    className="block py-2 text-sm hover:text-accent transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    My Favorites
+                  </Link>
+                  <Link 
+                    to="/cart" 
+                    className="block py-2 text-sm hover:text-accent transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Cart ({cartCount})
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      handleSignOut();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block py-2 text-sm text-destructive hover:text-accent transition-colors w-full text-left"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="border-t border-border pt-3 space-y-2">
+                <Link 
+                  to="/login" 
+                  className="block py-2 text-sm hover:text-accent transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="block py-2 text-sm text-destructive hover:text-accent transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

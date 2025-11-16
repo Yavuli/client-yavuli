@@ -27,6 +27,21 @@ const ProductDetails = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
+  // Record view when product page is loaded
+  useEffect(() => {
+    const recordView = async () => {
+      if (!id) return;
+      
+      try {
+        await listingsAPI.incrementViewCount(id);
+      } catch (error) {
+        console.error('Error recording view:', error);
+      }
+    };
+    
+    recordView();
+  }, [id]);
+
   useEffect(() => {
     const fetchProduct = async () => {
       if (!id) {
@@ -41,75 +56,23 @@ const ProductDetails = () => {
 
         console.log("ProductDetails: requested id =", id);
 
-        // Try single-item fetch helpers first (if listingsAPI exposes them)
-        const singleFetchFn =
-          (listingsAPI as any).get ||
-          (listingsAPI as any).getById ||
-          (listingsAPI as any).fetchById;
-
-        if (typeof singleFetchFn === "function") {
-          try {
-            const singleResp = await singleFetchFn(id);
-            console.log("listingsAPI.singleFetch response:", singleResp);
-            const candidate =
-              singleResp && singleResp?.data
-                ? // handle shapes like { data: {...} } or { data: [ {...} ] }
-                  Array.isArray(singleResp.data)
-                  ? singleResp.data[0]
-                  : singleResp.data
-                : singleResp;
-            if (candidate) {
-              setProduct(candidate);
-              return;
-            }
-          } catch (err) {
-            console.warn("single-item fetch failed, falling back to getAll:", err);
+        try {
+          // Use the getById method directly
+          const productData = await listingsAPI.getById(id);
+          console.log("Product data from API:", productData);
+          
+          if (productData) {
+            setProduct(productData);
+          } else {
+            setError("Product not found");
           }
+        } catch (err) {
+          console.error("Error fetching product:", err);
+          setError("Failed to load product details. Please try again later.");
         }
-
-        // Fallback: fetch all and normalize common wrapper shapes
-        const raw = await (listingsAPI.getAll ? listingsAPI.getAll() : (listingsAPI as any)());
-        console.log("listingsAPI.getAll() raw response:", raw);
-
-        // Many API clients return either:
-        // - an array
-        // - { data: [...] }
-        // - axios response: { data: { data: [...] } }
-        // Normalize to an array of products:
-        let allProducts: any[] = [];
-
-        if (Array.isArray(raw)) {
-          allProducts = raw;
-        } else if (raw?.data && Array.isArray(raw.data)) {
-          allProducts = raw.data;
-        } else if (raw?.data?.data && Array.isArray(raw.data.data)) {
-          // e.g. axiosResponse.data = { success: true, data: [...] }
-          allProducts = raw.data.data;
-        } else if (raw?.rows && Array.isArray(raw.rows)) {
-          allProducts = raw.rows;
-        } else {
-          // last resort: try object values
-          try {
-            const vals = Object.values(raw || {}).flatMap((v: any) => (Array.isArray(v) ? v : [v]));
-            allProducts = vals.filter(Boolean);
-          } catch {
-            allProducts = [];
-          }
-        }
-
-        console.log("Normalized products length:", allProducts.length);
-
-        const found = allProducts.find((p: any) => String(p?.id) === String(id));
-
-        if (!found) {
-          setError("Product not found :(");
-          setProduct(null);
-        } else {
-          setProduct(found);
-        }
-      } catch (err: any) {
-        console.error("Error in ProductDetails fetch:", err);
-        setError(err?.message || "Failed to load product");
+      } catch (err) {
+        console.error("Error in fetchProduct:", err);
+        setError("An unexpected error occurred. Please try again later.");
       } finally {
         setLoading(false);
       }
