@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path, { resolve } from 'path';
-import { componentTagger } from 'yavuli-tagger';
 
-export default defineConfig(({ mode }) => ({
-  plugins: [react(), mode === 'development' && componentTagger()].filter(Boolean),
+export default defineConfig({
+  plugins: [react()],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
@@ -34,4 +33,4 @@ export default defineConfig(({ mode }) => ({
   define: {
     'process.env': process.env,
   },
-}));
+});
