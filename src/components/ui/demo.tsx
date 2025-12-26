@@ -70,12 +70,12 @@ export function SplineSceneBasic() {
 
   return (
     <Card 
-      className="w-full h-[600px] bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden border-0 shadow-2xl"
+      className="w-full h-auto md:h-[600px] bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden border-0 shadow-2xl"
     >
-      <div className="flex h-full">
+      <div className="flex flex-col md:flex-row h-full">
         {/* Left content - Enhanced Yavuli Section */}
         <motion.div 
-          className="flex-1 p-12 relative z-10 flex flex-col justify-center items-start space-y-6"
+          className="flex-1 p-8 md:p-12 relative z-10 flex flex-col justify-center items-start space-y-6"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -152,7 +152,7 @@ export function SplineSceneBasic() {
         {/* Right content - Spline Scene */}
         <div 
           ref={splineContainerRef}
-          className="flex-1 relative hidden lg:block"
+          className="flex-1 relative block md:flex-1"
         >
           <div className="absolute inset-0 bg-gradient-to-l from-transparent via-indigo-900/5 to-transparent pointer-events-none" />
           <SplineScene 
