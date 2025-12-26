@@ -36,7 +36,7 @@ const App = () => (
           <Route path="/sell" element={<Sell />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<SignupForm />} />
-          <Route path="/callback" element={<Callback />} />
+          <Route path="/auth/callback" element={<Callback />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/favourites" element={<Favorites />} />

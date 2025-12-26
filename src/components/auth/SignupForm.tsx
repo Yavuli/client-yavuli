@@ -19,8 +19,18 @@ const Signup = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { signUp, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+
+  const handleGoogleSignUp = async () => {
+    try {
+      setError('');
+      const { error } = await signInWithGoogle();
+      if (error) throw error;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to sign up with Google');
+    }
+  };
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -131,7 +141,7 @@ const Signup = () => {
         </Alert>
 
         {/* Google Sign Up */}
-        <Button variant="outline" className="w-full border-2 hover:bg-muted">
+        <Button variant="outline" className="w-full border-2 hover:bg-muted" onClick={handleGoogleSignUp}>
           <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
             <path
               fill="currentColor"

@@ -1,40 +1,51 @@
 // src/pages/auth/Callback.tsx
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 
 export default function AuthCallback() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession();
+        // Check if there's a code in the URL (OAuth callback)
+        const code = searchParams.get('code');
+        
+        if (code) {
+          // Wait for Supabase to process the OAuth code
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        
+        // Wait a bit for the session to be established
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           throw error;
         }
 
-        if (data?.session) {
-          // User is authenticated, redirect to home
-          navigate('/');
+        if (session) {
+          // User is authenticated, redirect to explore
+          navigate('/explore', { replace: true });
         } else {
           // No session found, redirect to login
-          navigate('/login', { state: { from: location }, replace: true });
+          navigate('/login', { replace: true });
         }
       } catch (error) {
         console.error('Error in auth callback:', error);
         setError('Failed to authenticate. Please try again.');
         setTimeout(() => {
-          navigate('/login');
+          navigate('/login', { replace: true });
         }, 3000);
       }
     };
 
     handleAuthCallback();
-  }, [navigate, location]);
+  }, [navigate, searchParams]);
 
   if (error) {
     return (

@@ -1,8 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import type { CustomVariants } from 'framer-motion';
 import { SplineSceneBasic } from "@/components/ui/demo";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 import { 
   Sparkles, 
@@ -18,6 +21,91 @@ import {
 } from "lucide-react";
 
 const Welcome = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
+
+  useEffect(() => {
+    console.log('Welcome component mounted');
+    console.log('Current URL:', window.location.href);
+    console.log('Search params:', Object.fromEntries(searchParams));
+    
+    // Check if this is an OAuth callback
+    const code = searchParams.get('code');
+    const sessionState = searchParams.get('state');
+    
+    console.log('Code from URL:', code);
+    console.log('State from URL:', sessionState);
+    
+    if (code || sessionState) {
+      console.log('Starting OAuth processing...');
+      setIsProcessing(true);
+      setDebugInfo('Processing OAuth...');
+      
+      // Wait for Supabase to process the OAuth code
+      const handleOAuthCallback = async () => {
+        try {
+          console.log('Waiting for session to be established...');
+          setDebugInfo('Waiting for session...');
+          
+          // Wait longer for the session to be established by Supabase
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          
+          console.log('Checking for session...');
+          setDebugInfo('Checking session...');
+          
+          // Check if session was established
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          console.log('Session check result:', { session: !!session, error });
+          setDebugInfo(`Session: ${session ? 'Found' : 'Not found'}`);
+          
+          if (session) {
+            console.log('Session found! Redirecting to explore...');
+            navigate('/explore', { replace: true });
+          } else {
+            console.log('No session found. Redirecting to login...');
+            navigate('/login', { replace: true });
+          }
+        } catch (error) {
+          console.error('OAuth callback error:', error);
+          setDebugInfo(`Error: ${error}`);
+          navigate('/login', { replace: true });
+        }
+      };
+
+      // Set a timeout to force redirect after 10 seconds
+      const timeoutId = setTimeout(() => {
+        console.log('Timeout: Forcing redirect to login');
+        navigate('/login', { replace: true });
+      }, 10000);
+
+      handleOAuthCallback().finally(() => {
+        clearTimeout(timeoutId);
+        setIsProcessing(false);
+      });
+    }
+  }, [searchParams, navigate]);
+
+  // Show loading screen while processing OAuth
+  if (isProcessing) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative z-50">
+        <div className="text-center space-y-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 animate-pulse">
+            <Sparkles className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold text-white mb-2">Processing your login...</h2>
+            <p className="text-white/70 text-lg">Please wait while we verify your credentials.</p>
+            {debugInfo && <p className="text-white/50 text-sm mt-4">{debugInfo}</p>}
+          </div>
+        </div>
+      </div>
+    );
+  }
   const containerVariants: CustomVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -114,7 +202,7 @@ const Welcome = () => {
           >
             <motion.div variants={itemVariants}>
               <Button 
-                onClick={() => window.location.href = '/explore'}
+                onClick={() => navigate('/explore')}
                 size="lg" 
                 className="relative bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 text-lg font-semibold py-7 px-12 rounded-2xl overflow-hidden group border-0 font-poppins cursor-pointer"
               >
@@ -284,7 +372,7 @@ const Welcome = () => {
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button 
-                onClick={() => window.location.href = '/signup'}
+                onClick={() => navigate('/explore')}
                 size="lg" 
                 className="relative bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 font-semibold py-7 px-14 rounded-2xl overflow-hidden group border-0 font-poppins cursor-pointer"
               >
