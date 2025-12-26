@@ -29,7 +29,7 @@ const Contact = () => {
                   <Label htmlFor="name">Your Name</Label>
                   <Input
                     id="name"
-                    placeholder="Rahul Sharma"
+                    placeholder="Akshitha Sharma"
                     className="focus:ring-accent"
                   />
                 </div>
@@ -77,7 +77,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Email Us</h3>
-                    <p className="text-sm text-muted-foreground">support@yavuli.com</p>
+                    <p className="text-sm text-muted-foreground">kishlayamishra@gmail.com</p>
                     <p className="text-sm text-muted-foreground">We'll respond within 24 hours</p>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ const Contact = () => {
                 <p className="text-sm text-white/90 mb-4">
                   For urgent issues, reach out directly via email and we'll prioritize your request.
                 </p>
-                <Button variant="outline" className="w-full bg-white text-primary hover:bg-white/90">
+                <Button variant="outline" className="w-full bg-green text-primary hover:bg-white/90">
                   Priority Support
                 </Button>
               </Card>
