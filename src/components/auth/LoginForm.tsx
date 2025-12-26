@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -15,6 +16,24 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
+
+  //  google sign in method 
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          // telling google to send the user back to the page 
+          redirectTo: window.location.origin + '/explore', 
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +81,12 @@ const Login = () => {
         )}
 
         {/* Google Sign In */}
-        <Button variant="outline" className="w-full border-2 hover:bg-muted">
+        <Button 
+          variant="outline"
+          className="w-full border-2 hover:bg-muted"
+          onClick={handleGoogleLogin}
+          type='button'
+        >
           <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
             <path
               fill="currentColor"
