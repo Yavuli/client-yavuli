@@ -33,22 +33,21 @@ const Explore = () => {
 
 
   // Fetch products
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await listingsAPI.getAll();
-        console.log('Products from API:', response);
-        setProducts(Array.isArray(response) ? response : []);
-        setFilteredProducts(Array.isArray(response) ? response : []);
-      } catch (err) {
-        console.error('Error in fetchProducts:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load products');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await listingsAPI.getAll();
+      setProducts(Array.isArray(response) ? response : []);
+      setFilteredProducts(Array.isArray(response) ? response : []);
+    } catch (err) {
+      console.error('Error in fetchProducts:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
@@ -363,6 +362,15 @@ const Explore = () => {
                   <SlidersHorizontal className="h-4 w-4 mr-2" />
                   Filters
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={fetchProducts}
+                  disabled={loading}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  {loading ? 'Refreshing...' : 'Refresh'}
+                </Button>
                 <p className="text-sm text-muted-foreground">
                   {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
                   {searchQuery && ` for "${searchQuery}"`}
@@ -391,18 +399,18 @@ const Explore = () => {
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    title={product.title}
-                    price={product.price}
-                    images={product.images}
-                    location_city={product.location_city}
-                    college_name={product.college_name}
-                    condition={product.condition}
-                    views={product.views}
-                    favorites={product.favorites}
-                    verified={product.verified}
-                  />
+                      key={product.id}
+                      id={product.id}
+                      title={product.title}
+                      price={product.price}
+                      images={product.images}
+                      location_city={product.location_city}
+                      college_name={product.college_name}
+                      condition={product.condition}
+                      views={product.views}
+                      favorites={product.favorites}
+                      verified={product.verified}
+                    />
                 ))
               ) : (
                 <div className="col-span-full text-center py-10">
