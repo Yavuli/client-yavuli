@@ -110,9 +110,17 @@ export const listingsAPI = {
   // Increment view count by fetching the listing (GET /listings/:id already handles view counting)
   incrementViewCount: async (listingId: string) => {
     try {
-      // Just fetch the listing, which will automatically increment the view count on the server
+      // Fetch the listing, which will automatically increment the view count on the server
       const response = await api.get(`/listings/${listingId}`);
-      return response.data;
+      
+      // Handle the response structure
+      let listingData = response.data;
+      if (response.data?.data) {
+        listingData = response.data.data;
+      }
+      
+      // Transform and return the listing with updated view count
+      return transformListing(listingData);
     } catch (error) {
       console.error("Error incrementing view count:", error);
       throw error;

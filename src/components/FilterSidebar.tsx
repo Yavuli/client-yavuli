@@ -48,8 +48,15 @@ const FilterSidebar = ({ filters, onFilterChange, onClearAll }: FilterSidebarPro
   };
 
   const handleConditionChange = (condition: string, checked: boolean) => {
-    // Normalize condition to lowercase for consistent filtering
-    onFilterChange({ condition: checked ? condition.toLowerCase() : "" });
+    // Normalize condition to standard format: "new", "like-new", "used"
+    let normalized = "";
+    if (checked) {
+      const lower = condition.toLowerCase();
+      if (lower === "new") normalized = "new";
+      else if (lower.includes("like")) normalized = "like-new";
+      else if (lower === "used") normalized = "used";
+    }
+    onFilterChange({ condition: normalized });
   };
 
   const handleVerifiedChange = (checked: boolean) => {

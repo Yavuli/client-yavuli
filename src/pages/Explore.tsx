@@ -115,10 +115,10 @@ const Explore = () => {
       (product.price ?? 0) >= filters.priceRange[0] && (product.price ?? 0) <= filters.priceRange[1]
     );
 
-    // Apply condition filter (case-insensitive)
+    // Apply condition filter (exact match with normalized values)
     if (filters.condition) {
       filtered = filtered.filter(product => 
-        product.condition?.toLowerCase() === filters.condition.toLowerCase()
+        product.condition === filters.condition
       );
     }
 
