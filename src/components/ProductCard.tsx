@@ -53,19 +53,18 @@ const ProductCard = ({
       try {
         // Call the API to increment view count
         // This works for anonymous users too
-        await listingsAPI.incrementViewCount(id);
+        const response = await listingsAPI.incrementViewCount(id);
         
-        // Fetch updated listing data to get the new view count
-        setTimeout(async () => {
-          try {
-            const updatedListing = await listingsAPI.getById(id);
-            if (updatedListing) {
-              setCurrentViews(updatedListing.views || 0);
-            }
-          } catch (error) {
-            console.error('Error fetching updated view count:', error);
+        // Update view count immediately from response
+        if (response?.views) {
+          setCurrentViews(response.views);
+        } else {
+          // If response doesn't have views, fetch the full listing
+          const updatedListing = await listingsAPI.getById(id);
+          if (updatedListing) {
+            setCurrentViews(updatedListing.views || 0);
           }
-        }, 500); // Wait 500ms for database to update
+        }
       } catch (error) {
         console.error('Error incrementing view count:', error);
       }
