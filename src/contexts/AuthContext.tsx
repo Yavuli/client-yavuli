@@ -16,6 +16,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
     setSession(session);
     
+    // Store the access token in localStorage for API requests
+    if (session?.access_token) {
+      localStorage.setItem('token', session.access_token);
+    } else {
+      localStorage.removeItem('token');
+    }
+    
     if (session?.user) {
       try {
         // Small delay to ensure the profile is created
@@ -102,6 +109,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem('token');
     setUser(null);
     setSession(null);
   };
