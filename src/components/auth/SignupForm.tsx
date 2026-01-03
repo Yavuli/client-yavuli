@@ -88,6 +88,29 @@ const Signup = () => {
       
       if (error) throw error;
       
+      // After successful signup, sync user data to the backend database
+      try {
+        const session = (await import('@/lib/supabase').then(m => m.supabase.auth.getSession())).data.session;
+        if (session?.access_token) {
+          const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+          await fetch(`${apiUrl}/auth/sync-user`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({
+              full_name: fullName,
+              city,
+              college
+            })
+          });
+        }
+      } catch (syncError) {
+        console.error('Warning: Failed to sync user data:', syncError);
+        // Don't fail the signup if sync fails
+      }
+      
       // Show success message
       setSuccess('Please check your email to verify your account! You will be redirected to login shortly...');
       

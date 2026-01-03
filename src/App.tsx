@@ -9,6 +9,9 @@ import ProductDetails from "./pages/ProductDetails";
 import Sell from "./pages/Sell";
 import Callback from "./components/auth/Callback";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentFailure from "./pages/PaymentFailure";
 import Profile from "./pages/Profile";
 import Favorites from "./pages/Favorites";
 import About from "./pages/About";
@@ -41,6 +44,9 @@ const App = () => (
           <Route path="/signup" element={<SignupForm />} />
           <Route path="/auth/callback" element={<Callback />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failure" element={<PaymentFailure />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/about" element={<About />} />

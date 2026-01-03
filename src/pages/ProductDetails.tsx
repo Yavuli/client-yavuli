@@ -35,12 +35,19 @@ const ProductDetails = () => {
   const { user } = useAuth();   // Get current user
   const navigate = useNavigate();
 
-  // 1. Record View Count
+  // 1. Record View Count and update product data
   useEffect(() => {
     const recordView = async () => {
       if (!id) return;
       try {
-        await listingsAPI.incrementViewCount(id);
+        const updatedListing = await listingsAPI.incrementViewCount(id);
+        if (updatedListing) {
+          // Update the product with the new view count
+          setProduct((prev: any) => ({
+            ...prev,
+            views: updatedListing.views || 0,
+          }));
+        }
       } catch (error) {
         console.error('Error recording view:', error);
       }
@@ -100,6 +107,42 @@ const ProductDetails = () => {
     checkFavoriteStatus();
   }, [id, user]);
 
+  // 3.5 Subscribe to real-time updates for views and favorites count
+  useEffect(() => {
+    if (!id) return;
+
+    try {
+      const subscription = (supabase as any)
+        .channel(`product:${id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'listings',
+            filter: `id=eq.${id}`,
+          },
+          (payload: any) => {
+            if (payload.new?.id === id) {
+              // Update product with new views and favorites count
+              setProduct((prev: any) => ({
+                ...prev,
+                views: payload.new.views || 0,
+                favorites: payload.new.favorites || 0,
+              }));
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    } catch (error) {
+      console.error('Error setting up real-time subscription:', error);
+    }
+  }, [id]);
+
   // 4. Handle Heart Click 
   const handleToggleFavorite = async () => {
     if (!user) {
@@ -119,6 +162,23 @@ const ProductDetails = () => {
           .eq('user_id', user.id);
 
         if (error) throw error;
+
+        // Update the listing's favorite count
+        const newCount = Math.max(0, (product.favorites || 0) - 1);
+        const { error: updateError } = await (supabase as any)
+          .from('listings')
+          .update({ favorites: newCount })
+          .eq('id', id);
+
+        if (updateError) {
+          console.error('Error updating favorite count:', updateError);
+        }
+
+        // Update local product state
+        setProduct((prev: any) => ({
+          ...prev,
+          favorites: newCount
+        }));
         
         setIsFavorited(false);
         toast.success("Removed from favorites");
@@ -129,6 +189,23 @@ const ProductDetails = () => {
           .insert({ listing_id: id, user_id: user.id });
 
         if (error) throw error;
+
+        // Update the listing's favorite count
+        const newCount = (product.favorites || 0) + 1;
+        const { error: updateError } = await (supabase as any)
+          .from('listings')
+          .update({ favorites: newCount })
+          .eq('id', id);
+
+        if (updateError) {
+          console.error('Error updating favorite count:', updateError);
+        }
+
+        // Update local product state
+        setProduct((prev: any) => ({
+          ...prev,
+          favorites: newCount
+        }));
 
         setIsFavorited(true);
         toast.success("Added to favorites");
@@ -273,7 +350,7 @@ const ProductDetails = () => {
                 onClick={() => {
                   if (!product) return;
                   addToCart({
-                    id: product._id, // fallback if backend uses _id
+                    id: product.id, // Use product.id from database
                     title: product.title,
                     price: product.price,
                     image: product.images[0],
@@ -289,15 +366,21 @@ const ProductDetails = () => {
                 variant="outline" 
                 className="flex-1 border-accent text-accent hover:bg-accent hover:text-white"
                 onClick={() => {
-                  if (!product) return;
-                  addToCart({
-                    id: product._id,
-                    title: product.title,
-                    price: product.price,
-                    image: product.images[0],
-                    sellerId: product.seller_id
-                  });
-                  navigate('/cart');
+                  if (!product || !user) {
+                    toast.info("Please sign in to purchase");
+                    navigate("/auth/login");
+                    return;
+                  }
+                  
+                  if (product.seller_id === user.id) {
+                    toast.error("You cannot buy your own listing");
+                    return;
+                  }
+                  
+                  // Direct checkout - bypass cart
+                  navigate(
+                    `/checkout?listingId=${product.id}&price=${product.price}`
+                  );
                 }}
               >
                 Buy Now

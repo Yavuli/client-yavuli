@@ -1,4 +1,6 @@
 import { useState, useRef, ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +26,8 @@ interface FormData {
 }
 
 const Sell = () => {
+  const navigate = useNavigate();
+  const { session } = useAuth();
   const [images, setImages] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -196,31 +200,49 @@ const Sell = () => {
     }
 
     setIsUploading(true);
-    const formDataToSend = new FormData();
-    
-    // Append form data
-    Object.entries({ ...formData, status }).forEach(([key, value]) => {
-      formDataToSend.append(key, value);
-    });
-
-    // Append images
-    images.forEach((image) => {
-      formDataToSend.append('images', image);
-    });
 
     try {
-      const response = await fetch('http://localhost:5000/api/listings', {
+      // Convert images to data URLs for now
+      const imageDataUrls: string[] = [];
+      
+      for (const image of images) {
+        const reader = new FileReader();
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(image);
+        });
+        imageDataUrls.push(dataUrl);
+      }
+
+      const payload = {
+        ...formData,
+        status,
+        images: imageDataUrls
+      };
+
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+      // Get the access token from Supabase session
+      const token = session?.access_token;
+      
+      if (!token) {
+        throw new Error('Authentication required. Please log in first.');
+      }
+
+      const response = await fetch(`${apiUrl}/listings`, {
         method: 'POST',
-        body: formDataToSend,
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+        throw new Error(data.error || data.message || `HTTP error! status: ${response.status}`);
       }
 
       toast({
@@ -230,9 +252,13 @@ const Sell = () => {
           : "Your item is now live!",
       });
 
-      // Reset form only after successful publication
+      // Reset form and redirect on successful publication
       if (status === 'published') {
         resetForm();
+        // Redirect to explore page after 2 seconds
+        setTimeout(() => {
+          navigate('/explore');
+        }, 2000);
       }
 
     } catch (error) {

@@ -1,10 +1,7 @@
 // src/lib/api.ts
 import axios from "axios";
 
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:5000/api" ||
-  "https://server-yavuli.onrender.com/api";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -110,9 +107,21 @@ export const listingsAPI = {
   // Increment view count by fetching the listing (GET /listings/:id already handles view counting)
   incrementViewCount: async (listingId: string) => {
     try {
-      // Just fetch the listing, which will automatically increment the view count on the server
+      console.log(`[api] Incrementing view count for listing: ${listingId}`);
+      // Fetch the listing, which will automatically increment the view count on the server
       const response = await api.get(`/listings/${listingId}`);
-      return response.data;
+      console.log(`[api] View increment response:`, response.data);
+      
+      // Handle the response structure
+      let listingData = response.data;
+      if (response.data?.data) {
+        listingData = response.data.data;
+      }
+      
+      const transformed = transformListing(listingData);
+      console.log(`[api] Transformed listing with views: ${transformed.views}`);
+      // Transform and return the listing with updated view count
+      return transformed;
     } catch (error) {
       console.error("Error incrementing view count:", error);
       throw error;
@@ -222,6 +231,81 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Payments API
+export const paymentsAPI = {
+  // Create order for payment
+  createOrder: async (listingId: string, itemPrice: number) => {
+    try {
+      const response = await api.post("/payments/create-order", {
+        listingId,
+        itemPrice,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error creating payment order:", error);
+      throw error;
+    }
+  },
+
+  // Verify payment after Razorpay checkout
+  verifyPayment: async (
+    razorpayOrderId: string,
+    razorpayPaymentId: string,
+    razorpaySignature: string,
+    transactionId: string
+  ) => {
+    try {
+      const response = await api.post("/payments/verify-payment", {
+        razorpayOrderId,
+        razorpayPaymentId,
+        razorpaySignature,
+        transactionId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      throw error;
+    }
+  },
+
+  // Get transaction details
+  getTransaction: async (transactionId: string) => {
+    try {
+      const response = await api.get(`/payments/transaction/${transactionId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching transaction:", error);
+      throw error;
+    }
+  },
+
+  // Get buyer's purchase history
+  getPurchases: async (page: number = 1, limit: number = 10) => {
+    try {
+      const response = await api.get("/payments/my-purchases", {
+        params: { page, limit },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching purchases:", error);
+      throw error;
+    }
+  },
+
+  // Get seller's sales history
+  getSales: async (page: number = 1, limit: number = 10) => {
+    try {
+      const response = await api.get("/payments/my-sales", {
+        params: { page, limit },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching sales:", error);
+      throw error;
+    }
+  },
+};
 
 export const reportsAPI = {
   submitReport: (reportData: any) => api.post("/reports", reportData),

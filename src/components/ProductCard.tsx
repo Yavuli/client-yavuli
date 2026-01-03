@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { listingsAPI } from "@/lib/api";
-import { supabase } from "@/lib/supabase"; // Make sure you have supabase configured
+import { supabase } from "@/lib/supabase";
 
 interface ProductCardProps {
   id: string;
@@ -38,16 +38,48 @@ const ProductCard = ({
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentFavorites, setCurrentFavorites] = useState(favorites);
+  const [currentViews, setCurrentViews] = useState(views);
+  const [viewCountedSession, setViewCountedSession] = useState<string>(`${id}-${Date.now()}`);
 
-  // Update local state when favorites prop changes
+  // Update local state when props change
   useEffect(() => {
     setCurrentFavorites(favorites);
-  }, [favorites]);
+    setCurrentViews(views);
+  }, [favorites, views]);
+
+  // Increment view count when card is rendered (once per session)
+  useEffect(() => {
+    const incrementView = async () => {
+      try {
+        // Call the API to increment view count
+        // This works for anonymous users too
+        const response = await listingsAPI.incrementViewCount(id);
+        
+        // Update view count immediately from response
+        if (response?.views) {
+          setCurrentViews(response.views);
+        } else {
+          // If response doesn't have views, fetch the full listing
+          const updatedListing = await listingsAPI.getById(id);
+          if (updatedListing) {
+            setCurrentViews(updatedListing.views || 0);
+          }
+        }
+      } catch (error) {
+        console.error('Error incrementing view count:', error);
+      }
+    };
+
+    incrementView();
+  }, [id]);
 
   // Check if the current user has favorited this item
   useEffect(() => {
     const checkIfFavorited = async () => {
-      if (!user) return;
+      if (!user) {
+        setIsFavorited(false);
+        return;
+      }
       
       try {
         const { data } = await supabase
@@ -60,11 +92,45 @@ const ProductCard = ({
         setIsFavorited(!!data);
       } catch (error) {
         console.error('Error checking favorite status:', error);
+        setIsFavorited(false);
       }
     };
     
     checkIfFavorited();
   }, [id, user]);
+
+  // Subscribe to real-time updates for both views and favorites from other devices
+  useEffect(() => {
+    if (!id) return;
+
+    try {
+      const subscription = supabase
+        .channel(`listings:${id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'listings',
+            filter: `id=eq.${id}`,
+          },
+          (payload) => {
+            if (payload.new?.id === id) {
+              // Update both favorites and views count from real-time update
+              setCurrentFavorites(payload.new.favorites || 0);
+              setCurrentViews(payload.new.views || 0);
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    } catch (error) {
+      console.error('Error setting up real-time subscription:', error);
+    }
+  }, [id]);
 
   const handleFavoriteClick = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -75,43 +141,72 @@ const ProductCard = ({
       return;
     }
 
+    // Prevent double clicks while loading
+    if (isLoading) {
+      return;
+    }
+
     setIsLoading(true);
     try {
       if (isFavorited) {
-        // UNFAVORITE  making a Direct Supabase Call
-        const { error } = await supabase
+        // UNFAVORITE - Direct Supabase Call
+        const { error: deleteError } = await supabase
           .from('favorites')
           .delete()
           .eq('listing_id', id)
           .eq('user_id', user.id);
 
-        if (error) throw error;
+        if (deleteError) throw deleteError;
 
-        setCurrentFavorites(prev => Math.max(0, prev - 1));
+        // Update the listing's favorite count
+        const newCount = Math.max(0, currentFavorites - 1);
+        const { error: updateError } = await supabase
+          .from('listings')
+          .update({ favorites: newCount })
+          .eq('id', id);
+
+        if (updateError) {
+          console.error('Error updating favorite count:', updateError);
+          // Don't throw, the favorite was removed even if count update failed
+        }
+
+        setCurrentFavorites(newCount);
         setIsFavorited(false);
         toast.success('Removed from favorites');
       } else {
-        // ADD FAVORITE  Direct Supabase Call
-        const { error } = await supabase
+        // ADD FAVORITE - Direct Supabase Call
+        const { error: insertError } = await supabase
           .from('favorites')
           .insert({ 
             listing_id: id, 
             user_id: user.id 
           });
 
-        if (error) throw error;
+        if (insertError) throw insertError;
 
-        setCurrentFavorites(prev => prev + 1);
+        // Update the listing's favorite count
+        const newCount = currentFavorites + 1;
+        const { error: updateError } = await supabase
+          .from('listings')
+          .update({ favorites: newCount })
+          .eq('id', id);
+
+        if (updateError) {
+          console.error('Error updating favorite count:', updateError);
+          // Don't throw, the favorite was added even if count update failed
+        }
+
+        setCurrentFavorites(newCount);
         setIsFavorited(true);
         toast.success('Added to favorites');
       }
     } catch (error) {
       console.error('Error updating favorite:', error);
-      toast.error('Failed to update favorites');
+      toast.error('Failed to update favorites. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  }, [id, isFavorited, user]);
+  }, [id, isFavorited, user, currentFavorites]);
 
 return (
     <Card className="group overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
@@ -175,7 +270,7 @@ return (
         <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1">
           <div className="flex items-center gap-1">
             <Eye className="h-3 w-3" />
-            <span>{views}</span>
+            <span>{currentViews}</span>
           </div>
           <div className="flex items-center gap-1">
             <Heart className={`h-3 w-3 ${isFavorited ? 'fill-current text-destructive' : ''}`} />
