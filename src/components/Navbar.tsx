@@ -21,14 +21,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { cartCount } = useCart();
-  
+
   const isActive = (path: string) => location.pathname === path;
-  
+
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
   };
-  
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container mx-auto px-4">
@@ -54,29 +54,17 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <Link 
-              to="/explore" 
+            <Link
+              to="/explore"
               className={`text-sm font-medium transition-colors hover:text-accent ${isActive('/explore') ? 'text-accent' : 'text-foreground'}`}
             >
               Explore
             </Link>
-            <Link 
-              to="/sell" 
+            <Link
+              to="/sell"
               className={`text-sm font-medium transition-colors hover:text-accent ${isActive('/sell') ? 'text-accent' : 'text-foreground'}`}
             >
               Sell
-            </Link>
-            <Link 
-              to="/about" 
-              className={`text-sm font-medium transition-colors hover:text-accent ${isActive('/about') ? 'text-accent' : 'text-foreground'}`}
-            >
-              About
-            </Link>
-            <Link 
-              to="/contact" 
-              className={`text-sm font-medium transition-colors hover:text-accent ${isActive('/contact') ? 'text-accent' : 'text-foreground'}`}
-            >
-              Contact
             </Link>
           </div>
 
@@ -89,7 +77,7 @@ const Navbar = () => {
                     <Heart className="h-5 w-5" />
                   </Button>
                 </Link>
-                
+
                 <Link to="/cart">
                   <Button variant="ghost" size="icon" className="relative hover:bg-accent/10 hover:text-accent">
                     <ShoppingCart className="h-5 w-5" />
@@ -137,7 +125,7 @@ const Navbar = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       className="cursor-pointer text-destructive focus:text-destructive"
                       onClick={handleSignOut}
                     >
@@ -149,17 +137,17 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="hidden md:flex gap-2"
                   onClick={() => navigate('/login')}
                 >
                   <LogIn className="h-4 w-4" />
                   Sign In
                 </Button>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   className="hidden md:flex bg-gradient-hero text-white hover:shadow-glow"
                   onClick={() => navigate('/signup')}
                 >
@@ -196,61 +184,47 @@ const Navbar = () => {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-card animate-fade-in">
           <div className="container mx-auto px-4 py-4 space-y-3">
-            <Link 
-              to="/explore" 
+            <Link
+              to="/explore"
               className="block py-2 text-sm font-medium hover:text-accent transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Explore
             </Link>
-            <Link 
-              to="/sell" 
+            <Link
+              to="/sell"
               className="block py-2 text-sm font-medium hover:text-accent transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
               Sell
             </Link>
-            <Link 
-              to="/about" 
-              className="block py-2 text-sm font-medium hover:text-accent transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link 
-              to="/contact" 
-              className="block py-2 text-sm font-medium hover:text-accent transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Contact
-            </Link>
-            
+
             {/* User-specific mobile links */}
             {user ? (
               <>
                 <div className="border-t border-border pt-3 space-y-2">
-                  <Link 
-                    to="/profile" 
+                  <Link
+                    to="/profile"
                     className="block py-2 text-sm hover:text-accent transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     My Profile
                   </Link>
-                  <Link 
-                    to="/favorites" 
+                  <Link
+                    to="/favorites"
                     className="block py-2 text-sm hover:text-accent transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     My Favorites
                   </Link>
-                  <Link 
-                    to="/cart" 
+                  <Link
+                    to="/cart"
                     className="block py-2 text-sm hover:text-accent transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Cart ({cartCount})
                   </Link>
-                  <button 
+                  <button
                     onClick={() => {
                       handleSignOut();
                       setMobileMenuOpen(false);
@@ -263,15 +237,15 @@ const Navbar = () => {
               </>
             ) : (
               <div className="border-t border-border pt-3 space-y-2">
-                <Link 
-                  to="/login" 
+                <Link
+                  to="/login"
                   className="block py-2 text-sm hover:text-accent transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Sign In
                 </Link>
-                <Link 
-                  to="/signup" 
+                <Link
+                  to="/signup"
                   className="block py-2 text-sm text-destructive hover:text-accent transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >

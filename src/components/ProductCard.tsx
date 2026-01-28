@@ -54,7 +54,7 @@ const ProductCard = ({
         // Call the API to increment view count
         // This works for anonymous users too
         const response = await listingsAPI.incrementViewCount(id);
-        
+
         // Update view count immediately from response
         if (response?.views) {
           setCurrentViews(response.views);
@@ -80,7 +80,7 @@ const ProductCard = ({
         setIsFavorited(false);
         return;
       }
-      
+
       try {
         const { data } = await supabase
           .from('favorites')
@@ -88,14 +88,14 @@ const ProductCard = ({
           .eq('listing_id', id)
           .eq('user_id', user.id)
           .maybeSingle();
-          
+
         setIsFavorited(!!data);
       } catch (error) {
         console.error('Error checking favorite status:', error);
         setIsFavorited(false);
       }
     };
-    
+
     checkIfFavorited();
   }, [id, user]);
 
@@ -135,7 +135,7 @@ const ProductCard = ({
   const handleFavoriteClick = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!user) {
       toast.info('Please sign in to add items to favorites');
       return;
@@ -177,9 +177,9 @@ const ProductCard = ({
         // ADD FAVORITE - Direct Supabase Call
         const { error: insertError } = await supabase
           .from('favorites')
-          .insert({ 
-            listing_id: id, 
-            user_id: user.id 
+          .insert({
+            listing_id: id,
+            user_id: user.id
           });
 
         if (insertError) throw insertError;
@@ -208,12 +208,12 @@ const ProductCard = ({
     }
   }, [id, isFavorited, user, currentFavorites]);
 
-return (
-    <Card className="group overflow-hidden transition-all hover:shadow-lg hover:-translate-y-1">
-      
+  return (
+    <Card className="group overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 border-slate-100 rounded-[2rem]">
+
       {/* Container for Image + Heart + Badge */}
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-        
+
         {/* 1. LINK: Wraps ONLY the image now */}
         <Link to={`/product/${id}`} className="block h-full w-full">
           <img
@@ -228,11 +228,10 @@ return (
         <Button
           variant="ghost"
           size="icon"
-          className={`absolute top-2 right-2 h-8 w-8 rounded-full z-10 ${
-            isFavorited 
-              ? 'bg-white text-destructive hover:bg-white/90' 
+          className={`absolute top-2 right-2 h-8 w-8 rounded-full z-10 ${isFavorited
+              ? 'bg-white text-destructive hover:bg-white/90'
               : 'bg-white/90 hover:bg-white hover:text-destructive'
-          }`}
+            }`}
           onClick={handleFavoriteClick}
           disabled={isLoading}
         >
@@ -252,9 +251,9 @@ return (
             {title}
           </h3>
         </Link>
-        
+
         <p className="text-lg font-bold text-primary">₹{price.toLocaleString()}</p>
-        
+
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="h-3 w-3" />
           <span className="line-clamp-1">{location_city}</span>
@@ -264,9 +263,9 @@ return (
             </Badge>
           )}
         </div>
-        
+
         <p className="text-xs text-muted-foreground line-clamp-1">{college_name}</p>
-        
+
         <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1">
           <div className="flex items-center gap-1">
             <Eye className="h-3 w-3" />

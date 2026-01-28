@@ -14,8 +14,6 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailure from "./pages/PaymentFailure";
 import Profile from "./pages/Profile";
 import Favorites from "./pages/Favorites";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import NotFound from "./pages/NotFound";
@@ -29,32 +27,30 @@ const App = () => (
     <AuthProvider>
       <Toaster />
       <CartProvider>
-      <TooltipProvider>
-      <Sonner />
-      <BrowserRouter future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-      }}>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/sell" element={<Sell />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/signup" element={<SignupForm />} />
-          <Route path="/auth/callback" element={<Callback />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-failure" element={<PaymentFailure />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-      </TooltipProvider>
+        <TooltipProvider>
+          <Sonner />
+          <BrowserRouter future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}>
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/explore" element={<Explore />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/sell" element={<Sell />} />
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/signup" element={<SignupForm />} />
+              <Route path="/auth/callback" element={<Callback />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/payment-failure" element={<PaymentFailure />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
       </CartProvider>
     </AuthProvider>
   </QueryClientProvider>

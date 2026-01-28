@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
+import { ShootingStars } from "@/components/ui/shooting-stars";
+import { ChevronLeft, Info } from 'lucide-react';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -48,7 +48,6 @@ const Signup = () => {
     setSuccess('');
     setLoading(true);
 
-    // Basic validation
     if (!email || !password || !fullName || !city || !college) {
       setError('Please fill in all fields');
       setLoading(false);
@@ -80,219 +79,193 @@ const Signup = () => {
     }
 
     try {
-      const { error } = await signUp(email, password, { 
+      const { error } = await signUp(email, password, {
         fullName,
         city,
-        college 
+        college
       });
-      
+
       if (error) throw error;
-      
-      // After successful signup, sync user data to the backend database
-      try {
-        const session = (await import('@/lib/supabase').then(m => m.supabase.auth.getSession())).data.session;
-        if (session?.access_token) {
-          const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-          await fetch(`${apiUrl}/auth/sync-user`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session.access_token}`
-            },
-            body: JSON.stringify({
-              full_name: fullName,
-              city,
-              college
-            })
-          });
-        }
-      } catch (syncError) {
-        console.error('Warning: Failed to sync user data:', syncError);
-        // Don't fail the signup if sync fails
-      }
-      
-      // Show success message
-      setSuccess('Please check your email to verify your account! You will be redirected to login shortly...');
-      
-      // Redirect to login after a delay
-      setTimeout(() => {
-        navigate('/login');
-      }, 5000);
-      
+
+      setSuccess('Check your email to verify! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 5000);
+
     } catch (err) {
-      console.error('Signup error:', err);
-      const errorMessage = err instanceof Error ? 
-        err.message.replace('AuthApiError: ', '') : 
-        'Failed to create account. Please try again.';
-      setError(errorMessage);
+      setError(err instanceof Error ? err.message : 'Failed to create account');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8 space-y-6 animate-fade-up">
-        {/* Logo */}
-        <div className="text-center">
-          <Link to="/" className="inline-flex items-center gap-2 group">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-hero shadow-glow">
-              <span className="text-xl font-bold text-white">Y</span>
-            </div>
-          </Link>
-          <h1 className="text-2xl font-bold mt-4">Join Yavuli</h1>
-          <p className="text-sm text-muted-foreground mt-1">Create your student marketplace account</p>
+    <div className="relative min-h-screen w-full bg-slate-50 flex flex-col items-center justify-center p-4 overflow-hidden selection:bg-primary/30 py-20">
+      {/* Background with stars */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.05)_0%,rgba(255,255,255,0)_80%)]" />
+        <ShootingStars
+          starColor="#3b82f6"
+          trailColor="#93c5fd"
+          minSpeed={15}
+          maxSpeed={35}
+          minDelay={1000}
+          maxDelay={3000}
+        />
+        <ShootingStars
+          starColor="#8b5cf6"
+          trailColor="#c4b5fd"
+          minSpeed={20}
+          maxSpeed={40}
+          minDelay={1500}
+          maxDelay={3500}
+        />
+      </div>
+
+      <div className="absolute top-6 left-6 z-20">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/')}
+          className="text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-xl"
+        >
+          <ChevronLeft className="mr-2 h-4 w-4" /> Back
+        </Button>
+      </div>
+
+      <Card className="relative z-10 w-full max-w-xl p-8 md:p-12 space-y-8 bg-white/70 backdrop-blur-2xl border-white/50 shadow-2xl rounded-[2.5rem] animate-in fade-in zoom-in duration-500">
+        <div className="text-center space-y-2">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">Join Us</h1>
+          <p className="text-slate-500 font-medium">Create your student account today</p>
         </div>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <span className="block sm:inline">{error}</span>
+          <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-2xl text-sm" role="alert">
+            {error}
           </div>
         )}
 
         {success && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-            <span className="block sm:inline">{success}</span>
+          <div className="bg-green-50 border border-green-100 text-green-600 px-4 py-3 rounded-2xl text-sm" role="alert">
+            {success}
           </div>
         )}
 
-        <Alert className="border-accent/50 bg-accent/5">
-          <Info className="h-4 w-4 text-accent" />
-          <AlertDescription className="text-xs">
-            Access is limited to verified college email IDs (.edu, .ac.in, .college)
-          </AlertDescription>
-        </Alert>
-
-        {/* Google Sign Up */}
-        <Button variant="outline" className="w-full border-2 hover:bg-muted" onClick={handleGoogleSignUp}>
-          <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="currentColor"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            />
-          </svg>
-          Continue with Google
-        </Button>
-
-        <div className="relative">
-          <Separator />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-            or sign up with email
-          </span>
+        <div className="bg-primary/5 border border-primary/10 rounded-2xl p-4 flex gap-3 text-primary/80">
+          <Info className="h-5 w-5 shrink-0" />
+          <p className="text-xs font-bold uppercase tracking-wider leading-relaxed">
+            Must use .edu, .ac.in, or .college email
+          </p>
         </div>
 
-        {/* Signup Form */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              placeholder="Rahul Sharma"
-              className="focus:ring-accent"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">College Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="rahul@iitdelhi.ac.in"
-              className="focus:ring-accent"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-            <p className="text-xs text-muted-foreground">Must be a valid .edu, .ac.in, or .college email</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                placeholder="Delhi"
-                className="focus:ring-accent"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="college">College</Label>
-              <Input
-                id="college"
-                placeholder="IIT Delhi"
-                className="focus:ring-accent"
-                value={college}
-                onChange={(e) => setCollege(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              className="focus:ring-accent"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="new-password"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirm Password</Label>
-            <Input
-              id="confirm-password"
-              type="password"
-              placeholder="••••••••"
-              className="focus:ring-accent"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              autoComplete="new-password"
-            />
-          </div>
-
-          <Button 
-            type="submit" 
+        <div className="space-y-6">
+          <Button
+            variant="outline"
+            className="w-full h-14 border-slate-100 bg-white hover:bg-slate-50 text-slate-900 rounded-2xl transition-all font-bold shadow-sm"
+            onClick={handleGoogleSignUp}
             disabled={loading}
-            className="w-full bg-gradient-hero text-white hover:shadow-glow"
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            Sign up with Google
           </Button>
-        </form>
 
-        <p className="text-center text-sm text-muted-foreground">
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="bg-slate-100" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-4 text-slate-300 font-bold tracking-widest">or details</span>
+            </div>
+          </div>
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">Full Name</Label>
+              <Input
+                id="name"
+                placeholder="Rahul Sharma"
+                className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">College Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="rahul@college.edu"
+                className="h-14 bg-white/5 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="city" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">City</Label>
+                <Input
+                  id="city"
+                  placeholder="Delhi"
+                  className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="college" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">College</Label>
+                <Input
+                  id="college"
+                  placeholder="IIT Delhi"
+                  className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
+                  value={college}
+                  onChange={(e) => setCollege(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">Confirm Password</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                placeholder="••••••••"
+                className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-16 bg-primary hover:bg-primary/90 text-primary-foreground font-black text-lg rounded-2xl transition-all shadow-xl shadow-primary/10"
+            >
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </Button>
+          </form>
+        </div>
+
+        <p className="text-center text-sm text-slate-400 font-medium pb-4">
           Already have an account?{" "}
-          <Link to="/login" className="text-accent hover:underline font-medium">
+          <Link to="/login" className="text-primary hover:text-primary/80 font-bold transition-colors">
             Sign in
           </Link>
-        </p>
-
-        <p className="text-xs text-center text-muted-foreground">
-          By signing up, you agree to our Terms of Service and Privacy Policy
         </p>
       </Card>
     </div>
