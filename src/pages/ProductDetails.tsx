@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -11,13 +10,10 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   MapPin,
-  Eye,
-  Heart,
   ShoppingCart,
   MessageCircle,
   Calendar,
   Package,
-  Receipt,
 } from "lucide-react";
 import { listingsAPI } from "@/lib/api";
 import SEO from "@/components/SEO";
@@ -28,35 +24,11 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // --- New State for Favorites ---
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [favLoading, setFavLoading] = useState(false);
-
   const { addToCart } = useCart();
-  const { user } = useAuth();   // Get current user
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  // 1. Record View Count and update product data
-  useEffect(() => {
-    const recordView = async () => {
-      if (!id) return;
-      try {
-        const updatedListing = await listingsAPI.incrementViewCount(id);
-        if (updatedListing) {
-          // Update the product with the new view count
-          setProduct((prev: any) => ({
-            ...prev,
-            views: updatedListing.views || 0,
-          }));
-        }
-      } catch (error) {
-        console.error('Error recording view:', error);
-      }
-    };
-    recordView();
-  }, [id]);
-
-  // 2. Fetch Product Data
+  // 1. Fetch Product Data
   useEffect(() => {
     const fetchProduct = async () => {
       if (!id) {
@@ -68,7 +40,6 @@ const ProductDetails = () => {
       try {
         setLoading(true);
         setError(null);
-        // Use the getById method directly
         const productData = await listingsAPI.getById(id);
 
         if (productData) {
@@ -86,138 +57,6 @@ const ProductDetails = () => {
 
     fetchProduct();
   }, [id]);
-
-  // 3. Check if Favorited Database Check
-  useEffect(() => {
-    const checkFavoriteStatus = async () => {
-      if (!user || !id) return;
-
-      try {
-        const { data } = await (supabase as any)
-          .from('favorites')
-          .select('id')
-          .eq('listing_id', id)
-          .eq('user_id', user.id)
-          .maybeSingle(); // Returns data if exists, null if not
-
-        if (data) setIsFavorited(true);
-      } catch (err) {
-        console.error("Error checking favorite:", err);
-      }
-    };
-    checkFavoriteStatus();
-  }, [id, user]);
-
-  // 3.5 Subscribe to real-time updates for views and favorites count
-  useEffect(() => {
-    if (!id) return;
-
-    try {
-      const subscription = (supabase as any)
-        .channel(`product:${id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'listings',
-            filter: `id=eq.${id}`,
-          },
-          (payload: any) => {
-            if (payload.new?.id === id) {
-              // Update product with new views and favorites count
-              setProduct((prev: any) => ({
-                ...prev,
-                views: payload.new.views || 0,
-                favorites: payload.new.favorites || 0,
-              }));
-            }
-          }
-        )
-        .subscribe();
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    } catch (error) {
-      console.error('Error setting up real-time subscription:', error);
-    }
-  }, [id]);
-
-  // 4. Handle Heart Click 
-  const handleToggleFavorite = async () => {
-    if (!user) {
-      toast.info("Please sign in to favorite items");
-      return;
-    }
-    if (!id) return;
-
-    setFavLoading(true);
-    try {
-      if (isFavorited) {
-        // Remove from DB
-        const { error } = await (supabase as any)
-          .from('favorites')
-          .delete()
-          .eq('listing_id', id)
-          .eq('user_id', user.id);
-
-        if (error) throw error;
-
-        // Update the listing's favorite count
-        const newCount = Math.max(0, (product.favorites || 0) - 1);
-        const { error: updateError } = await (supabase as any)
-          .from('listings')
-          .update({ favorites: newCount })
-          .eq('id', id);
-
-        if (updateError) {
-          console.error('Error updating favorite count:', updateError);
-        }
-
-        // Update local product state
-        setProduct((prev: any) => ({
-          ...prev,
-          favorites: newCount
-        }));
-
-        setIsFavorited(false);
-        toast.success("Removed from favorites");
-      } else {
-        // Add to DB
-        const { error } = await (supabase as any)
-          .from('favorites')
-          .insert({ listing_id: id, user_id: user.id });
-
-        if (error) throw error;
-
-        // Update the listing's favorite count
-        const newCount = (product.favorites || 0) + 1;
-        const { error: updateError } = await (supabase as any)
-          .from('listings')
-          .update({ favorites: newCount })
-          .eq('id', id);
-
-        if (updateError) {
-          console.error('Error updating favorite count:', updateError);
-        }
-
-        // Update local product state
-        setProduct((prev: any) => ({
-          ...prev,
-          favorites: newCount
-        }));
-
-        setIsFavorited(true);
-        toast.success("Added to favorites");
-      }
-    } catch (err) {
-      console.error("Favorite error:", err);
-      toast.error("Something went wrong");
-    } finally {
-      setFavLoading(false);
-    }
-  };
 
   // --- Loading State ---
   if (loading) {
@@ -284,19 +123,6 @@ const ProductDetails = () => {
             <div>
               <div className="flex items-start justify-between mb-2">
                 <h1 className="text-3xl font-bold text-primary">{product.title}</h1>
-
-                {/* --- ❤️ THE ACTIVE HEART BUTTON --- */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`hover:text-destructive transition-colors ${isFavorited ? 'text-destructive' : 'text-muted-foreground'}`}
-                  onClick={handleToggleFavorite}
-                  disabled={favLoading}
-                >
-                  <Heart className={`h-8 w-8 ${isFavorited ? 'fill-current' : ''}`} />
-                </Button>
-                {/* ---------------------------------- */}
-
               </div>
 
               <div className="flex items-center gap-2 mb-4">
@@ -339,12 +165,6 @@ const ProductDetails = () => {
                     <span>Posted on {new Date(product.created_at).toLocaleDateString()}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                  <span>
-                    {product.views || 0} views
-                  </span>
-                </div>
               </div>
             </Card>
 
@@ -355,7 +175,7 @@ const ProductDetails = () => {
                 onClick={() => {
                   if (!product) return;
                   addToCart({
-                    id: product.id, // Use product.id from database
+                    id: product.id,
                     title: product.title,
                     price: product.price,
                     image: product.images[0],
@@ -382,7 +202,6 @@ const ProductDetails = () => {
                     return;
                   }
 
-                  // Direct checkout - bypass cart
                   navigate(
                     `/checkout?listingId=${product.id}&price=${product.price}`
                   );
@@ -417,12 +236,6 @@ const ProductDetails = () => {
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Age: {product.age_of_item}</span>
                 </div>
-                {product.bill_uploaded && (
-                  <div className="flex items-center gap-2">
-                    <Receipt className="h-4 w-4 text-accent" />
-                    <span className="text-accent font-medium">Bill Available</span>
-                  </div>
-                )}
               </div>
             )}
           </div>

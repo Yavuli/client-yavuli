@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Heart, ShoppingCart, User, Menu, X, LogIn } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, LogIn } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -72,12 +72,6 @@ const Navbar = () => {
           <div className="flex items-center gap-2">
             {user ? (
               <>
-                <Link to="/favorites">
-                  <Button variant="ghost" size="icon" className="relative hidden md:flex hover:bg-accent/10 hover:text-accent">
-                    <Heart className="h-5 w-5" />
-                  </Button>
-                </Link>
-
                 <Link to="/cart">
                   <Button variant="ghost" size="icon" className="relative hover:bg-accent/10 hover:text-accent">
                     <ShoppingCart className="h-5 w-5" />
@@ -118,12 +112,6 @@ const Navbar = () => {
                         <span>Profile</span>
                       </DropdownMenuItem>
                     </Link>
-                    <DropdownMenuItem asChild>
-                      <Link to="/favorites" className="cursor-pointer">
-                        <Heart className="mr-2 h-4 w-4" />
-                        <span>My Favorites</span>
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="cursor-pointer text-destructive focus:text-destructive"
@@ -209,13 +197,6 @@ const Navbar = () => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     My Profile
-                  </Link>
-                  <Link
-                    to="/favorites"
-                    className="block py-2 text-sm hover:text-accent transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    My Favorites
                   </Link>
                   <Link
                     to="/cart"

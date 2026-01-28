@@ -13,7 +13,6 @@ import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailure from "./pages/PaymentFailure";
 import Profile from "./pages/Profile";
-import Favorites from "./pages/Favorites";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import NotFound from "./pages/NotFound";
@@ -50,7 +49,6 @@ const App = () => (
                 <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route path="/payment-failure" element={<PaymentFailure />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/favorites" element={<Favorites />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
