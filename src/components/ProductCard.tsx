@@ -12,6 +12,8 @@ interface ProductCardProps {
   college_name: string;
   condition: string;
   verified?: boolean;
+  seller_phone?: string;
+  seller_name?: string;
 }
 
 const ProductCard = ({
@@ -23,6 +25,8 @@ const ProductCard = ({
   college_name,
   condition,
   verified,
+  seller_phone,
+  seller_name,
 }: ProductCardProps) => {
 
   return (
@@ -66,6 +70,12 @@ const ProductCard = ({
         </div>
 
         <p className="text-xs text-muted-foreground line-clamp-1">{college_name}</p>
+
+        {seller_phone && (
+          <p className="text-xs font-medium text-primary line-clamp-1">
+            📞 {seller_phone} {seller_name ? `• ${seller_name}` : ''}
+          </p>
+        )}
       </div>
     </Card>
   );

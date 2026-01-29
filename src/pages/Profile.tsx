@@ -19,7 +19,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { paymentsAPI } from "@/lib/api";
+import { listingsAPI, paymentsAPI } from "@/lib/api";
 
 interface Transaction {
   id: string;
@@ -64,6 +64,9 @@ const Profile = () => {
   const [errorPurchases, setErrorPurchases] = useState<string | null>(null);
   const [errorSales, setErrorSales] = useState<string | null>(null);
   const [totalEarnings, setTotalEarnings] = useState(0);
+  const [myListings, setMyListings] = useState<any[]>([]);
+  const [loadingListings, setLoadingListings] = useState(false);
+  const [errorListings, setErrorListings] = useState<string | null>(null);
 
   // Fetch purchases
   useEffect(() => {
@@ -117,6 +120,40 @@ const Profile = () => {
 
     fetchSales();
   }, [user]);
+
+  // Fetch user's listings
+  useEffect(() => {
+    const fetchListings = async () => {
+      if (!user) return;
+
+      try {
+        setLoadingListings(true);
+        setErrorListings(null);
+        const listings = await listingsAPI.getMine();
+        setMyListings(listings);
+      } catch (err) {
+        console.error("Error fetching listings:", err);
+        setErrorListings("Failed to load listings");
+      } finally {
+        setLoadingListings(false);
+      }
+    };
+
+    fetchListings();
+  }, [user]);
+
+  const handleDeleteListing = async (listingId: string) => {
+    if (!listingId) return;
+
+    try {
+      await listingsAPI.remove(listingId);
+      setMyListings((prev) => prev.filter((listing) => listing.id !== listingId));
+      toast.success("Listing removed successfully");
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      toast.error("Failed to remove listing. Please try again.");
+    }
+  };
 
   if (!user) {
     return (
@@ -207,9 +244,10 @@ const Profile = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="purchases" className="space-y-6 animate-fade-up">
-          <TabsList className="grid w-full max-w-2xl grid-cols-2">
+          <TabsList className="grid w-full max-w-3xl grid-cols-3">
             <TabsTrigger value="purchases">My Purchases</TabsTrigger>
             <TabsTrigger value="sales">My Sales</TabsTrigger>
+            <TabsTrigger value="listings">My Listings</TabsTrigger>
           </TabsList>
 
           {/* Purchases Tab */}
@@ -353,6 +391,77 @@ const Profile = () => {
                             sale.status.slice(1)}
                         </Badge>
                       </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Listings Tab */}
+          <TabsContent value="listings" className="space-y-4">
+            {loadingListings ? (
+              <Card className="p-12 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-accent" />
+                <p className="ml-3 text-muted-foreground">Loading listings...</p>
+              </Card>
+            ) : errorListings ? (
+              <Card className="p-6 border-destructive bg-destructive/5">
+                <div className="flex gap-3">
+                  <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-destructive">{errorListings}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Try refreshing the page
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ) : myListings.length === 0 ? (
+              <Card className="p-8 text-center">
+                <Package className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                <h3 className="text-lg font-semibold mb-2">No listings yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  Create your first listing to start selling
+                </p>
+                <Button onClick={() => navigate("/sell")}>Create Listing</Button>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {myListings.map((listing) => (
+                  <Card
+                    key={listing.id}
+                    className="p-4 md:p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+                  >
+                    <div className="flex items-center gap-4 flex-1">
+                      <img
+                        src={listing.images?.[0] || "/placeholder.jpg"}
+                        alt={listing.title}
+                        className="h-20 w-20 rounded-xl object-cover"
+                      />
+                      <div>
+                        <h3 className="font-semibold text-lg">{listing.title}</h3>
+                        <p className="text-muted-foreground text-sm">
+                          ₹{Number(listing.price).toLocaleString()} · {listing.condition}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Posted on {new Date(listing.created_at).toLocaleDateString()}
+                        </p>
+                        <Badge variant={listing.status === 'active' ? 'default' : 'secondary'} className="mt-2 w-fit">
+                          {listing.status === 'active' ? 'Published' : listing.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <Button variant="outline" onClick={() => navigate(`/product/${listing.id}`)}>
+                        View
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDeleteListing(listing.id)}
+                      >
+                        Delete
+                      </Button>
                     </div>
                   </Card>
                 ))}

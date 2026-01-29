@@ -17,6 +17,8 @@ const Signup = () => {
   const [fullName, setFullName] = useState('');
   const [city, setCity] = useState('');
   const [college, setCollege] = useState('');
+  const [phone, setPhone] = useState('');
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -49,8 +51,14 @@ const Signup = () => {
     setSuccess('');
     setLoading(true);
 
-    if (!email || !password || !fullName || !city || !college) {
+    if (!email || !password || !fullName || !city || !college || !phone) {
       setError('Please fill in all fields');
+      setLoading(false);
+      return;
+    }
+
+    if (!/^[0-9+\-()\s]{6,20}$/.test(phone)) {
+      setError('Please enter a valid phone number');
       setLoading(false);
       return;
     }
@@ -83,7 +91,8 @@ const Signup = () => {
       const { error } = await signUp(email, password, {
         fullName,
         city,
-        college
+        college,
+        phone
       });
 
       if (error) throw error;
@@ -205,7 +214,7 @@ const Signup = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="city" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">City</Label>
                 <Input
@@ -214,6 +223,17 @@ const Signup = () => {
                   className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">Phone Number</Label>
+                <Input
+                  id="phone"
+                  placeholder="+91 9876543210"
+                  className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   required
                 />
               </div>

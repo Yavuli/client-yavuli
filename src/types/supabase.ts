@@ -13,6 +13,9 @@ export type Profile = {
   full_name: string | null;
   avatar_url: string | null;
   updated_at: string | null;
+  city?: string | null;
+  college?: string | null;
+  phone?: string | null;
 };
 
 // User type that includes the profile
@@ -22,8 +25,18 @@ export type User = {
   user_metadata?: {
     full_name?: string;
     avatar_url?: string;
+    city?: string;
+    college?: string;
+    phone?: string;
   };
   profile?: Profile;
+};
+
+export type SignUpProfileInput = {
+  fullName: string;
+  city: string;
+  college: string;
+  phone: string;
 };
 
 // Auth context type
@@ -32,7 +45,7 @@ export type AuthContextType = {
   session: any | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<any>;
-  signUp: (email: string, password: string, userData: any) => Promise<any>;
+  signUp: (email: string, password: string, userData: SignUpProfileInput) => Promise<any>;
   signInWithGoogle: () => Promise<any>;
   signOut: () => Promise<void>;
 };

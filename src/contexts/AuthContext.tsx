@@ -2,7 +2,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { AuthContextType, User as AppUser } from '@/types/supabase';
+import { authAPI } from '@/lib/api';
+import { AuthContextType, Profile, SignUpProfileInput, User as AppUser } from '@/types/supabase';
 
 // Create the context with the imported type
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -11,6 +12,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<AppUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const buildProfileFallback = (sessionUser: SupabaseUser): Profile => ({
+    id: sessionUser.id,
+    full_name: sessionUser.user_metadata?.full_name || 'New User',
+    avatar_url: sessionUser.user_metadata?.avatar_url || null,
+    updated_at: new Date().toISOString(),
+    city: sessionUser.user_metadata?.city || null,
+    college: sessionUser.user_metadata?.college || null,
+    phone: sessionUser.user_metadata?.phone || null,
+  });
+
+  const syncProfileWithServer = async (
+    sessionUser: SupabaseUser,
+    profileData?: Profile | null
+  ) => {
+    if (!sessionUser) return;
+
+    const payload = {
+      full_name: sessionUser.user_metadata?.full_name || profileData?.full_name,
+      city: sessionUser.user_metadata?.city || profileData?.city,
+      college: sessionUser.user_metadata?.college || profileData?.college,
+      phone: sessionUser.user_metadata?.phone || profileData?.phone,
+    };
+
+    const hasData = Object.values(payload).some((value) => Boolean(value));
+    if (!hasData) return;
+
+    try {
+      await authAPI.syncProfile(payload);
+    } catch (error) {
+      console.error('Error syncing profile:', error);
+    }
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -30,19 +64,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
           const { data: profile, error } = await supabase
             .from('profiles')
-            .select('*')
+            .select('id, full_name, avatar_url, updated_at, city, college, phone')
             .eq('id', session.user.id)
             .single();
+
+          const profileRecord = profile || buildProfileFallback(session.user);
 
           setUser({
             ...session.user,
             email: session.user.email || '',
-            profile: profile || {
-              id: session.user.id,
-              full_name: session.user.user_metadata?.full_name || 'New User',
-              updated_at: new Date().toISOString()
-            }
+            profile: profileRecord
           });
+
+          await syncProfileWithServer(session.user, profileRecord);
         } catch (error) {
           console.error('Error in auth state change:', error);
           setUser({
@@ -64,7 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return await supabase.auth.signInWithPassword({ email, password });
   };
 
-  const signUp = async (email: string, password: string, userData: { fullName: string }) => {
+  const signUp = async (email: string, password: string, userData: SignUpProfileInput) => {
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
@@ -72,6 +106,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         options: {
           data: {
             full_name: userData.fullName,
+            city: userData.city,
+            college: userData.college,
+            phone: userData.phone,
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`
         }
@@ -79,6 +116,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (authError) throw authError;
       if (!authData.user) throw new Error('User creation failed');
+
+      if (authData.session) {
+        try {
+          await authAPI.syncProfile({
+            full_name: userData.fullName,
+            city: userData.city,
+            college: userData.college,
+            phone: userData.phone,
+          });
+        } catch (syncError) {
+          console.error('Post-signup profile sync failed:', syncError);
+        }
+      }
 
       return {
         data: {
@@ -102,7 +152,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`
+        redirectTo: `${window.location.origin}/auth/callback`
       }
     });
   };

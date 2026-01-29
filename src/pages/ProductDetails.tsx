@@ -14,6 +14,7 @@ import {
   MessageCircle,
   Calendar,
   Package,
+  Phone,
 } from "lucide-react";
 import { listingsAPI } from "@/lib/api";
 import SEO from "@/components/SEO";
@@ -163,6 +164,22 @@ const ProductDetails = () => {
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span>Posted on {new Date(product.created_at).toLocaleDateString()}</span>
+                  </div>
+                )}
+                {product.seller_phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-semibold text-primary">
+                      {product.seller_phone}
+                      {product.seller_name ? ` · ${product.seller_name}` : ""}
+                    </span>
+                    <Button
+                      variant="link"
+                      className="h-auto px-0 text-primary"
+                      onClick={() => window.open(`tel:${product.seller_phone}`)}
+                    >
+                      Call
+                    </Button>
                   </div>
                 )}
               </div>
