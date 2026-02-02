@@ -125,7 +125,7 @@ const Welcome = () => {
                     <Mail className="h-4 w-4" />
                     <span>Email Us</span>
                   </div>
-                  <span className="text-sm font-bold text-slate-900 break-all">kishlayamishra@gmail.com</span>
+                  <span className="text-sm font-bold text-slate-900 break-all">founder@yavuli.app</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
