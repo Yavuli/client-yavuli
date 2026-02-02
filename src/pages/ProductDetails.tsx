@@ -250,21 +250,27 @@ const ProductDetails = () => {
               <p className="text-muted-foreground leading-relaxed">{product.description || "No description provided."}</p>
             </div>
 
-            {product.why_selling && (
+            {/* Product Details Grid */}
+            <div className="grid grid-cols-2 gap-4">
               <Card className="p-4 bg-muted/30">
-                <h4 className="font-semibold text-sm mb-2">Reason for Selling</h4>
-                <p className="text-sm text-muted-foreground">{product.why_selling}</p>
+                <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Condition</h4>
+                <p className="font-medium capitalize">{product.condition}</p>
               </Card>
-            )}
-
-            {product.age_of_item && (
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Age: {product.age_of_item}</span>
-                </div>
-              </div>
-            )}
+              <Card className="p-4 bg-muted/30">
+                <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Age</h4>
+                <p className="font-medium">{product.age_of_item || "Not specified"}</p>
+              </Card>
+              <Card className="p-4 bg-muted/30">
+                <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Original Price</h4>
+                <p className="font-medium">{originalPriceStr || "Not specified"}</p>
+              </Card>
+              <Card className="p-4 bg-muted/30">
+                <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Reason for Selling</h4>
+                <p className="font-medium text-sm line-clamp-2" title={product.why_selling}>
+                  {product.why_selling || "Not specified"}
+                </p>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
