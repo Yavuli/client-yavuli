@@ -18,14 +18,20 @@ import {
   Zap,
   ShieldCheck,
   Users,
-  ArrowRight
+  ArrowRight,
+  User,
+  LogOut
 } from "lucide-react";
 import { motion } from "framer-motion";
 import SEO from "@/components/SEO";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
 const Welcome = () => {
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [searchParams] = useSearchParams();
   const [isProcessing, setIsProcessing] = useState(false);
   const [debugInfo, setDebugInfo] = useState('');
@@ -123,9 +129,49 @@ const Welcome = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" onClick={() => navigate('/login')} className="text-slate-500 hover:text-slate-900">
-              Sign In
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-50 h-9 w-9">
+                    <Avatar className="h-8 w-8 border border-slate-200">
+                      <AvatarImage src={user.user_metadata?.avatar_url} alt={user.user_metadata?.full_name} />
+                      <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                        {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl backdrop-blur-xl bg-white/95 shadow-2xl border-slate-100 mt-2">
+                  <DropdownMenuLabel className="font-normal p-3">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-bold leading-none text-slate-900">
+                        {user.user_metadata?.full_name || 'User'}
+                      </p>
+                      <p className="text-xs leading-none text-slate-500 font-medium truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-slate-100 my-1" />
+                  <DropdownMenuItem className="cursor-pointer rounded-xl hover:bg-slate-50 focus:bg-slate-50 p-3 transition-colors font-medium" onClick={() => navigate('/profile')}>
+                    <User className="mr-2 h-4 w-4 text-slate-500" />
+                    <span>My Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-slate-100 my-1" />
+                  <DropdownMenuItem
+                    className="cursor-pointer text-red-500 focus:text-red-500 focus:bg-red-50 rounded-xl p-3 transition-colors font-bold"
+                    onClick={() => signOut()}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" onClick={() => navigate('/login')} className="text-slate-500 hover:text-slate-900 font-bold">
+                Sign In
+              </Button>
+            )}
             <Button onClick={() => navigate('/explore')} className="rounded-xl px-6 shadow-md hover:shadow-lg transition-all active:scale-95">
               Explore
             </Button>
