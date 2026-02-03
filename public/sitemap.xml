@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://yavuli.app/</loc>
+    <lastmod>2026-02-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://yavuli.app/explore</loc>
+    <lastmod>2024-02-03</lastmod>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://yavuli.app/sell</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yavuli.app/login</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://yavuli.app/signup</loc>
+    <priority>0.6</priority>
+  </url>
+</urlset>

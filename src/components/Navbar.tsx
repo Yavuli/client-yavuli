@@ -56,13 +56,13 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-6">
             <Link
               to="/explore"
-              className={`text-sm font-medium transition-colors hover:text-accent ${isActive('/explore') ? 'text-accent' : 'text-foreground'}`}
+              className={`text-sm font-medium transition-colors hover:text-violet-600 ${isActive('/explore') ? 'text-violet-600' : 'text-foreground'}`}
             >
               Explore
             </Link>
             <Link
               to="/sell"
-              className={`text-sm font-medium transition-colors hover:text-accent ${isActive('/sell') ? 'text-accent' : 'text-foreground'}`}
+              className={`text-sm font-medium transition-colors hover:text-violet-600 ${isActive('/sell') ? 'text-violet-600' : 'text-foreground'}`}
             >
               Sell
             </Link>

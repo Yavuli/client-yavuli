@@ -34,11 +34,6 @@ export function Toaster() {
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }
 
-  // Example: add a toast for demonstration
-  React.useEffect(() => {
-    addToast({ title: "Welcome!", description: "This is a self-contained toast." })
-  }, [])
-
   return (
     <ToastProvider>
       {toasts.map(({ id, title, description }) => (

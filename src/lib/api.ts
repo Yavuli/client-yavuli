@@ -24,6 +24,8 @@ export const authAPI = {
     api.post("/auth/login", credentials),
   signup: (userData: any) => api.post("/auth/signup", userData),
   test: () => api.get("/auth"),
+  syncProfile: (profile: { full_name?: string; city?: string; college?: string; phone?: string }) =>
+    api.post("/auth/sync-user", profile),
 };
 
 // Listings API
@@ -55,6 +57,19 @@ export const listingsAPI = {
       return [];
     } catch (error) {
       console.error("Error fetching listings:", error);
+      throw error;
+    }
+  },
+
+  getMine: async () => {
+    try {
+      const response = await api.get("/listings/my");
+      const payload = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
+      return payload.map(transformListing);
+    } catch (error) {
+      console.error("Error fetching my listings:", error);
       throw error;
     }
   },
@@ -129,7 +144,6 @@ export const listingsAPI = {
   },
 
   // Get single listing by ID
-  // In api.ts
   getById: async (listingId: string) => {
     try {
       console.log(`[api] Fetching listing with ID: ${listingId}`);
@@ -162,6 +176,17 @@ export const listingsAPI = {
       throw error;
     }
   },
+
+  // Delete (archive) a listing
+  remove: async (listingId: string) => {
+    try {
+      const response = await api.delete(`/listings/${listingId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      throw error;
+    }
+  },
 };
 
 // Helper function to transform listing data
@@ -190,6 +215,8 @@ function transformListing(listing: any) {
     };
   }
 
+  const seller = listing.seller || {};
+
   return {
     id: listing.id || listing._id || 'unknown',
     title: listing.title || 'Untitled Listing',
@@ -201,7 +228,9 @@ function transformListing(listing: any) {
     condition: listing.condition || 'N/A',
     views: listing.views || 0,
     favorites: listing.favorites || 0,
-    verified: listing.verified || false,
+    verified: typeof seller.is_verified === 'boolean'
+      ? seller.is_verified
+      : !!listing.verified,
     description: listing.description || '',
     original_price: listing.original_price || null,
     location_state: listing.location_state || '',
@@ -209,7 +238,14 @@ function transformListing(listing: any) {
     why_selling: listing.why_selling || '',
     age_of_item: listing.age_of_item || '',
     bill_uploaded: listing.bill_uploaded || false,
+    status: listing.status || 'draft',
     seller_id: listing.seller_id || listing.userId || listing.user_id || '',
+    seller_name: seller.full_name || listing.seller_name || '',
+    seller_phone: seller.phone || listing.seller_phone || listing.phone || '',
+    seller_verified: typeof seller.is_verified === 'boolean'
+      ? seller.is_verified
+      : listing.seller_verified || false,
+    seller_avatar: seller.profile_image_url || listing.seller_avatar || '',
   };
 }
 // Add response interceptor for debugging
