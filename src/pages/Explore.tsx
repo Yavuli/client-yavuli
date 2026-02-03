@@ -57,8 +57,9 @@ const Explore = () => {
   return (
     <div className="min-h-screen bg-white selection:bg-primary/20">
       <SEO
-        title="Explore Marketplace | Yavuli"
-        description="Browse thousands of student-listed items. Find affordable textbooks, dorm essentials, and electronics at your campus."
+        title="Explore Yavuli Marketplace | Buy & Sell College Essentials"
+        description="Browse thousands of student-listed items. Find affordable textbooks, dorm essentials, and electronics at your campus. The best student marketplace founded by Kishlaya Mishra."
+        keywords="Yavuli explore, buy used textbooks, student marketplace, Kishlaya Mishra, cheap electronics, college dorm essentials"
       />
       <Navbar />
 

@@ -6,16 +6,66 @@ interface SEOProps {
     keywords?: string;
     image?: string;
     url?: string;
+    type?: string;
+    schema?: Record<string, any>;
 }
 
 const SEO = ({
     title = "Yavuli | The Student Marketplace",
-    description = "Yavuli is the smart, centralized marketplace for everything in your college life. Buy and sell textbooks, gear, and essentials within your campus community.",
-    keywords = "student marketplace, college buy sell, textbooks, college life, campus gear, Yavuli",
-    image = "/og-image.jpg",
-    url = "https://yavuli.netlify.app"
+    description = "Yavuli is the smart, centralized marketplace for everything in your college life. Buy and sell textbooks, gear, and essentials within your campus community. Founder & CEO: Kishlaya Mishra.",
+    keywords = "Kishlaya Mishra, Kishlaya Mishra Yavuli, Yavuli CEO, student marketplace, college buy sell, textbooks, college life, campus gear, Yavuli, buy and sell",
+    image = "https://yavuli.app/og-image.jpg", // Ensure absolute path for better social sharing
+    url = "https://yavuli.app",
+    type = "website",
+    schema
 }: SEOProps) => {
     const siteTitle = title.includes("Yavuli") ? title : `${title} | Yavuli`;
+
+    // Default Structured Data (JSON-LD)
+    const defaultSchema = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "Organization",
+                "@id": "https://yavuli.app/#organization",
+                "name": "Yavuli",
+                "url": "https://yavuli.app",
+                "logo": "https://yavuli.app/favicon.jpeg",
+                "sameAs": [
+                    "https://twitter.com/yavuli",
+                    "https://instagram.com/yavuli"
+                ],
+                "founder": {
+                    "@type": "Person",
+                    "name": "Kishlaya Mishra",
+                    "jobTitle": "Founder & CEO",
+                    "url": "https://www.linkedin.com/in/kishlayamishra"
+                }
+            },
+            {
+                "@type": "WebSite",
+                "@id": "https://yavuli.app/#website",
+                "url": "https://yavuli.app",
+                "name": "Yavuli",
+                "description": description,
+                "publisher": {
+                    "@id": "https://yavuli.app/#organization"
+                },
+                "inLanguage": "en-US"
+            },
+            {
+                "@type": "Person",
+                "name": "Kishlaya Mishra",
+                "jobTitle": "CEO",
+                "affiliation": {
+                    "@id": "https://yavuli.app/#organization"
+                },
+                "description": "Founder and CEO of Yavuli, the student marketplace."
+            }
+        ]
+    };
+
+    const structuredData = schema ? { ...defaultSchema, ...schema } : defaultSchema;
 
     return (
         <Helmet>
@@ -23,20 +73,28 @@ const SEO = ({
             <title>{siteTitle}</title>
             <meta name="description" content={description} />
             <meta name="keywords" content={keywords} />
+            <link rel="canonical" href={url} />
 
             {/* Open Graph / Facebook */}
-            <meta property="og:type" content="website" />
+            <meta property="og:type" content={type} />
             <meta property="og:url" content={url} />
             <meta property="og:title" content={siteTitle} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={image} />
+            <meta property="og:site_name" content="Yavuli" />
 
             {/* Twitter */}
-            <meta property="twitter:card" content="summary_large_image" />
-            <meta property="twitter:url" content={url} />
-            <meta property="twitter:title" content={siteTitle} />
-            <meta property="twitter:description" content={description} />
-            <meta property="twitter:image" content={image} />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:url" content={url} />
+            <meta name="twitter:title" content={siteTitle} />
+            <meta name="twitter:description" content={description} />
+            <meta name="twitter:image" content={image} />
+            <meta name="twitter:creator" content="@yavuli" />
+
+            {/* Structured Data */}
+            <script type="application/ld+json">
+                {JSON.stringify(structuredData)}
+            </script>
         </Helmet>
     );
 };

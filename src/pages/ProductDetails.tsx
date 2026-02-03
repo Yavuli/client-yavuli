@@ -102,6 +102,19 @@ const ProductDetails = () => {
       <SEO
         title={product.title}
         description={product.description || `Buy ${product.title} on Yavuli.`}
+        image={product.images && product.images[0]}
+        schema={{
+          "@type": "Product",
+          "name": product.title,
+          "description": product.description || `Buy ${product.title} on Yavuli.`,
+          "image": product.images || [],
+          "offers": {
+            "@type": "Offer",
+            "price": product.price,
+            "priceCurrency": "INR", // Assuming Rupees based on earlier context
+            "availability": "https://schema.org/InStock"
+          }
+        }}
       />
       <Navbar />
 
