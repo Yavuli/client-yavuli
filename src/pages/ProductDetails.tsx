@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ContactSellerBtn } from "@/components/ContactSellerBtn";
 import {
   MapPin,
   ShoppingCart,
@@ -241,6 +242,18 @@ const ProductDetails = () => {
               </Button>
             </div>
 
+
+            <div className="space-y-3 mt-4">
+              {/* Only show Chat button if I am NOT the seller */}
+              {user?.id !== product.seller_id && (
+                <ContactSellerBtn 
+                  listingId={product.id} 
+                  sellerId={product.seller_id} 
+                  currentUserId={user?.id || ""} 
+                />
+              )}
+            </div>
+
             <Button
               variant="outline"
               className="w-full"
@@ -252,7 +265,7 @@ const ProductDetails = () => {
                 }
               }}
             >
-              <Phone className="h-4 w-4 mr-2" />
+              <Phone className="h-4 w-4 mr-2 mt-3" />
               Call Seller
             </Button>
 

@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ShoppingCart, User, Menu, X, LogIn } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, LogIn, MessageCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { supabase } from '@/lib/supabase'
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -21,6 +22,35 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { cartCount } = useCart();
+  const [unreadCount, setUnreadCount] = useState(0)
+
+useEffect(() => {
+  // Function to fetch the count
+  const fetchUnread = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    // Call the SQL function we just made
+    const { data, error } = await supabase.rpc('get_unread_count')
+    if (!error) setUnreadCount(data || 0)
+  }
+
+  fetchUnread()
+
+  // Realtime: Listen for ANY new message in my chats
+  const channel = supabase
+    .channel('global_messages')
+    .on('postgres_changes', 
+      { event: 'INSERT', schema: 'public', table: 'messages' }, 
+      () => {
+        // If ANY message comes into the DB, recheck count
+        fetchUnread()
+      }
+    )
+    .subscribe()
+
+  return () => { supabase.removeChannel(channel) }
+}, [])
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -67,6 +97,14 @@ const Navbar = () => {
               Sell
             </Link>
           </div>
+          <Link to="/inbox" className="relative p-2 hover:bg-gray-100 rounded-full transition">
+            <MessageCircle className="w-6 h-6 text-gray-700" />
+            {unreadCount > 0 && (
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full border-2 border-white">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
+          </Link>
 
           {/* Icons */}
           <div className="flex items-center gap-2">

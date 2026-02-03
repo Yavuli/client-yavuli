@@ -18,6 +18,8 @@ import { CartProvider } from "./contexts/CartContext";
 import NotFound from "./pages/NotFound";
 import LoginForm from "./components/auth/LoginForm";
 import SignupForm from "./components/auth/SignupForm";
+import { ChatPage } from './pages/ChatPage'
+import { Inbox } from "./pages/Inbox";
 import SEO from "@/components/SEO";
 
 import { HelmetProvider } from 'react-helmet-async';
@@ -41,6 +43,8 @@ const App = () => (
                 <Route path="/" element={<Welcome />} />
                 <Route path="/explore" element={<Explore />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/messages/:id" element={<ChatPage />} />
+                <Route path="/inbox" element={<Inbox/>} />
                 <Route path="/sell" element={<Sell />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/auth/login" element={<LoginForm />} />
