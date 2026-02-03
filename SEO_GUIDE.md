@@ -17,7 +17,7 @@ To track who visits your site.
 1.  Go to [Google Analytics](https://analytics.google.com/).
 2.  Create a property for Yavuli.
 3.  Get the **Measurement ID** (starts with `G-`).
-4.  **Action**: Let me know if you want me to add the GA script to your code, or you can add it to `index.html` head manually.
+4.  **Action**: **DONE**. I have added the GA script (`G-2BPS429V7M`) to your `index.html`. Data should start appearing in your dashboard within 24-48 hours.
 
 ## 3. Claim Social Profiles
 To reinforce the "Organization" and "Person" schema we added.
