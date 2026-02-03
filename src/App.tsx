@@ -18,6 +18,7 @@ import { CartProvider } from "./contexts/CartContext";
 import NotFound from "./pages/NotFound";
 import LoginForm from "./components/auth/LoginForm";
 import SignupForm from "./components/auth/SignupForm";
+import SEO from "@/components/SEO";
 
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -25,6 +26,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <HelmetProvider>
+    <SEO />
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Toaster />

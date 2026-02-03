@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Upload, Plus, X, Loader2 } from "lucide-react";
+import SEO from "@/components/SEO";
 
 interface FormData {
   title: string;
@@ -280,6 +281,11 @@ const Sell = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Sell Your Items on Yavuli | Student Marketplace"
+        description="List your used textbooks, electronics, and other college items for sale on Yavuli. Reach thousands of students at your campus. Quick, easy, and secure."
+        keywords="sell on Yavuli, student marketplace, sell textbooks, make money in college, list items for sale, Kishlaya Mishra"
+      />
       <Navbar />
       
       <div className="container mx-auto px-4 py-8">
