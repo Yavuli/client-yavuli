@@ -89,7 +89,7 @@ const Welcome = () => {
   return (
     <div className="relative min-h-screen w-full bg-white overflow-x-hidden selection:bg-primary/20">
       <SEO
-        title="Yavuli | The Ultimate Student Marketplace | Kishlaya Mishra"
+        title="Yavuli | The Ultimate Student Marketplace"
         description="Yavuli is the smart, centralized marketplace for everything in your college life, founded by Kishlaya Mishra. Buy, sell, and connect with students."
         keywords="Kishlaya Mishra, Kishlaya Mishra CEO, Yavuli founder, student marketplace, college buy sell, textbooks"
       />
@@ -335,7 +335,10 @@ const Welcome = () => {
             </div>
           </div>
           <div className="max-w-7xl mx-auto pt-20 text-center">
-            <p className="text-[10px] text-slate-400 font-bold tracking-[0.5em] uppercase opacity-50">
+            <p className="text-xs text-slate-500 font-medium">
+                Founded by Kishlaya Mishra
+            </p>
+            <p className="text-[10px] text-slate-400 font-bold tracking-[0.5em] uppercase opacity-50 pt-4">
               © 2026 Yavuli Marketplace • Built For Students
             </p>
           </div>
