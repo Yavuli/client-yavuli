@@ -42,8 +42,26 @@ const Login = () => {
     setLoading(true);
 
     try {
+      // Clear any stale session before attempting new login
+      // This prevents issues with stored cookies from previous sessions
+      console.log('[LoginForm] Clearing stale sessions before login attempt');
+      await supabase.auth.signOut({ scope: 'local' }).catch(() => {
+        // Ignore errors - we just want to clean up
+      });
+
+      // Wait a moment for logout to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Now attempt the new login
+      console.log('[LoginForm] Attempting sign in');
       const { data, error } = await signIn(email, password);
-      if (error) throw error;
+      
+      if (error) {
+        console.error('[LoginForm] Sign in error:', error);
+        throw error;
+      }
+
+      console.log('[LoginForm] Sign in successful');
 
       if (data?.user?.user_metadata?.full_name) {
         toast.success(`Welcome back, ${data.user.user_metadata.full_name.split(' ')[0]}!`);
@@ -52,9 +70,11 @@ const Login = () => {
       }
 
       // Immediately navigate after successful authentication
-      // Backend has already confirmed login with 200 status
+      // The onAuthStateChange listener will handle session setup
+      console.log('[LoginForm] Navigating to explore');
       navigate('/explore', { replace: true });
     } catch (error: unknown) {
+      console.error('[LoginForm] Login failed:', error);
       setError(error instanceof Error ? error.message : 'Failed to sign in');
       setLoading(false);
     }
