@@ -108,38 +108,3 @@ class ErrorBoundary extends Component<Props, State> {
 }
 
 export default ErrorBoundary;
-                                    </pre>
-                                </details>
-                            )}
-                        </div>
-
-                        <div className="flex flex-col gap-3">
-                            <Button
-                                onClick={this.handleReload}
-                                className="w-full"
-                            >
-                                Reload Page
-                            </Button>
-
-                            <Button
-                                onClick={this.handleClearStorage}
-                                variant="outline"
-                                className="w-full"
-                            >
-                                Clear Cache & Reload
-                            </Button>
-                        </div>
-
-                        <p className="text-xs text-muted-foreground text-center">
-                            If this problem persists, please try clearing your browser cookies or contact support.
-                        </p>
-                    </Card>
-                </div>
-            );
-        }
-
-        return this.props.children;
-    }
-}
-
-export default ErrorBoundary;
