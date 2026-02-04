@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
+import { Button } from '@/components/ui/button'
+import { MessageCircle } from 'lucide-react'
 
 interface ContactSellerBtnProps {
   listingId: string
@@ -17,7 +19,7 @@ export const ContactSellerBtn = ({ listingId, sellerId, currentUserId }: Contact
       alert("Please login to chat!")
       return
     }
-    
+
     if (currentUserId === sellerId) {
       alert("You can't chat with yourself!")
       return
@@ -53,7 +55,7 @@ export const ContactSellerBtn = ({ listingId, sellerId, currentUserId }: Contact
           .single()
 
         if (createError) throw createError
-        
+
         // Go to new chat
         navigate(`/messages/${newChat.id}`)
       }
@@ -67,12 +69,14 @@ export const ContactSellerBtn = ({ listingId, sellerId, currentUserId }: Contact
   }
 
   return (
-    <button 
+    <Button
       onClick={handleContact}
       disabled={loading}
-      className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 flex justify-center items-center gap-2"
+      variant="outline"
+      className="w-full"
     >
-      {loading ? 'Starting Chat...' : '💬 Chat with Seller'}
-    </button>
+      <MessageCircle className="h-4 w-4 mr-2" />
+      {loading ? 'Starting Chat...' : 'Chat with Seller'}
+    </Button>
   )
 }

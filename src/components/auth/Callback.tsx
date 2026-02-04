@@ -15,12 +15,9 @@ export default function AuthCallback() {
         const code = searchParams.get('code');
 
         if (code) {
-          // Wait for Supabase to process the OAuth code
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // Small delay to ensure Supabase processes the OAuth code
+          await new Promise(resolve => setTimeout(resolve, 200));
         }
-
-        // Wait a bit for the session to be established
-        await new Promise(resolve => setTimeout(resolve, 1500));
 
         const { data: { session }, error } = await supabase.auth.getSession();
 

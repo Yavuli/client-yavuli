@@ -246,10 +246,10 @@ const ProductDetails = () => {
             <div className="space-y-3 mt-4">
               {/* Only show Chat button if I am NOT the seller */}
               {user?.id !== product.seller_id && (
-                <ContactSellerBtn 
-                  listingId={product.id} 
-                  sellerId={product.seller_id} 
-                  currentUserId={user?.id || ""} 
+                <ContactSellerBtn
+                  listingId={product.id}
+                  sellerId={product.seller_id}
+                  currentUserId={user?.id || ""}
                 />
               )}
             </div>
@@ -265,7 +265,7 @@ const ProductDetails = () => {
                 }
               }}
             >
-              <Phone className="h-4 w-4 mr-2 mt-3" />
+              <Phone className="h-4 w-4 mr-2" />
               Call Seller
             </Button>
 

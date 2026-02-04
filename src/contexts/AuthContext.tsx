@@ -47,51 +47,103 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    let mounted = true;
+
+    // Check initial session
+    const initAuth = async () => {
+      try {
+        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        if (!mounted) return;
+
+        if (error) {
+          console.error('Error fetching initial session:', error);
+          setLoading(false);
+          return;
+        }
+
+        setSession(initialSession);
+
+        if (initialSession?.access_token) {
+          localStorage.setItem('token', initialSession.access_token);
+        }
+
+        if (initialSession?.user) {
+          await handleUserAuthenticated(initialSession.user);
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Fatal error in auth initialization:', err);
+        if (mounted) setLoading(false);
+      }
+    };
+
+    const handleUserAuthenticated = async (supabaseUser: SupabaseUser) => {
+      try {
+        // Fetch profile
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url, updated_at, city, college, phone')
+          .eq('id', supabaseUser.id)
+          .single();
+
+        const profileRecord = profile || buildProfileFallback(supabaseUser);
+
+        if (mounted) {
+          setUser({
+            ...supabaseUser,
+            email: supabaseUser.email || '',
+            profile: profileRecord
+          });
+          setLoading(false);
+        }
+
+        // Sync in background
+        syncProfileWithServer(supabaseUser, profileRecord);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        if (mounted) {
+          setUser({
+            ...supabaseUser,
+            email: supabaseUser.email || '',
+            profile: buildProfileFallback(supabaseUser)
+          });
+          setLoading(false);
+        }
+      }
+    };
+
+    initAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
       setSession(session);
 
-      // Store the access token in localStorage for API requests
       if (session?.access_token) {
         localStorage.setItem('token', session.access_token);
       } else {
         localStorage.removeItem('token');
       }
 
-      if (session?.user) {
-        try {
-          // Small delay to ensure the profile is created
-          await new Promise(resolve => setTimeout(resolve, 500));
-
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('id, full_name, avatar_url, updated_at, city, college, phone')
-            .eq('id', session.user.id)
-            .single();
-
-          const profileRecord = profile || buildProfileFallback(session.user);
-
-          setUser({
-            ...session.user,
-            email: session.user.email || '',
-            profile: profileRecord
-          });
-
-          await syncProfileWithServer(session.user, profileRecord);
-        } catch (error) {
-          console.error('Error in auth state change:', error);
-          setUser({
-            ...session.user,
-            email: session.user.email || '',
-            profile: undefined
-          });
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
+        if (session?.user) {
+          await handleUserAuthenticated(session.user);
+        } else {
+          setLoading(false);
         }
-      } else {
+      } else if (event === 'SIGNED_OUT') {
         setUser(null);
+        setLoading(false);
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
