@@ -1,10 +1,18 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { headerMonitor } from "./lib/headerMonitor";
 
 // ==========================================
 // GLOBAL ERROR HANDLERS
 // ==========================================
+
+// Initialize header monitor to detect cookie bloat early
+console.log('[main.tsx] Initializing header monitor...');
+if (import.meta.env.DEV) {
+  headerMonitor.logReport();
+  headerMonitor.startMonitoring(30000); // Check every 30 seconds in dev
+}
 
 // Handle runtime errors
 window.onerror = function (message, source, lineno, colno, error) {

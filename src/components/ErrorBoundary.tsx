@@ -50,7 +50,14 @@ class ErrorBoundary extends Component<Props, State> {
         try {
             localStorage.clear();
             sessionStorage.clear();
-            window.location.reload();
+            // Clear all cookies
+            document.cookie.split(";").forEach((c) => {
+                const eqPos = c.indexOf("=");
+                const name = eqPos > -1 ? c.substr(0, eqPos).trim() : c.trim();
+                document.cookie = `${name}=;expires=${new Date().toUTCString()};path=/`;
+            });
+            console.log('[ErrorBoundary] Storage cleared, redirecting to login');
+            window.location.href = '/login';
         } catch (e) {
             console.error('[ErrorBoundary] Failed to clear storage:', e);
             window.location.reload();
@@ -69,7 +76,7 @@ class ErrorBoundary extends Component<Props, State> {
 
                         <div className="space-y-3">
                             <p className="text-muted-foreground">
-                                We encountered an unexpected error. This could be due to a temporary issue.
+                                We encountered an unexpected error. This could be due to a temporary issue or corrupted session state.
                             </p>
 
                             {import.meta.env.DEV && this.state.error && (
@@ -78,6 +85,29 @@ class ErrorBoundary extends Component<Props, State> {
                                     <pre className="whitespace-pre-wrap overflow-auto">
                                         {this.state.error.toString()}
                                         {this.state.errorInfo?.componentStack}
+                                    </pre>
+                                </details>
+                            )}
+                        </div>
+
+                        <div className="flex gap-3 flex-col">
+                            <Button onClick={this.handleReload} variant="default" className="w-full">
+                                Reload Page
+                            </Button>
+                            <Button onClick={this.handleClearStorage} variant="outline" className="w-full">
+                                Clear Cache & Login Again
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
+export default ErrorBoundary;
                                     </pre>
                                 </details>
                             )}

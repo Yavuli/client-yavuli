@@ -18,6 +18,51 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Response error interceptor - CRITICAL for handling auth/header failures
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+
+    // Handle 401 (Unauthorized) - token expired or invalid
+    if (status === 401) {
+      console.error('[API] Unauthorized (401) - Clearing auth state');
+      localStorage.removeItem('token');
+      sessionStorage.clear();
+      
+      // Force redirect to login
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+        window.location.href = '/login?session_expired=true';
+      }
+    }
+
+    // Handle 431 (Request Header Fields Too Large) - cookie/header bloat
+    if (status === 431) {
+      console.error('[API] Header too large (431) - Clearing storage and reloading');
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+        document.cookie.split(";").forEach((c) => {
+          const eqPos = c.indexOf("=");
+          const name = eqPos > -1 ? c.substr(0, eqPos).trim() : c.trim();
+          document.cookie = `${name}=;expires=${new Date().toUTCString()};path=/`;
+        });
+      } catch (e) {
+        console.error('[API] Failed to clear cookies:', e);
+      }
+      // Reload to reset the app state
+      window.location.href = '/';
+    }
+
+    // Handle other critical errors
+    if (status === 500 || status === 502 || status === 503) {
+      console.error('[API] Server error:', status);
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 // API endpoints
 export const authAPI = {
   login: (credentials: { email: string; password: string }) =>
