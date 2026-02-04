@@ -16,7 +16,7 @@ export default function AuthCallback() {
 
         if (code) {
           // Small delay to ensure Supabase processes the OAuth code
-          await new Promise(resolve => setTimeout(resolve, 200));
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
 
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -26,7 +26,7 @@ export default function AuthCallback() {
         }
 
         if (session) {
-          // User is authenticated, redirect to explore
+          // User is authenticated, redirect to explore immediately
           navigate('/explore', { replace: true });
         } else {
           // No session found, redirect to login

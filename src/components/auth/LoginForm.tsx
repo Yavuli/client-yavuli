@@ -51,26 +51,9 @@ const Login = () => {
         toast.success('Successfully logged in!');
       }
 
-      // Poll for the user state to be set in AuthContext
-      // The onAuthStateChange listener will update the user state
-      let attempts = 0;
-      const maxAttempts = 20; // 20 * 100ms = 2 seconds max wait
-      
-      while (attempts < maxAttempts) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          // Session is valid, wait a bit more for AuthContext to update
-          await new Promise(resolve => setTimeout(resolve, 200));
-          navigate('/explore');
-          return;
-        }
-        await new Promise(resolve => setTimeout(resolve, 100));
-        attempts++;
-      }
-
-      // If we get here, something went wrong but signIn succeeded
-      // Navigate anyway
-      navigate('/explore');
+      // Immediately navigate after successful authentication
+      // Backend has already confirmed login with 200 status
+      navigate('/explore', { replace: true });
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'Failed to sign in');
       setLoading(false);
