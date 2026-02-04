@@ -24,33 +24,65 @@ const Navbar = () => {
   const { cartCount } = useCart();
   const [unreadCount, setUnreadCount] = useState(0)
 
-useEffect(() => {
-  // Function to fetch the count
-  const fetchUnread = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+  useEffect(() => {
+    if (!user) return;
 
-    // Call the SQL function we just made
-    const { data, error } = await supabase.rpc('get_unread_count')
-    if (!error) setUnreadCount(data || 0)
-  }
+    // Function to fetch the count
+    const fetchUnread = async () => {
+      try {
+        const { data: { user: currentUser } } = await supabase.auth.getUser()
+        if (!currentUser) return
 
-  fetchUnread()
-
-  // Realtime: Listen for ANY new message in my chats
-  const channel = supabase
-    .channel('global_messages')
-    .on('postgres_changes', 
-      { event: 'INSERT', schema: 'public', table: 'messages' }, 
-      () => {
-        // If ANY message comes into the DB, recheck count
-        fetchUnread()
+        // Call the SQL function we just made
+        const { data, error } = await supabase.rpc('get_unread_count')
+        if (error) {
+          console.error('[Navbar] Error fetching unread count:', error);
+          return;
+        }
+        setUnreadCount(data || 0)
+      } catch (error) {
+        console.error('[Navbar] Fatal error fetching unread count:', error);
       }
-    )
-    .subscribe()
+    }
 
-  return () => { supabase.removeChannel(channel) }
-}, [])
+    fetchUnread()
+
+    // Realtime: Listen for ANY new message in my chats
+    let channel: any = null;
+
+    try {
+      channel = supabase
+        .channel('global_messages')
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'messages' },
+          () => {
+            // If ANY message comes into the DB, recheck count
+            fetchUnread()
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('[Navbar] Realtime subscribed successfully');
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('[Navbar] Realtime subscription error');
+          } else if (status === 'TIMED_OUT') {
+            console.warn('[Navbar] Realtime subscription timed out');
+          }
+        });
+    } catch (error) {
+      console.error('[Navbar] Error setting up realtime subscription:', error);
+    }
+
+    return () => {
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch (error) {
+          console.error('[Navbar] Error removing channel:', error);
+        }
+      }
+    }
+  }, [user])
 
   const isActive = (path: string) => location.pathname === path;
 

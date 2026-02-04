@@ -126,13 +126,13 @@ export const listingsAPI = {
       // Fetch the listing, which will automatically increment the view count on the server
       const response = await api.get(`/listings/${listingId}`);
       console.log(`[api] View increment response:`, response.data);
-      
+
       // Handle the response structure
       let listingData = response.data;
       if (response.data?.data) {
         listingData = response.data.data;
       }
-      
+
       const transformed = transformListing(listingData);
       console.log(`[api] Transformed listing with views: ${transformed.views}`);
       // Transform and return the listing with updated view count
@@ -248,7 +248,7 @@ function transformListing(listing: any) {
     seller_avatar: seller.profile_image_url || listing.seller_avatar || '',
   };
 }
-// Add response interceptor for debugging
+// Add response interceptor for error handling and automatic token refresh
 api.interceptors.response.use(
   (response) => {
     console.log('[api] Response received:', {
@@ -258,13 +258,87 @@ api.interceptors.response.use(
     });
     return response;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
     console.error('[api] Response error:', {
       message: error.message,
       url: error.config?.url,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
+      code: error.response?.data?.code
     });
+
+    // Handle TOKEN_EXPIRED error - attempt token refresh
+    if (
+      error.response?.status === 401 &&
+      (error.response?.data?.code === 'TOKEN_EXPIRED' ||
+        error.response?.data?.message?.includes('expired'))
+    ) {
+      console.warn('[api] Token expired, attempting to refresh session...');
+
+      // Prevent infinite retry loop
+      if (originalRequest._retry) {
+        console.error('[api] Token refresh retry failed, redirecting to login');
+        localStorage.removeItem('token');
+        // Force user to re-login
+        window.location.href = '/signin';
+        return Promise.reject(error);
+      }
+
+      originalRequest._retry = true;
+
+      try {
+        // Use Supabase client to refresh the session
+        const { supabase } = await import('@/integrations/supabase/client');
+        const { data, error: refreshError } = await supabase.auth.refreshSession();
+
+        if (refreshError || !data.session) {
+          console.error('[api] Session refresh failed:', refreshError);
+          localStorage.removeItem('token');
+          window.location.href = '/signin';
+          return Promise.reject(refreshError || new Error('Session refresh failed'));
+        }
+
+        // Update token in localStorage
+        const newToken = data.session.access_token;
+        localStorage.setItem('token', newToken);
+        console.log('[api] Token refreshed successfully, retrying request');
+
+        // Retry the original request with new token
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        console.error('[api] Error during token refresh:', refreshError);
+        localStorage.removeItem('token');
+        window.location.href = '/signin';
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // Handle invalid token - force re-login
+    if (
+      error.response?.status === 401 &&
+      error.response?.data?.code === 'TOKEN_INVALID'
+    ) {
+      console.error('[api] Invalid token, clearing auth and redirecting to login');
+      localStorage.removeItem('token');
+      window.location.href = '/signin';
+      return Promise.reject(error);
+    }
+
+    // Handle network errors gracefully
+    if (!error.response && error.request) {
+      console.error('[api] Network error - no response received');
+      // Don't redirect on network errors, let component handle it
+    }
+
+    // Handle server errors (500+)
+    if (error.response?.status >= 500) {
+      console.error('[api] Server error:', error.response.status);
+      // Don't clear tokens on server errors
+    }
+
     return Promise.reject(error);
   }
 );

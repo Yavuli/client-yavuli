@@ -21,48 +21,51 @@ import SignupForm from "./components/auth/SignupForm";
 import { ChatPage } from './pages/ChatPage'
 import { Inbox } from "./pages/Inbox";
 import SEO from "@/components/SEO";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 import { HelmetProvider } from 'react-helmet-async';
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <HelmetProvider>
-    <SEO />
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Toaster />
-        <CartProvider>
-          <TooltipProvider>
-            <Sonner />
-            <BrowserRouter future={{
-              v7_startTransition: true,
-              v7_relativeSplatPath: true,
-            }}>
-              <Routes>
-                <Route path="/" element={<Welcome />} />
-                <Route path="/explore" element={<Explore />} />
-                <Route path="/product/:id" element={<ProductDetails />} />
-                <Route path="/messages/:id" element={<ChatPage />} />
-                <Route path="/inbox" element={<Inbox/>} />
-                <Route path="/sell" element={<Sell />} />
-                <Route path="/login" element={<LoginForm />} />
-                <Route path="/auth/login" element={<LoginForm />} />
-                <Route path="/signup" element={<SignupForm />} />
-                <Route path="/auth/callback" element={<Callback />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route path="/payment-success" element={<PaymentSuccess />} />
-                <Route path="/payment-failure" element={<PaymentFailure />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </CartProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
+  <ErrorBoundary>
+    <HelmetProvider>
+      <SEO />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Toaster />
+          <CartProvider>
+            <TooltipProvider>
+              <Sonner />
+              <BrowserRouter future={{
+                v7_startTransition: true,
+                v7_relativeSplatPath: true,
+              }}>
+                <Routes>
+                  <Route path="/" element={<Welcome />} />
+                  <Route path="/explore" element={<Explore />} />
+                  <Route path="/product/:id" element={<ProductDetails />} />
+                  <Route path="/messages/:id" element={<ChatPage />} />
+                  <Route path="/inbox" element={<Inbox />} />
+                  <Route path="/sell" element={<Sell />} />
+                  <Route path="/login" element={<LoginForm />} />
+                  <Route path="/auth/login" element={<LoginForm />} />
+                  <Route path="/signup" element={<SignupForm />} />
+                  <Route path="/auth/callback" element={<Callback />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route path="/payment-success" element={<PaymentSuccess />} />
+                  <Route path="/payment-failure" element={<PaymentFailure />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </CartProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  </ErrorBoundary>
 );
 
 export default App;

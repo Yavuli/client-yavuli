@@ -5,17 +5,64 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  console.error('[Supabase] Missing environment variables');
+}
+
 const client = (window as any).supabase ?? createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-  }
+    storageKey: 'sb-auth-token',
+    flowType: 'pkce',
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'yavuli-web',
+    },
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10,
+    },
+  },
 });
 
+// Add error listener for client-level errors
 if (import.meta.env.DEV) {
-    (window as any).supabase = client;
+  (window as any).supabase = client;
+  console.log('[Supabase] Client initialized in development mode');
 }
+
+// Monitor auth state changes and handle errors
+client.auth.onAuthStateChange((event, session) => {
+  if (event === 'TOKEN_REFRESHED') {
+    console.log('[Supabase] Token refreshed successfully');
+    // Update localStorage with new token
+    if (session?.access_token) {
+      try {
+        localStorage.setItem('token', session.access_token);
+      } catch (e) {
+        console.error('[Supabase] Failed to store refreshed token:', e);
+      }
+    }
+  } else if (event === 'SIGNED_OUT') {
+    console.log('[Supabase] User signed out');
+    try {
+      localStorage.removeItem('token');
+    } catch (e) {
+      console.error('[Supabase] Failed to remove token:', e);
+    }
+  } else if (event === 'USER_DELETED') {
+    console.log('[Supabase] User deleted');
+    try {
+      localStorage.removeItem('token');
+    } catch (e) {
+      console.error('[Supabase] Failed to remove token:', e);
+    }
+  }
+});
 
 export const supabase = client;

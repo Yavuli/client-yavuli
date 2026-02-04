@@ -12,7 +12,7 @@ interface Message {
 
 interface ChatProps {
   conversationId: string
-  currentUserId: string 
+  currentUserId: string
 }
 
 export const ChatWindow = ({ conversationId, currentUserId }: ChatProps) => {
@@ -30,49 +30,99 @@ export const ChatWindow = ({ conversationId, currentUserId }: ChatProps) => {
   }, [messages])
 
   useEffect(() => {
+    let mounted = true;
+    let channel: any = null;
+
     // 1. Fetch Messages
     const fetchMessages = async () => {
-      const { data } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true })
-      
-      if (data) setMessages(data)
-      
-      // 2. MARK AS READ 
-      // If there are messages from the OTHER person that are unread, mark them read now.
-      const unreadIds = data
-        ?.filter(m => m.sender_id !== currentUserId && !m.is_read)
-        .map(m => m.id)
-
-      if (unreadIds && unreadIds.length > 0) {
-        await supabase
+      try {
+        const { data, error } = await supabase
           .from('messages')
-          .update({ is_read: true })
-          .in('id', unreadIds)
+          .select('*')
+          .eq('conversation_id', conversationId)
+          .order('created_at', { ascending: true })
+
+        if (error) {
+          console.error('[ChatWindow] Error fetching messages:', error);
+          return;
+        }
+
+        if (mounted && data) {
+          setMessages(data)
+        }
+
+        // 2. MARK AS READ 
+        // If there are messages from the OTHER person that are unread, mark them read now.
+        const unreadIds = data
+          ?.filter(m => m.sender_id !== currentUserId && !m.is_read)
+          .map(m => m.id)
+
+        if (unreadIds && unreadIds.length > 0) {
+          try {
+            await supabase
+              .from('messages')
+              .update({ is_read: true })
+              .in('id', unreadIds)
+          } catch (updateError) {
+            console.error('[ChatWindow] Error marking messages as read:', updateError);
+          }
+        }
+      } catch (error) {
+        console.error('[ChatWindow] Fatal error fetching messages:', error);
       }
     }
 
     fetchMessages()
 
     // 3. Realtime Subscription
-    const channel = supabase
-      .channel(`chat:${conversationId}`)
-      .on('postgres_changes', 
-        { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, 
-        (payload) => {
-          setMessages((prev) => [...prev, payload.new as Message])
-          // If I receive a message while looking at the screen, mark it read immediately
-          if (payload.new.sender_id !== currentUserId) {
-             supabase.from('messages').update({ is_read: true }).eq('id', payload.new.id).then()
-          }
-        }
-      )
-      .subscribe()
+    try {
+      channel = supabase
+        .channel(`chat:${conversationId}`)
+        .on('postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` },
+          (payload) => {
+            if (!mounted) return;
 
-    return () => { supabase.removeChannel(channel) }
-  }, [conversationId])
+            try {
+              setMessages((prev) => [...prev, payload.new as Message])
+              // If I receive a message while looking at the screen, mark it read immediately
+              if (payload.new.sender_id !== currentUserId) {
+                supabase.from('messages')
+                  .update({ is_read: true })
+                  .eq('id', payload.new.id)
+                  .then(({ error }) => {
+                    if (error) console.error('[ChatWindow] Error marking new message as read:', error);
+                  })
+              }
+            } catch (error) {
+              console.error('[ChatWindow] Error processing new message:', error);
+            }
+          }
+        )
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('[ChatWindow] Realtime subscribed successfully');
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('[ChatWindow] Realtime subscription error');
+          } else if (status === 'TIMED_OUT') {
+            console.warn('[ChatWindow] Realtime subscription timed out');
+          }
+        })
+    } catch (error) {
+      console.error('[ChatWindow] Error setting up realtime subscription:', error);
+    }
+
+    return () => {
+      mounted = false;
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch (error) {
+          console.error('[ChatWindow] Error removing channel:', error);
+        }
+      }
+    }
+  }, [conversationId, currentUserId])
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,10 +133,10 @@ export const ChatWindow = ({ conversationId, currentUserId }: ChatProps) => {
 
     const { error } = await supabase
       .from('messages')
-      .insert({ 
-        conversation_id: conversationId, 
-        content: msg, 
-        sender_id: currentUserId 
+      .insert({
+        conversation_id: conversationId,
+        content: msg,
+        sender_id: currentUserId
       })
 
     if (error) {
@@ -102,14 +152,13 @@ export const ChatWindow = ({ conversationId, currentUserId }: ChatProps) => {
         {messages.map((msg) => {
           const isMe = msg.sender_id === currentUserId
           const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          
+
           return (
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[75%] px-4 py-2 rounded-2xl shadow-sm text-sm relative group ${
-                isMe 
-                  ? 'bg-blue-600 text-white rounded-br-none' 
+              <div className={`max-w-[75%] px-4 py-2 rounded-2xl shadow-sm text-sm relative group ${isMe
+                  ? 'bg-blue-600 text-white rounded-br-none'
                   : 'bg-white text-gray-800 border rounded-bl-none'
-              }`}>
+                }`}>
                 <p>{msg.content}</p>
                 <p className={`text-[10px] text-right mt-1 ${isMe ? 'text-blue-100' : 'text-gray-400'}`}>
                   {time}
@@ -130,8 +179,8 @@ export const ChatWindow = ({ conversationId, currentUserId }: ChatProps) => {
           placeholder="Type a message..."
           className="flex-1 bg-gray-100 border-none focus:ring-1 focus:ring-blue-500 rounded-full px-4 py-3"
         />
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={!newMessage.trim()}
           className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 transition shadow-md"
         >

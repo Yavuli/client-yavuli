@@ -63,8 +63,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         setSession(initialSession);
 
-        if (initialSession?.access_token) {
-          localStorage.setItem('token', initialSession.access_token);
+        // Store tokens with error handling
+        try {
+          if (initialSession?.access_token) {
+            localStorage.setItem('token', initialSession.access_token);
+          }
+        } catch (storageError) {
+          console.error('[AuthContext] localStorage error on init:', storageError);
         }
 
         if (initialSession?.user) {
@@ -120,10 +125,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       setSession(session);
 
-      if (session?.access_token) {
-        localStorage.setItem('token', session.access_token);
-      } else {
-        localStorage.removeItem('token');
+      // Store tokens with error handling
+      try {
+        if (session?.access_token) {
+          localStorage.setItem('token', session.access_token);
+        } else {
+          localStorage.removeItem('token');
+        }
+      } catch (storageError) {
+        console.error('[AuthContext] localStorage error:', storageError);
+        // Continue even if storage fails - auth will still work
       }
 
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
