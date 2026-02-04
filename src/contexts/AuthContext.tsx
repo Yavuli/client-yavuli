@@ -48,28 +48,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     let mounted = true;
-    let authInitialized = false;
 
-    // Timeout to prevent permanent blank page (increased to 8s)
-    const timeoutId = setTimeout(() => {
-      if (mounted && !authInitialized) {
-        console.warn('[Auth] Auth initialization timed out, forcing loading false');
-        setLoading(false);
+    // Check initial session
+    const initAuth = async () => {
+      try {
+        const { data: { session: initialSession }, error } = await supabase.auth.getSession();
+        if (!mounted) return;
+
+        if (error) {
+          console.error('Error fetching initial session:', error);
+          setLoading(false);
+          return;
+        }
+
+        setSession(initialSession);
+
+        if (initialSession?.access_token) {
+          localStorage.setItem('token', initialSession.access_token);
+        }
+
+        if (initialSession?.user) {
+          await handleUserAuthenticated(initialSession.user);
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Fatal error in auth initialization:', err);
+        if (mounted) setLoading(false);
       }
-    }, 8000);
+    };
 
     const handleUserAuthenticated = async (supabaseUser: SupabaseUser) => {
       try {
-        // Use maybeSingle to avoid console errors when row doesn't exist
+        // Fetch profile
         const { data: profile, error } = await supabase
           .from('profiles')
           .select('id, full_name, avatar_url, updated_at, city, college, phone')
           .eq('id', supabaseUser.id)
-          .maybeSingle();
-
-        if (error) {
-          console.error('[Auth] Profile fetch error:', error);
-        }
+          .single();
 
         const profileRecord = profile || buildProfileFallback(supabaseUser);
 
@@ -79,31 +95,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             email: supabaseUser.email || '',
             profile: profileRecord
           });
-          authInitialized = true;
           setLoading(false);
-          clearTimeout(timeoutId);
         }
 
         // Sync in background
         syncProfileWithServer(supabaseUser, profileRecord);
       } catch (error) {
-        console.error('[Auth] Error fetching profile:', error);
+        console.error('Error fetching profile:', error);
         if (mounted) {
           setUser({
             ...supabaseUser,
             email: supabaseUser.email || '',
             profile: buildProfileFallback(supabaseUser)
           });
-          authInitialized = true;
           setLoading(false);
-          clearTimeout(timeoutId);
         }
       }
     };
 
+    initAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
-      console.log(`[Auth] Event: ${event}`);
 
       setSession(session);
 
@@ -113,20 +126,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.removeItem('token');
       }
 
-      if (session?.user) {
-        await handleUserAuthenticated(session.user);
-      } else {
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
+        if (session?.user) {
+          await handleUserAuthenticated(session.user);
+        } else {
+          setLoading(false);
+        }
+      } else if (event === 'SIGNED_OUT') {
         setUser(null);
-        authInitialized = true;
         setLoading(false);
-        clearTimeout(timeoutId);
+      } else {
+        setLoading(false);
       }
     });
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
-      clearTimeout(timeoutId);
     };
   }, []);
 
