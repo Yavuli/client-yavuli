@@ -65,4 +65,18 @@ client.auth.onAuthStateChange((event, session) => {
   }
 });
 
+// Handle auth errors and invalid sessions
+client.auth.onAuthStateChange(async (event, session) => {
+  // If there's an issue with refresh token, clear it and force re-login
+  if (event === 'SIGNED_OUT' && session === null) {
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('sb-auth-token');
+      sessionStorage.clear();
+    } catch (e) {
+      console.error('[Supabase] Failed to clear storage:', e);
+    }
+  }
+});
+
 export const supabase = client;

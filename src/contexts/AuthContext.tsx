@@ -56,9 +56,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (!mounted) return;
 
         if (error) {
-          console.error('Error fetching initial session:', error);
+          console.error('[AuthContext] Error fetching initial session:', error);
+          // If there's an error getting the session, clear stale data
+          try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('sb-auth-token');
+          } catch (e) {
+            console.error('[AuthContext] Error clearing stale tokens:', e);
+          }
           setLoading(false);
           return;
+        }
+
+        // If there's no session but there's stored auth data, we may have a stale session
+        if (!initialSession && localStorage.getItem('sb-auth-token')) {
+          console.warn('[AuthContext] Stale session detected - clearing stored tokens');
+          try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('sb-auth-token');
+          } catch (e) {
+            console.error('[AuthContext] Error clearing stale tokens:', e);
+          }
         }
 
         setSession(initialSession);
@@ -78,8 +96,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setLoading(false);
         }
       } catch (err) {
-        console.error('Fatal error in auth initialization:', err);
-        if (mounted) setLoading(false);
+        console.error('[AuthContext] Fatal error in auth initialization:', err);
+        if (mounted) {
+          // Clear everything on fatal error
+          try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('sb-auth-token');
+          } catch (e) {
+            console.error('[AuthContext] Error clearing tokens on fatal error:', e);
+          }
+          setLoading(false);
+        }
       }
     };
 
@@ -123,6 +150,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
 
+      console.log('[AuthContext] Auth state change:', event);
+
       setSession(session);
 
       // Store tokens with error handling
@@ -137,7 +166,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Continue even if storage fails - auth will still work
       }
 
-      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('[AuthContext] Token refreshed successfully');
+        setLoading(false);
+      } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
         if (session?.user) {
           await handleUserAuthenticated(session.user);
         } else {
@@ -146,8 +178,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setLoading(false);
+      } else if (event === 'MFA_CHALLENGE_VERIFIED') {
+        console.log('[AuthContext] MFA challenge verified');
+        if (session?.user) {
+          await handleUserAuthenticated(session.user);
+        }
       } else {
         setLoading(false);
+      }
       }
     });
 
@@ -237,7 +275,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signOut,
   };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  // Always render children - never return null to avoid blank screen
+  // Loading state is managed by pages/components individually
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
