@@ -33,58 +33,12 @@ const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [searchParams] = useSearchParams();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [debugInfo, setDebugInfo] = useState('');
 
   useEffect(() => {
-    // OAuth Logic
-    const code = searchParams.get('code');
-    const sessionState = searchParams.get('state');
+    // Scroll to top on mount
+    window.scrollTo(0, 0);
+  }, []);
 
-    if (code || sessionState) {
-      setIsProcessing(true);
-      setDebugInfo('Processing OAuth...');
-
-      const handleOAuthCallback = async () => {
-        try {
-          await new Promise(resolve => setTimeout(resolve, 5000));
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            navigate('/explore', { replace: true });
-          } else {
-            navigate('/login', { replace: true });
-          }
-        } catch (error) {
-          navigate('/login', { replace: true });
-        }
-      };
-
-      const timeoutId = setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 10000);
-
-      handleOAuthCallback().finally(() => {
-        clearTimeout(timeoutId);
-        setIsProcessing(false);
-      });
-    }
-  }, [searchParams, navigate]);
-
-  if (isProcessing) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-white relative z-50">
-        <div className="text-center space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 animate-pulse">
-            <Sparkles className="w-8 h-8 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Processing your login...</h2>
-            <p className="text-slate-500 font-medium">Please wait while we verify your credentials.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative min-h-screen w-full bg-white overflow-x-hidden selection:bg-primary/20">
@@ -336,7 +290,7 @@ const Welcome = () => {
           </div>
           <div className="max-w-7xl mx-auto pt-20 text-center">
             <p className="text-xs text-slate-500 font-medium">
-                Founded by Kishlaya Mishra
+              Founded by Kishlaya Mishra
             </p>
             <p className="text-[10px] text-slate-400 font-bold tracking-[0.5em] uppercase opacity-50 pt-4">
               © 2026 Yavuli Marketplace • Built For Students

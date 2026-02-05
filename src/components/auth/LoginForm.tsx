@@ -26,7 +26,7 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/explore',
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) throw error;
@@ -55,7 +55,7 @@ const Login = () => {
       // Now attempt the new login
       console.log('[LoginForm] Attempting sign in');
       const { data, error } = await signIn(email, password);
-      
+
       if (error) {
         console.error('[LoginForm] Sign in error:', error);
         throw error;
