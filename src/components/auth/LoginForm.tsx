@@ -23,6 +23,8 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
+      setError('');
+      console.log('[LoginForm] Initiating Google OAuth Login');
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -30,7 +32,9 @@ const Login = () => {
         },
       });
       if (error) throw error;
+      // We don't set loading false here because the whole page redirects
     } catch (error: unknown) {
+      console.error('[LoginForm] Google login error:', error);
       setError(error instanceof Error ? error.message : 'Failed to sign up with Google');
       setLoading(false);
     }
@@ -42,39 +46,25 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Clear any stale session before attempting new login
-      // This prevents issues with stored cookies from previous sessions
-      console.log('[LoginForm] Clearing stale sessions before login attempt');
-      await supabase.auth.signOut({ scope: 'local' }).catch(() => {
-        // Ignore errors - we just want to clean up
-      });
+      // Now attempt the new login with a timeout safety
+      console.log('[LoginForm] Attempting sign in with email:', email);
 
-      // Wait a moment for logout to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
+      const loginPromise = signIn(email, password);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Authentication timed out. Please check your connection.')), 15000)
+      );
 
-      // Now attempt the new login
-      console.log('[LoginForm] Attempting sign in');
-      const { data, error } = await signIn(email, password);
+      const { data, error } = await Promise.race([loginPromise, timeoutPromise]) as any;
 
       if (error) {
         console.error('[LoginForm] Sign in error:', error);
         throw error;
       }
 
-      console.log('[LoginForm] Sign in successful');
-
-      if (data?.user?.user_metadata?.full_name) {
-        toast.success(`Welcome back, ${data.user.user_metadata.full_name.split(' ')[0]}!`);
-      } else {
-        toast.success('Successfully logged in!');
-      }
-
-      // Immediately navigate after successful authentication
-      // The onAuthStateChange listener will handle session setup
-      console.log('[LoginForm] Navigating to explore');
+      console.log('[LoginForm] Navigating to explore after success');
       navigate('/explore', { replace: true });
     } catch (error: unknown) {
-      console.error('[LoginForm] Login failed:', error);
+      console.error('[LoginForm] Login process caught error:', error);
       setError(error instanceof Error ? error.message : 'Failed to sign in');
       setLoading(false);
     }

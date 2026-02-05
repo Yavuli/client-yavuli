@@ -11,33 +11,39 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Check if there's a code in the URL (OAuth callback)
         const code = searchParams.get('code');
+        console.log('[AuthCallback] Starting callback processing, code exists:', !!code);
 
+        // Wait a bit to let Supabase Auth internal state catch up with the URL code
         if (code) {
-          // Small delay to ensure Supabase processes the OAuth code
-          await new Promise(resolve => setTimeout(resolve, 500));
+          console.log('[AuthCallback] Code found, waiting for session...');
+          await new Promise(resolve => setTimeout(resolve, 2000));
         }
 
-        const { data: { session }, error } = await supabase.auth.getSession();
+        let { data: { session }, error } = await supabase.auth.getSession();
 
-        if (error) {
-          throw error;
+        if (!session && code) {
+          console.log('[AuthCallback] No session yet, retrying check...');
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          const result = await supabase.auth.getSession();
+          session = result.data.session;
+          if (result.error) console.error('[AuthCallback] Retry error:', result.error);
         }
+
+        if (error) throw error;
 
         if (session) {
-          // User is authenticated, redirect to explore immediately
+          console.log('[AuthCallback] Session found, user:', session.user.email, 'Redirecting to /explore');
           navigate('/explore', { replace: true });
         } else {
-          // No session found, redirect to login
-          navigate('/login', { replace: true });
+          console.error('[AuthCallback] No session found after processing');
+          setError('No valid session found. Redirecting to login...');
+          setTimeout(() => navigate('/login', { replace: true }), 2000);
         }
       } catch (error) {
         console.error('Error in auth callback:', error);
         setError('Failed to authenticate. Please try again.');
-        setTimeout(() => {
-          navigate('/login', { replace: true });
-        }, 3000);
+        setTimeout(() => navigate('/login', { replace: true }), 3000);
       }
     };
 

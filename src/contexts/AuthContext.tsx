@@ -150,7 +150,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
 
-      console.log('[AuthContext] Auth state change:', event);
+      console.log('[AuthContext] DEBUG: event=', event, 'session exists=', !!session, 'user=', session?.user?.email);
 
       setSession(session);
 
@@ -163,29 +163,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (storageError) {
         console.error('[AuthContext] localStorage error:', storageError);
-        // Continue even if storage fails - auth will still work
       }
 
-      if (event === 'TOKEN_REFRESHED') {
-        console.log('[AuthContext] Token refreshed successfully');
-        setLoading(false);
-      } else if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
+      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'INITIAL_SESSION') {
         if (session?.user) {
-          await handleUserAuthenticated(session.user);
+          console.log('[AuthContext] Handling user authentication for event:', event);
+          // Don't await here - let it run in background to not block the listener
+          handleUserAuthenticated(session.user).catch(err => {
+            console.error('[AuthContext] Background auth handler error:', err);
+            setLoading(false);
+          });
+
+          // Safety fallback: if handleUserAuthenticated is too slow, ensure we stop loading eventually
+          setTimeout(() => {
+            if (mounted) setLoading(false);
+          }, 5000);
         } else {
+          console.log('[AuthContext] No user in session for event:', event);
           setLoading(false);
         }
       } else if (event === 'SIGNED_OUT') {
+        console.log('[AuthContext] User signed out');
         setUser(null);
         setLoading(false);
-      } else if (event === 'MFA_CHALLENGE_VERIFIED') {
-        console.log('[AuthContext] MFA challenge verified');
-        if (session?.user) {
-          await handleUserAuthenticated(session.user);
-        }
       } else {
+        console.log('[AuthContext] Other event:', event);
         setLoading(false);
-      }
       }
     });
 

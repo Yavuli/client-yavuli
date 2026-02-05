@@ -18,50 +18,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response error interceptor - CRITICAL for handling auth/header failures
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const status = error.response?.status;
-
-    // Handle 401 (Unauthorized) - token expired or invalid
-    if (status === 401) {
-      console.error('[API] Unauthorized (401) - Clearing auth state');
-      localStorage.removeItem('token');
-      sessionStorage.clear();
-      
-      // Force redirect to login
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
-        window.location.href = '/login?session_expired=true';
-      }
-    }
-
-    // Handle 431 (Request Header Fields Too Large) - cookie/header bloat
-    if (status === 431) {
-      console.error('[API] Header too large (431) - Clearing storage and reloading');
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-        document.cookie.split(";").forEach((c) => {
-          const eqPos = c.indexOf("=");
-          const name = eqPos > -1 ? c.substr(0, eqPos).trim() : c.trim();
-          document.cookie = `${name}=;expires=${new Date().toUTCString()};path=/`;
-        });
-      } catch (e) {
-        console.error('[API] Failed to clear cookies:', e);
-      }
-      // Reload to reset the app state
-      window.location.href = '/';
-    }
-
-    // Handle other critical errors
-    if (status === 500 || status === 502 || status === 503) {
-      console.error('[API] Server error:', status);
-    }
-
-    return Promise.reject(error);
-  }
-);
+// Response interceptor is handled below at line 297 with consolidated logic
 
 // API endpoints
 export const authAPI = {
@@ -293,95 +250,68 @@ function transformListing(listing: any) {
     seller_avatar: seller.profile_image_url || listing.seller_avatar || '',
   };
 }
-// Add response interceptor for error handling and automatic token refresh
+// Consolidate response interceptor for error handling and automatic token refresh
 api.interceptors.response.use(
-  (response) => {
-    console.log('[api] Response received:', {
-      status: response.status,
-      url: response.config.url,
-      data: response.data
-    });
-    return response;
-  },
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const status = error.response?.status;
 
     console.error('[api] Response error:', {
       message: error.message,
       url: error.config?.url,
-      status: error.response?.status,
-      data: error.response?.data,
-      code: error.response?.data?.code
+      status: status,
+      data: error.response?.data
     });
 
-    // Handle TOKEN_EXPIRED error - attempt token refresh
-    if (
-      error.response?.status === 401 &&
-      (error.response?.data?.code === 'TOKEN_EXPIRED' ||
-        error.response?.data?.message?.includes('expired'))
-    ) {
-      console.warn('[api] Token expired, attempting to refresh session...');
+    // Handle 401 (Unauthorized)
+    if (status === 401) {
+      const isAuthRequest = originalRequest.url?.includes('/auth/') || originalRequest.url?.includes('/login');
+      const errorCode = error.response?.data?.code;
+      const errorMessage = error.response?.data?.message || '';
 
-      // Prevent infinite retry loop
-      if (originalRequest._retry) {
-        console.error('[api] Token refresh retry failed, redirecting to login');
-        localStorage.removeItem('token');
-        // Force user to re-login
-        window.location.href = '/signin';
-        return Promise.reject(error);
-      }
+      // Check if it's a refreshable token error
+      if (
+        (errorCode === 'TOKEN_EXPIRED' || errorMessage.toLowerCase().includes('expired')) &&
+        !originalRequest._retry &&
+        !isAuthRequest
+      ) {
+        console.warn('[api] Token expired, attempting to refresh session...');
+        originalRequest._retry = true;
 
-      originalRequest._retry = true;
+        try {
+          const { supabase } = await import('@/integrations/supabase/client');
+          const { data, error: refreshError } = await supabase.auth.refreshSession();
 
-      try {
-        // Use Supabase client to refresh the session
-        const { supabase } = await import('@/integrations/supabase/client');
-        const { data, error: refreshError } = await supabase.auth.refreshSession();
-
-        if (refreshError || !data.session) {
+          if (!refreshError && data.session) {
+            const newToken = data.session.access_token;
+            localStorage.setItem('token', newToken);
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return api(originalRequest);
+          }
           console.error('[api] Session refresh failed:', refreshError);
-          localStorage.removeItem('token');
-          window.location.href = '/signin';
-          return Promise.reject(refreshError || new Error('Session refresh failed'));
+        } catch (refreshError) {
+          console.error('[api] Error during token refresh:', refreshError);
         }
-
-        // Update token in localStorage
-        const newToken = data.session.access_token;
-        localStorage.setItem('token', newToken);
-        console.log('[api] Token refreshed successfully, retrying request');
-
-        // Retry the original request with new token
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        console.error('[api] Error during token refresh:', refreshError);
-        localStorage.removeItem('token');
-        window.location.href = '/signin';
-        return Promise.reject(refreshError);
       }
-    }
 
-    // Handle invalid token - force re-login
-    if (
-      error.response?.status === 401 &&
-      error.response?.data?.code === 'TOKEN_INVALID'
-    ) {
-      console.error('[api] Invalid token, clearing auth and redirecting to login');
+      // If refresh failed or was not possible, clear and redirect
+      console.error('[api] Unauthorized - Clearing auth and redirecting');
       localStorage.removeItem('token');
-      window.location.href = '/signin';
+      sessionStorage.clear();
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+        window.location.href = '/login?session_expired=true';
+      }
       return Promise.reject(error);
     }
 
-    // Handle network errors gracefully
-    if (!error.response && error.request) {
-      console.error('[api] Network error - no response received');
-      // Don't redirect on network errors, let component handle it
-    }
-
-    // Handle server errors (500+)
-    if (error.response?.status >= 500) {
-      console.error('[api] Server error:', error.response.status);
-      // Don't clear tokens on server errors
+    // Handle 431 (Request Header Fields Too Large)
+    if (status === 431) {
+      console.error('[api] Header too large (431) - Clearing storage and reloading');
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
+      return Promise.reject(error);
     }
 
     return Promise.reject(error);
