@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { ChevronLeft, Mail } from 'lucide-react';
+import { ChevronLeft, Mail, AlertCircle } from 'lucide-react';
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import SEO from "@/components/SEO";
 import { toast } from 'sonner';
+import { authAPI } from '@/lib/api';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -21,6 +22,15 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
+            // Step 1: Check if email exists in our database
+            const response = await authAPI.checkEmail(email);
+            if (!response.data || !response.data.exists) {
+                toast.error('This email is not registered with Yavuli.');
+                setLoading(false);
+                return;
+            }
+
+            // Step 2: Proceed with Supabase password reset
             const { error } = await resetPassword(email);
             if (error) throw error;
 

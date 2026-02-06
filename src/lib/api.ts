@@ -26,6 +26,7 @@ export const authAPI = {
     api.post("/auth/login", credentials),
   signup: (userData: any) => api.post("/auth/signup", userData),
   test: () => api.get("/auth"),
+  checkEmail: (email: string) => api.post("/auth/check-email", { email }),
   syncProfile: (profile: { full_name?: string; city?: string; college?: string; phone?: string }) =>
     api.post("/auth/sync-user", profile),
 };
