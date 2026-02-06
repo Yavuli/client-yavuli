@@ -215,28 +215,6 @@ const Welcome = () => {
           </div>
         </section>
 
-        {/* Transparency & Trust Section (Google OAuth Requirement) */}
-        <section className="bg-primary/5 py-24 border-y border-primary/10 px-6">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest">
-              <ShieldCheck className="h-3 w-3" />
-              <span>Transparency & Security</span>
-            </div>
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900">Your Data, Your Control.</h2>
-            <p className="text-lg md:text-xl text-slate-600 font-medium leading-relaxed">
-              To maintain a safe and exclusive environment for students, Yavuli uses Google Sign-In to verify your identity.
-              We only request access to your <strong>email address</strong> and <strong>basic profile information</strong>.
-              This ensure you are a verified student and helps us protect the community from non-student entities.
-              We never sell your personal data or post on your behalf.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm font-bold text-slate-500 uppercase tracking-widest">
-              <span className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-primary" /> Email Verification</span>
-              <span className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-primary" /> Identity Security</span>
-              <span className="flex items-center gap-2"><div className="h-1.5 w-1.5 rounded-full bg-primary" /> No Third-Party Selling</span>
-            </div>
-          </div>
-        </section>
-
         {/* Presenting Section */}
         <section className="bg-slate-50/50 py-40 border-y border-slate-100 px-6">
           <div className="max-w-4xl mx-auto text-center space-y-12">
