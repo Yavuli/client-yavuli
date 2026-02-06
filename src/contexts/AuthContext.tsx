@@ -268,6 +268,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setSession(null);
   };
 
+  const resetPassword = async (email: string) => {
+    return await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+  };
+
+  const updatePassword = async (password: string) => {
+    return await supabase.auth.updateUser({ password });
+  };
+
   const value = {
     user,
     session,
@@ -276,6 +286,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signUp,
     signInWithGoogle,
     signOut,
+    resetPassword,
+    updatePassword,
   };
 
   // Always render children - never return null to avoid blank screen
