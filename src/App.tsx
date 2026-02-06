@@ -22,6 +22,8 @@ import { ChatPage } from './pages/ChatPage'
 import { Inbox } from "./pages/Inbox";
 import SEO from "@/components/SEO";
 import ErrorBoundary from "./components/ErrorBoundary";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -57,6 +59,8 @@ const App = () => (
                   <Route path="/payment-success" element={<PaymentSuccess />} />
                   <Route path="/payment-failure" element={<PaymentFailure />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsOfService />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
