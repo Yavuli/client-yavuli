@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Phone, Mail } from "lucide-react";
 import { toast } from "sonner";
 
@@ -27,8 +27,8 @@ export default function Footer() {
                         <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Policy</h4>
                         <ul className="space-y-2 text-sm text-slate-500 font-medium">
                             <li><button onClick={() => toast.info("Safety Tips coming soon!")} className="hover:text-primary transition-colors">Safety Tips</button></li>
-                            <li><button onClick={() => navigate('/policy')} className="hover:text-primary transition-colors">Privacy Policy</button></li>
-                            <li><button onClick={() => navigate('/terms')} className="hover:text-primary transition-colors">Terms of Service</button></li>
+                            <li><Link to="/policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                            <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
                         </ul>
                     </div>
                     <div className="space-y-4 col-span-2 lg:col-span-1">
