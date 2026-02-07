@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { authAPI } from "@/lib/api";
+import { Loader2 } from 'lucide-react';
 
 export default function AuthCallback() {
   const [error, setError] = useState<string | null>(null);
@@ -46,14 +48,38 @@ export default function AuthCallback() {
             .eq('id', user.id)
             .single();
 
-          const hasDetails = profile?.full_name && profile?.phone && profile?.college_name;
-          const hasVerifiedEmail = isEducational || profile?.college_email;
+          // Also check the users table for global verification status
+          const { data: userData } = await supabase
+            .from('users')
+            .select('is_verified')
+            .eq('id', user.id)
+            .single();
+
+          const hasDetails = !!(profile?.full_name && profile?.phone && profile?.college_name);
+
+          // A user is considered "Verified" if:
+          // 1. Their primary email is educational OR
+          // 2. They have a verified college email in their profile OR
+          // 3. The users table marks them as verified
+          const isProfileEmailEducational = profile?.college_email && (
+            profile.college_email.endsWith('.edu') ||
+            profile.college_email.endsWith('.ac.in') ||
+            profile.college_email.endsWith('.college')
+          );
+
+          const hasVerifiedEmail = isEducational || isProfileEmailEducational || userData?.is_verified;
 
           if (!hasDetails || !hasVerifiedEmail) {
-            console.log('[AuthCallback] Profile incomplete or not verified. Redirecting to /complete-profile');
+            console.log('[AuthCallback] Profile incomplete or not verified. Redirecting to /complete-profile', { hasDetails, hasVerifiedEmail });
             navigate('/complete-profile', { replace: true });
           } else {
             console.log('[AuthCallback] Profile complete. Redirecting to /explore');
+
+            // Proactively sync verification status back to users table if missing
+            if (hasVerifiedEmail && !userData?.is_verified) {
+              await authAPI.syncProfile({ is_verified: true } as any);
+            }
+
             navigate('/explore', { replace: true });
           }
         } else {

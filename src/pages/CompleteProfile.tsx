@@ -31,6 +31,34 @@ const CompleteProfile = () => {
             return;
         }
 
+        const checkAlreadyVerified = async () => {
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('full_name, phone, college_name, college_email')
+                .eq('id', user.id)
+                .single();
+
+            const { data: userData } = await supabase
+                .from('users')
+                .select('is_verified')
+                .eq('id', user.id)
+                .single();
+
+            const hasDetails = profile?.full_name && profile?.phone && profile?.college_name;
+            const isStoredEducational = profile?.college_email && (
+                profile.college_email.endsWith('.edu') ||
+                profile.college_email.endsWith('.ac.in') ||
+                profile.college_email.endsWith('.college')
+            );
+
+            if (hasDetails && (isEducational || isStoredEducational || userData?.is_verified)) {
+                console.log('[CompleteProfile] User already verified, redirecting to /explore');
+                navigate('/explore');
+            }
+        };
+
+        checkAlreadyVerified();
+
         // Pre-fill if Google email is already educational
         if (isEducational && !collegeEmail) {
             setCollegeEmail(userEmail);
@@ -59,7 +87,15 @@ const CompleteProfile = () => {
         }
 
         try {
-            // 1. If physical email is different from Google email, trigger verification
+            // ALWAYS sync basic profile details first so we don't lose them
+            await authAPI.syncProfile({
+                full_name: user?.user_metadata?.full_name,
+                phone,
+                college_name: collegeName,
+                college_email: collegeEmail
+            });
+
+            // 1. If college email is different from current primary email, trigger verification
             if (collegeEmail !== userEmail) {
                 setVerifying(true);
                 const { error: updateError } = await supabase.auth.updateUser({
@@ -71,14 +107,6 @@ const CompleteProfile = () => {
                 toast.success('Verification email sent to ' + collegeEmail);
                 // We stay on this page to show the "check your email" state
             } else {
-                // 2. If already educational, just sync profile and proceed
-                await authAPI.syncProfile({
-                    full_name: user?.user_metadata?.full_name,
-                    phone,
-                    college_name: collegeName,
-                    college_email: collegeEmail
-                });
-
                 toast.success('Profile completed!');
                 navigate('/explore');
             }
