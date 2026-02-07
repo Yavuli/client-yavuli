@@ -61,37 +61,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (error) {
           console.error('[AuthContext] Error fetching initial session:', error);
-          // If there's an error getting the session, clear stale data
-          try {
-            localStorage.removeItem('token');
-            localStorage.removeItem('sb-auth-token');
-          } catch (e) {
-            console.error('[AuthContext] Error clearing stale tokens:', e);
-          }
           setLoading(false);
           return;
         }
 
-        // If there's no session but there's stored auth data, we may have a stale session
-        if (!initialSession && localStorage.getItem('sb-auth-token')) {
-          console.warn('[AuthContext] Stale session detected - clearing stored tokens');
-          try {
-            localStorage.removeItem('token');
-            localStorage.removeItem('sb-auth-token');
-          } catch (e) {
-            console.error('[AuthContext] Error clearing stale tokens:', e);
-          }
-        }
-
         setSession(initialSession);
 
-        // Store tokens with error handling
-        try {
-          if (initialSession?.access_token) {
+        // Update token if session exists
+        if (initialSession?.access_token) {
+          try {
             localStorage.setItem('token', initialSession.access_token);
+          } catch (storageError) {
+            console.error('[AuthContext] localStorage error on init:', storageError);
           }
-        } catch (storageError) {
-          console.error('[AuthContext] localStorage error on init:', storageError);
         }
 
         if (initialSession?.user) {
@@ -101,16 +83,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (err) {
         console.error('[AuthContext] Fatal error in auth initialization:', err);
-        if (mounted) {
-          // Clear everything on fatal error
-          try {
-            localStorage.removeItem('token');
-            localStorage.removeItem('sb-auth-token');
-          } catch (e) {
-            console.error('[AuthContext] Error clearing tokens on fatal error:', e);
-          }
-          setLoading(false);
-        }
+        if (mounted) setLoading(false);
       }
     };
 

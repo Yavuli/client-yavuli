@@ -36,45 +36,24 @@ if (import.meta.env.DEV) {
   console.log('[Supabase] Client initialized in development mode');
 }
 
-// Monitor auth state changes and handle errors
+// Monitor auth state changes and handle events
 client.auth.onAuthStateChange((event, session) => {
-  if (event === 'TOKEN_REFRESHED') {
-    console.log('[Supabase] Token refreshed successfully');
-    // Update localStorage with new token
+  if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    console.log(`[Supabase] Auth event: ${event}`);
     if (session?.access_token) {
       try {
         localStorage.setItem('token', session.access_token);
       } catch (e) {
-        console.error('[Supabase] Failed to store refreshed token:', e);
+        console.error('[Supabase] Failed to store token:', e);
       }
     }
   } else if (event === 'SIGNED_OUT') {
     console.log('[Supabase] User signed out');
     try {
       localStorage.removeItem('token');
+      // No need to manually clear 'sb-auth-token' as Supabase manages its own storage logic
     } catch (e) {
       console.error('[Supabase] Failed to remove token:', e);
-    }
-  } else if (event === 'USER_DELETED') {
-    console.log('[Supabase] User deleted');
-    try {
-      localStorage.removeItem('token');
-    } catch (e) {
-      console.error('[Supabase] Failed to remove token:', e);
-    }
-  }
-});
-
-// Handle auth errors and invalid sessions
-client.auth.onAuthStateChange(async (event, session) => {
-  // If there's an issue with refresh token, clear it and force re-login
-  if (event === 'SIGNED_OUT' && session === null) {
-    try {
-      localStorage.removeItem('token');
-      localStorage.removeItem('sb-auth-token');
-      sessionStorage.clear();
-    } catch (e) {
-      console.error('[Supabase] Failed to clear storage:', e);
     }
   }
 });
