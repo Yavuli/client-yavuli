@@ -33,8 +33,29 @@ export default function AuthCallback() {
         if (error) throw error;
 
         if (session) {
-          console.log('[AuthCallback] Session found, user:', session.user.email, 'Redirecting to /explore');
-          navigate('/explore', { replace: true });
+          const user = session.user;
+          const userEmail = user.email || '';
+          const isEducational = userEmail.endsWith('.edu') || userEmail.endsWith('.ac.in') || userEmail.endsWith('.college');
+
+          console.log('[AuthCallback] Session found, user:', userEmail);
+
+          // Get profile to check for missing fields
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name, phone, college_name, college_email')
+            .eq('id', user.id)
+            .single();
+
+          const hasDetails = profile?.full_name && profile?.phone && profile?.college_name;
+          const hasVerifiedEmail = isEducational || profile?.college_email;
+
+          if (!hasDetails || !hasVerifiedEmail) {
+            console.log('[AuthCallback] Profile incomplete or not verified. Redirecting to /complete-profile');
+            navigate('/complete-profile', { replace: true });
+          } else {
+            console.log('[AuthCallback] Profile complete. Redirecting to /explore');
+            navigate('/explore', { replace: true });
+          }
         } else {
           console.error('[AuthCallback] No session found after processing');
           setError('No valid session found. Redirecting to login...');

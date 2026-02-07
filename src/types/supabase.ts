@@ -15,6 +15,8 @@ export type Profile = {
   updated_at: string | null;
   city?: string | null;
   college?: string | null;
+  college_email?: string | null;
+  college_name?: string | null;
   phone?: string | null;
 };
 
@@ -27,6 +29,8 @@ export type User = {
     avatar_url?: string;
     city?: string;
     college?: string;
+    college_email?: string;
+    college_name?: string;
     phone?: string;
   };
   profile?: Profile;

@@ -20,6 +20,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     updated_at: new Date().toISOString(),
     city: sessionUser.user_metadata?.city || null,
     college: sessionUser.user_metadata?.college || null,
+    college_email: sessionUser.user_metadata?.college_email || null,
+    college_name: sessionUser.user_metadata?.college_name || null,
     phone: sessionUser.user_metadata?.phone || null,
   });
 
@@ -33,6 +35,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       full_name: sessionUser.user_metadata?.full_name || profileData?.full_name,
       city: sessionUser.user_metadata?.city || profileData?.city,
       college: sessionUser.user_metadata?.college || profileData?.college,
+      college_email: sessionUser.user_metadata?.college_email || profileData?.college_email,
+      college_name: sessionUser.user_metadata?.college_name || profileData?.college_name,
       phone: sessionUser.user_metadata?.phone || profileData?.phone,
     };
 
@@ -115,7 +119,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Fetch profile
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('id, full_name, avatar_url, updated_at, city, college, phone')
+          .select('id, full_name, avatar_url, updated_at, city, college, college_email, college_name, phone')
           .eq('id', supabaseUser.id)
           .single();
 
