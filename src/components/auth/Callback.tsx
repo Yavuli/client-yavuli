@@ -37,51 +37,55 @@ export default function AuthCallback() {
         if (session) {
           const user = session.user;
           const userEmail = user.email || '';
+          const provider = user.app_metadata.provider;
           const isEducational = userEmail.endsWith('.edu') || userEmail.endsWith('.ac.in') || userEmail.endsWith('.college');
 
-          console.log('[AuthCallback] Session found, user:', userEmail);
+          console.log('[AuthCallback] Session found, user:', userEmail, 'provider:', provider);
 
-          // Get profile to check for missing fields
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name, phone, college_name, college_email')
-            .eq('id', user.id)
-            .single();
+          // ONLY trigger the /complete-profile flow for Google OAuth users
+          if (provider === 'google') {
+            // Get profile to check for missing fields
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('full_name, phone, college_name, college_email')
+              .eq('id', user.id)
+              .single();
 
-          // Also check the users table for global verification status
-          const { data: userData } = await supabase
-            .from('users')
-            .select('is_verified')
-            .eq('id', user.id)
-            .single();
+            // Also check the users table for global verification status
+            const { data: userData } = await supabase
+              .from('users')
+              .select('is_verified')
+              .eq('id', user.id)
+              .single();
 
-          const hasDetails = !!(profile?.full_name && profile?.phone && profile?.college_name);
+            const hasDetails = !!(profile?.full_name && profile?.phone && profile?.college_name);
 
-          // A user is considered "Verified" if:
-          // 1. Their primary email is educational OR
-          // 2. They have a verified college email in their profile OR
-          // 3. The users table marks them as verified
-          const isProfileEmailEducational = profile?.college_email && (
-            profile.college_email.endsWith('.edu') ||
-            profile.college_email.endsWith('.ac.in') ||
-            profile.college_email.endsWith('.college')
-          );
+            // A user is considered "Verified" if:
+            // 1. Their primary email is educational OR
+            // 2. They have a verified college email in their profile OR
+            // 3. The users table marks them as verified
+            const isProfileEmailEducational = profile?.college_email && (
+              profile.college_email.endsWith('.edu') ||
+              profile.college_email.endsWith('.ac.in') ||
+              profile.college_email.endsWith('.college')
+            );
 
-          const hasVerifiedEmail = isEducational || isProfileEmailEducational || userData?.is_verified;
+            const hasVerifiedEmail = isEducational || isProfileEmailEducational || userData?.is_verified;
 
-          if (!hasDetails || !hasVerifiedEmail) {
-            console.log('[AuthCallback] Profile incomplete or not verified. Redirecting to /complete-profile', { hasDetails, hasVerifiedEmail });
-            navigate('/complete-profile', { replace: true });
-          } else {
-            console.log('[AuthCallback] Profile complete. Redirecting to /explore');
+            if (!hasDetails || !hasVerifiedEmail) {
+              console.log('[AuthCallback] Google User: Profile incomplete or not verified. Redirecting to /complete-profile', { hasDetails, hasVerifiedEmail });
+              navigate('/complete-profile', { replace: true });
+              return;
+            }
 
-            // Proactively sync verification status back to users table if missing
+            // Sync verification status back to users table if verified but flag is missing
             if (hasVerifiedEmail && !userData?.is_verified) {
               await authAPI.syncProfile({ is_verified: true } as any);
             }
-
-            navigate('/explore', { replace: true });
           }
+
+          console.log('[AuthCallback] Redirecting to /explore');
+          navigate('/explore', { replace: true });
         } else {
           console.error('[AuthCallback] No session found after processing');
           setError('No valid session found. Redirecting to login...');
