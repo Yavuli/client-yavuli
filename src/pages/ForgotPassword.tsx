@@ -22,19 +22,15 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
-            // Step 1: Check if email exists in our database
-            const response = await authAPI.checkEmail(email);
-            if (!response.data || !response.data.exists) {
-                toast.error('This email is not registered with Yavuli.');
-                setLoading(false);
-                return;
-            }
-
-            // Step 2: Proceed with Supabase password reset
+            // Step 1: Proceed with Supabase password reset directly
+            // We removal the explicit checkEmail call to prevent email enumeration (best practice)
             const { error } = await resetPassword(email);
+
+            // Note: Supabase will return success even if the email doesn't exist
+            // but the email won't be sent. This is intentional for security.
             if (error) throw error;
 
-            toast.success('Password reset link sent to your email!');
+            toast.success('If an account exists for this email, we have sent a reset link to your inbox!');
             navigate('/login');
         } catch (error: any) {
             console.error('[ForgotPassword] Error:', error);
