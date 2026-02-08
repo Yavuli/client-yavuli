@@ -30,6 +30,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import Footer from "@/components/Footer";
 
+import YavuliLogoAnimation from "@/components/YavuliLogoAnimation";
+
 const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -143,10 +145,9 @@ const Welcome = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-sm font-bold tracking-wide mb-4"
+            className="w-full flex justify-center"
           >
-            <Sparkles className="h-4 w-4" />
-            <span>EXCLUSIVELY FOR STUDENTS</span>
+            <YavuliLogoAnimation />
           </motion.div>
 
           <motion.div

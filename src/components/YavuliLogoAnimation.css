@@ -1,0 +1,48 @@
+/* --- LOGO ANIMATION --- */
+.yavuli-letter {
+    font-size: 200px; 
+    font-weight: 900; 
+    letter-spacing: -8px;
+    fill: transparent; 
+    stroke: #0f172a; 
+    stroke-width: 3px;
+    stroke-linecap: square; 
+    stroke-linejoin: round;
+    stroke-dasharray: 1200; 
+    stroke-dashoffset: 1200;
+    animation: drawLine 1.5s ease-in-out forwards, fillIn 0.5s ease-out 1.2s forwards;
+}
+
+/* Specific delays and colors for each letter */
+.char-y { stroke: #2563EB; animation-delay: 0s, 1.2s; }
+.char-a { stroke: #059669; animation-delay: 0.2s, 1.4s; }
+.char-v { stroke: #D97706; animation-delay: 0.4s, 1.6s; }
+.char-u { stroke: #DC2626; animation-delay: 0.6s, 1.8s; }
+.char-l { stroke: #7C3AED; animation-delay: 0.8s, 2.0s; }
+.char-i { stroke: #DB2777; animation-delay: 1.0s, 2.2s; }
+
+@keyframes drawLine { to { stroke-dashoffset: 0; } }
+@keyframes fillIn { to { fill: inherit; stroke: #0f172a; } }
+
+/* Accessories */
+.grad-cap { 
+    opacity: 0; 
+    transform-origin: bottom center; 
+    animation: dropCap 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.5s forwards; 
+}
+
+@keyframes dropCap { 
+    0% { opacity: 0; transform: translate(125px, -50px) rotate(-10deg); } 
+    100% { opacity: 1; transform: translate(125px, 55px) rotate(12deg); } 
+}
+
+.shopping-bag { 
+    opacity: 0; 
+    transform-origin: top center; 
+    animation: swingBag 1s ease-out 1.5s forwards; 
+}
+
+@keyframes swingBag { 
+    0% { opacity: 0; transform: translate(40px, 60px) rotate(45deg) scale(0.5); } 
+    100% { opacity: 1; transform: translate(65px, 90px) rotate(-8deg) scale(1); } 
+}
