@@ -99,7 +99,7 @@ const Navbar = () => {
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group shrink-0">
-            <YavuliLogoAnimation className={isActive('/explore') ? "max-w-[140px]" : "max-w-[200px]"} />
+            <YavuliLogoAnimation className={location.pathname === "/" ? "max-w-[200px]" : "max-w-[140px]"} />
           </Link>
 
           {/* Search Bar - Desktop */}
