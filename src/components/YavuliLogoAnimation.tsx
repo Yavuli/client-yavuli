@@ -2,9 +2,9 @@
 import React from 'react';
 import './YavuliLogoAnimation.css';
 
-const YavuliLogoAnimation = () => {
+const YavuliLogoAnimation = ({ className = "max-w-[200px]" }: { className?: string }) => {
     return (
-        <div className="w-full max-w-[200px] select-none pointer-events-none flex items-center">
+        <div className={`w-full ${className} select-none pointer-events-none flex items-center`}>
             <svg viewBox="0 0 800 280" className="w-full h-auto overflow-visible">
                 <g transform="translate(40, 0)">
                     <text x="40" y="220" className="yavuli-letter char-y" fill="#2563EB">Y</text>
@@ -15,13 +15,13 @@ const YavuliLogoAnimation = () => {
                     <text x="680" y="220" className="yavuli-letter char-i" fill="#DB2777">I</text>
 
                     {/* Adjusted positions for icons to sit nicely around letters */}
-                    <g className="shopping-bag" style={{ transform: 'translate(215px, 110px) scale(1.8)' }}>
+                    <g className="shopping-bag">
                         {/* Replacing simple path with a group if needed, but keeping simple for now */}
                         <path d="M0,20 L50,20 L55,70 L-5,70 Z" fill="#EA580C" stroke="#0f172a" strokeWidth="3" />
                         <path d="M10,20 C10,-20 40,-20 40,20" fill="none" stroke="#0f172a" strokeWidth="3" />
                         <text x="13" y="55" fontSize="24">❤️</text>
                     </g>
-                    <g className="grad-cap" style={{ transform: 'translate(490px, 50px) scale(1.5) rotate(15deg)' }}>
+                    <g className="grad-cap">
                         <polygon points="0,20 50,5 100,20 50,35" fill="#4F46E5" stroke="#0f172a" strokeWidth="3" />
                         <path d="M25,30 L25,50 C25,55 75,55 75,50 L75,30" fill="#4F46E5" stroke="#0f172a" strokeWidth="3" />
                         <line x1="100" y1="20" x2="100" y2="60" stroke="#FBBF24" strokeWidth="2" />
