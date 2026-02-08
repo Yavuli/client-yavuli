@@ -3,33 +3,33 @@
     font-weight: 900;
     font-size: 160px;
     opacity: 0;
-    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation: popIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     transform-box: fill-box;
     transform-origin: center bottom;
 }
 
 .char-y {
-    animation-delay: 0.1s;
-}
-
-.char-a {
     animation-delay: 0.2s;
 }
 
-.char-v {
-    animation-delay: 0.3s;
-}
-
-.char-u {
+.char-a {
     animation-delay: 0.4s;
 }
 
+.char-v {
+    animation-delay: 0.6s;
+}
+
+.char-u {
+    animation-delay: 0.8s;
+}
+
 .char-l {
-    animation-delay: 0.5s;
+    animation-delay: 1.0s;
 }
 
 .char-i {
-    animation-delay: 0.6s;
+    animation-delay: 1.2s;
 }
 
 @keyframes popIn {
@@ -46,7 +46,7 @@
 
 .shopping-bag {
     transform-origin: center;
-    animation: swing 3s ease-in-out infinite;
+    animation: swing 6s ease-in-out infinite;
     transform-box: fill-box;
     /* Position adjustments manually translated in SVG space */
     transform: translate(210px, 110px) scale(1.8);
@@ -68,11 +68,11 @@
 
 .grad-cap {
     transform-origin: center;
-    animation: toss 4s ease-in-out infinite;
+    animation: toss 8s ease-in-out infinite;
     transform-box: fill-box;
     transform: translate(490px, 50px) scale(1.5) rotate(15deg);
     opacity: 0;
-    animation: toss-in 4s ease-in-out infinite;
+    animation: toss-in 8s ease-in-out infinite;
 }
 
 @keyframes toss-in {
