@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import YavuliLogoAnimation from "@/components/YavuliLogoAnimation";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -98,10 +99,7 @@ const Navbar = () => {
         <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group shrink-0">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-hero transition-transform group-hover:scale-105 shadow-sm">
-              <span className="text-lg font-bold text-white">Y</span>
-            </div>
-            <span className="text-xl font-bold text-primary hidden sm:block">Yavuli</span>
+            <YavuliLogoAnimation />
           </Link>
 
           {/* Search Bar - Desktop */}

@@ -34,7 +34,7 @@ const CompleteProfile = () => {
         const checkAlreadyVerified = async () => {
             const { data: profile } = await supabase
                 .from('profiles')
-                .select('full_name, phone, college_name, college_email')
+                .select('*')
                 .eq('id', user.id)
                 .single();
 

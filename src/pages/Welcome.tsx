@@ -58,8 +58,8 @@ const Welcome = () => {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-md border-b border-slate-100">
         <div className="flex justify-between items-center p-6 max-w-7xl mx-auto w-full">
-          <div className="text-2xl font-black tracking-tighter text-slate-900 select-none cursor-pointer" onClick={() => navigate('/')}>
-            YAVULI
+          <div className="w-40 cursor-pointer" onClick={() => navigate('/')}>
+            <YavuliLogoAnimation />
           </div>
           <div className="flex items-center gap-2 md:gap-4">
             <DropdownMenu>
@@ -141,14 +141,7 @@ const Welcome = () => {
       <div className="relative z-10">
         {/* Hero Section */}
         <section className="flex flex-col items-center justify-center text-center px-4 pt-48 pb-32 max-w-5xl mx-auto space-y-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="w-full flex justify-center"
-          >
-            <YavuliLogoAnimation />
-          </motion.div>
+
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

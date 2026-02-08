@@ -1,48 +1,104 @@
-/* --- LOGO ANIMATION --- */
 .yavuli-letter {
-    font-size: 200px; 
-    font-weight: 900; 
-    letter-spacing: -8px;
-    fill: transparent; 
-    stroke: #0f172a; 
-    stroke-width: 3px;
-    stroke-linecap: square; 
-    stroke-linejoin: round;
-    stroke-dasharray: 1200; 
-    stroke-dashoffset: 1200;
-    animation: drawLine 1.5s ease-in-out forwards, fillIn 0.5s ease-out 1.2s forwards;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    font-size: 160px;
+    opacity: 0;
+    animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transform-box: fill-box;
+    transform-origin: center bottom;
 }
 
-/* Specific delays and colors for each letter */
-.char-y { stroke: #2563EB; animation-delay: 0s, 1.2s; }
-.char-a { stroke: #059669; animation-delay: 0.2s, 1.4s; }
-.char-v { stroke: #D97706; animation-delay: 0.4s, 1.6s; }
-.char-u { stroke: #DC2626; animation-delay: 0.6s, 1.8s; }
-.char-l { stroke: #7C3AED; animation-delay: 0.8s, 2.0s; }
-.char-i { stroke: #DB2777; animation-delay: 1.0s, 2.2s; }
-
-@keyframes drawLine { to { stroke-dashoffset: 0; } }
-@keyframes fillIn { to { fill: inherit; stroke: #0f172a; } }
-
-/* Accessories */
-.grad-cap { 
-    opacity: 0; 
-    transform-origin: bottom center; 
-    animation: dropCap 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.5s forwards; 
+.char-y {
+    animation-delay: 0.1s;
 }
 
-@keyframes dropCap { 
-    0% { opacity: 0; transform: translate(125px, -50px) rotate(-10deg); } 
-    100% { opacity: 1; transform: translate(125px, 55px) rotate(12deg); } 
+.char-a {
+    animation-delay: 0.2s;
 }
 
-.shopping-bag { 
-    opacity: 0; 
-    transform-origin: top center; 
-    animation: swingBag 1s ease-out 1.5s forwards; 
+.char-v {
+    animation-delay: 0.3s;
 }
 
-@keyframes swingBag { 
-    0% { opacity: 0; transform: translate(40px, 60px) rotate(45deg) scale(0.5); } 
-    100% { opacity: 1; transform: translate(65px, 90px) rotate(-8deg) scale(1); } 
+.char-u {
+    animation-delay: 0.4s;
+}
+
+.char-l {
+    animation-delay: 0.5s;
+}
+
+.char-i {
+    animation-delay: 0.6s;
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.shopping-bag {
+    transform-origin: center;
+    animation: swing 3s ease-in-out infinite;
+    transform-box: fill-box;
+    /* Position adjustments manually translated in SVG space */
+    transform: translate(210px, 110px) scale(1.8);
+}
+
+/* Specific shopping bag adjustments handled in SVG transform, 
+   animation just needs to handle the rotation/swing */
+@keyframes swing {
+
+    0%,
+    100% {
+        transform: translate(215px, 110px) scale(1.8) rotate(-5deg);
+    }
+
+    50% {
+        transform: translate(215px, 110px) scale(1.8) rotate(5deg);
+    }
+}
+
+.grad-cap {
+    transform-origin: center;
+    animation: toss 4s ease-in-out infinite;
+    transform-box: fill-box;
+    transform: translate(490px, 50px) scale(1.5) rotate(15deg);
+    opacity: 0;
+    animation: toss-in 4s ease-in-out infinite;
+}
+
+@keyframes toss-in {
+    0% {
+        opacity: 0;
+        transform: translate(490px, 150px) scale(1.5) rotate(0deg);
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    20% {
+        transform: translate(490px, 50px) scale(1.5) rotate(15deg);
+    }
+
+    30% {
+        transform: translate(490px, 60px) scale(1.5) rotate(10deg);
+    }
+
+    40% {
+        transform: translate(490px, 50px) scale(1.5) rotate(15deg);
+    }
+
+    100% {
+        transform: translate(490px, 50px) scale(1.5) rotate(15deg);
+        opacity: 1;
+    }
 }

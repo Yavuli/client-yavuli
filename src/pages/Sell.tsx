@@ -33,7 +33,7 @@ const Sell = () => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  
+
   const [formData, setFormData] = useState<FormData>({
     title: '',
     category: '',
@@ -52,7 +52,7 @@ const Sell = () => {
     const files = e.target.files;
     if (!files) return;
 
-    const newImages = Array.from(files).filter(file => 
+    const newImages = Array.from(files).filter(file =>
       file.type.startsWith('image/')
     );
 
@@ -66,7 +66,7 @@ const Sell = () => {
     }
 
     setImages(prev => [...prev, ...newImages]);
-    
+
     // Reset file input to allow uploading same files again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -205,7 +205,7 @@ const Sell = () => {
     try {
       // Convert images to data URLs for now
       const imageDataUrls: string[] = [];
-      
+
       for (const image of images) {
         const reader = new FileReader();
         const dataUrl = await new Promise<string>((resolve, reject) => {
@@ -226,7 +226,7 @@ const Sell = () => {
 
       // Get the access token from Supabase session
       const token = session?.access_token;
-      
+
       if (!token) {
         throw new Error('Authentication required. Please log in first.');
       }
@@ -248,8 +248,8 @@ const Sell = () => {
 
       toast({
         title: status === 'draft' ? "Draft saved!" : "Listing published!",
-        description: status === 'draft' 
-          ? "Your listing has been saved as a draft." 
+        description: status === 'draft'
+          ? "Your listing has been saved as a draft."
           : "Your item is now live!",
       });
 
@@ -287,7 +287,7 @@ const Sell = () => {
         keywords="sell on Yavuli, student marketplace, sell textbooks, make money in college, list items for sale, Kishlaya Mishra"
       />
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           <div className="mb-8">
@@ -321,7 +321,7 @@ const Sell = () => {
 
                   {/* Upload button */}
                   {images.length < 5 && (
-                    <label 
+                    <label
                       htmlFor="image-upload"
                       className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-accent transition-colors cursor-pointer flex items-center justify-center bg-muted/30"
                     >
@@ -489,8 +489,8 @@ const Sell = () => {
 
               {/* Submit Buttons */}
               <div className="flex gap-4 pt-4">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="flex-1 bg-gradient-hero text-white hover:shadow-glow"
                   disabled={isUploading}
                 >
@@ -506,9 +506,9 @@ const Sell = () => {
                     </>
                   )}
                 </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   className="flex-1"
                   onClick={() => handleSubmit('draft')}
                   disabled={isUploading}

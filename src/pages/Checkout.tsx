@@ -154,7 +154,8 @@ const Checkout = () => {
    * Process payment for a single item
    * Creates order, opens Razorpay modal, verifies payment
    */
-  const handlePayment = async () => {
+  const handlePayment = async (e?: React.MouseEvent) => {
+    e?.preventDefault(); // Prevent any form submission or default behavior
     if (items.length === 0) {
       toast.error("No items to checkout");
       return;
@@ -394,8 +395,8 @@ const Checkout = () => {
                   <span>₹{totalAmount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Marketplace Fee (5%)</span>
-                  <span>₹{Math.round(totalAmount * 0.05).toLocaleString()}</span>
+                  <span>Marketplace Fee</span>
+                  <span className="text-accent">Included</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Shipping</span>
@@ -408,7 +409,7 @@ const Checkout = () => {
               <div className="flex justify-between text-xl font-bold">
                 <span>Total Amount</span>
                 <span className="text-accent">
-                  ₹{Math.round(totalAmount * 1.05).toLocaleString()}
+                  ₹{totalAmount.toLocaleString()}
                 </span>
               </div>
             </Card>
@@ -437,7 +438,7 @@ const Checkout = () => {
                 <div>
                   <p className="text-muted-foreground">Amount</p>
                   <p className="text-2xl font-bold text-accent">
-                    ₹{Math.round(totalAmount * 1.05).toLocaleString()}
+                    ₹{totalAmount.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -453,8 +454,9 @@ const Checkout = () => {
 
               {/* Payment Button */}
               <Button
+                type="button"
                 className="w-full bg-gradient-hero text-white hover:shadow-glow h-12 text-base font-semibold disabled:opacity-50"
-                onClick={handlePayment}
+                onClick={(e) => handlePayment(e)}
                 disabled={processingPayment || loading || error !== null}
               >
                 {processingPayment ? (
@@ -463,7 +465,7 @@ const Checkout = () => {
                     Processing...
                   </>
                 ) : (
-                  `Pay ₹${Math.round(totalAmount * 1.05).toLocaleString()}`
+                  `Pay ₹${totalAmount.toLocaleString()}`
                 )}
               </Button>
 
