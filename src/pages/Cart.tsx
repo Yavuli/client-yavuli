@@ -31,13 +31,13 @@ const Cart = () => {
       <div className="flex flex-col min-h-screen bg-background">
         <Navbar />
         <div className="flex-1 flex flex-col items-center justify-center p-4">
-          <div className="max-w-md w-full text-center space-y-8 animate-fade-up">
+          <div className="max-w-md w-full text-center space-y-12 animate-fade-up">
             <div className="flex justify-center">
               <div className="h-32 w-32 rounded-full bg-muted/50 flex items-center justify-center ring-8 ring-muted/20">
                 <ShoppingBag className="h-16 w-16 text-muted-foreground/60" />
               </div>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-6">
               <h2 className="text-3xl font-bold tracking-tight">Your cart is empty</h2>
               <p className="text-muted-foreground text-lg">
                 Discover amazing products from verified students
