@@ -171,10 +171,26 @@ const Welcome = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-6 pt-4"
           >
-            <Button size="lg" className="px-12 h-16 text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 active:scale-95" onClick={() => navigate('/explore')}>
+            <Button
+              size="lg"
+              className="px-12 h-16 text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 active:scale-95"
+              onClick={() => navigate('/explore')}
+            >
               Start Browsing <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button variant="outline" size="lg" className="px-12 h-16 text-lg font-bold rounded-2xl bg-white/50 backdrop-blur-sm border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors text-slate-600" onClick={() => navigate('/sell')}>
+            <Button
+              variant="outline"
+              size="lg"
+              className="px-12 h-16 text-lg font-bold rounded-2xl bg-white/50 backdrop-blur-sm border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors text-slate-600"
+              onClick={() => {
+                if (user) {
+                  navigate('/sell');
+                } else {
+                  toast.info("Please sign up or sign in to start selling");
+                  navigate('/login');
+                }
+              }}
+            >
               Start Selling
             </Button>
           </motion.div>

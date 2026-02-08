@@ -184,13 +184,19 @@ const ProductDetails = () => {
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <span className="font-semibold text-primary">
-                      {product.seller_phone}
-                      {product.seller_name ? ` · ${product.seller_name}` : ""}
+                      {product.seller_name || "Verified Seller"}
                     </span>
                     <Button
                       variant="link"
                       className="h-auto px-0 text-primary"
-                      onClick={() => window.open(`tel:${product.seller_phone}`)}
+                      onClick={() => {
+                        if (user) {
+                          window.open(`tel:${product.seller_phone}`);
+                        } else {
+                          toast.info("Please sign in to call the seller");
+                          navigate("/auth/login");
+                        }
+                      }}
                     >
                       Call
                     </Button>
@@ -258,6 +264,11 @@ const ProductDetails = () => {
               variant="outline"
               className="w-full"
               onClick={() => {
+                if (!user) {
+                  toast.info("Please sign in to call the seller");
+                  navigate("/auth/login");
+                  return;
+                }
                 if (product.seller_phone) {
                   window.open(`tel:${product.seller_phone}`);
                 } else {

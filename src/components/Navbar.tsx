@@ -7,6 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { supabase } from '@/lib/supabase'
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -124,12 +125,19 @@ const Navbar = () => {
               >
                 Explore
               </Link>
-              <Link
-                to="/sell"
+              <button
+                onClick={() => {
+                  if (user) {
+                    navigate('/sell');
+                  } else {
+                    toast.info("Please sign in to start selling");
+                    navigate('/login');
+                  }
+                }}
                 className={`text-sm font-semibold px-3 py-2 rounded-lg transition-colors hover:bg-accent/5 ${isActive('/sell') ? 'text-accent bg-accent/10' : 'text-foreground/80 hover:text-accent'}`}
               >
                 Sell
-              </Link>
+              </button>
             </div>
 
             {/* Action Icons */}
@@ -254,13 +262,20 @@ const Navbar = () => {
             >
               Explore
             </Link>
-            <Link
-              to="/sell"
-              className="block py-2 text-sm font-medium hover:text-accent transition-colors"
-              onClick={() => setMobileMenuOpen(false)}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (user) {
+                  navigate('/sell');
+                } else {
+                  toast.info("Please sign in to start selling");
+                  navigate('/login');
+                }
+              }}
+              className="block py-2 text-sm font-medium hover:text-accent transition-colors w-full text-left"
             >
               Sell
-            </Link>
+            </button>
 
             {/* User-specific mobile links */}
             {user ? (
