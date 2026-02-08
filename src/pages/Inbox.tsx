@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { supabase } from  '@/lib/supabase'
+import { Link, useNavigate } from 'react-router-dom'
+import { supabase } from '@/lib/supabase'
+import { Button } from '@/components/ui/button'
+import { ChevronLeft } from 'lucide-react'
 
 export const Inbox = () => {
   const [chats, setChats] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const getChats = async () => {
@@ -26,10 +29,10 @@ export const Inbox = () => {
           listings ( title, images, price ) 
         `)
         .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
-      
+
       if (error) console.error('Error fetching inbox:', error)
       else setChats(data || [])
-      
+
       setLoading(false)
     }
 
@@ -40,8 +43,18 @@ export const Inbox = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6">My Messages</h1>
-      
+      <div className="flex items-center gap-4 mb-6">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate('/explore')}
+          className="rounded-full"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <h1 className="text-2xl font-bold">My Messages</h1>
+      </div>
+
       <div className="space-y-4">
         {chats.length === 0 ? (
           <p className="text-gray-500">No messages yet.</p>
@@ -50,14 +63,14 @@ export const Inbox = () => {
             // Figure out the "Other Person's" role
             const isBuyer = chat.buyer_id === userId
             const role = isBuyer ? 'Buying' : 'Selling'
-            
+
             // Safe access to listing data (handle if listing was deleted)
             const title = chat.listings?.title || 'Unknown Item'
             const img = chat.listings?.images?.[0] || '/placeholder.jpg'
 
             return (
-              <Link 
-                key={chat.id} 
+              <Link
+                key={chat.id}
                 to={`/messages/${chat.id}`}
                 className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 transition shadow-sm bg-white"
               >

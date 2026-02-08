@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
+import { Button } from '@/components/ui/button'
+import { MessageCircle } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface ContactSellerBtnProps {
   listingId: string
@@ -14,16 +17,17 @@ export const ContactSellerBtn = ({ listingId, sellerId, currentUserId }: Contact
 
   const handleContact = async () => {
     if (!currentUserId) {
-      alert("Please login to chat!")
+      toast.info("Please login to chat!")
       return
     }
-    
+
     if (currentUserId === sellerId) {
-      alert("You can't chat with yourself!")
+      toast.error("You can't chat with yourself!")
       return
     }
 
     setLoading(true)
+    console.log('[Chat] Starting chat process...', { listingId, sellerId, currentUserId });
 
     try {
       // 1. Check if conversation already exists
@@ -35,12 +39,16 @@ export const ContactSellerBtn = ({ listingId, sellerId, currentUserId }: Contact
         .eq('seller_id', sellerId)
         .maybeSingle() // Returns null if not found (instead of error)
 
-      if (fetchError) throw fetchError
+      if (fetchError) {
+        console.error('[Chat] Fetch error:', fetchError);
+        throw fetchError;
+      }
 
       if (existingChat) {
-        // Chat exists then we  Go to it
+        console.log('[Chat] Existing chat found:', existingChat.id);
         navigate(`/messages/${existingChat.id}`)
       } else {
+        console.log('[Chat] No existing chat, creating new one...');
         // Chat doesn't exist we  Create it
         const { data: newChat, error: createError } = await supabase
           .from('conversations')
@@ -52,27 +60,33 @@ export const ContactSellerBtn = ({ listingId, sellerId, currentUserId }: Contact
           .select()
           .single()
 
-        if (createError) throw createError
-        
+        if (createError) {
+          console.error('[Chat] Create error:', createError);
+          throw createError;
+        }
+
+        console.log('[Chat] New chat created:', newChat.id);
         // Go to new chat
         navigate(`/messages/${newChat.id}`)
       }
 
-    } catch (error) {
-      console.error('Error starting chat:', error)
-      alert('Something went wrong starting the chat.')
+    } catch (error: any) {
+      console.error('[Chat] Fatal error starting chat:', error)
+      toast.error(error.message || 'Something went wrong starting the chat.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <button 
+    <Button
       onClick={handleContact}
       disabled={loading}
-      className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 flex justify-center items-center gap-2"
+      variant="outline"
+      className="w-full"
     >
-      {loading ? 'Starting Chat...' : '💬 Chat with Seller'}
-    </button>
+      <MessageCircle className="h-4 w-4 mr-2" />
+      {loading ? 'Starting Chat...' : 'Chat with Seller'}
+    </Button>
   )
 }

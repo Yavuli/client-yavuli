@@ -28,70 +28,27 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import Footer from "@/components/Footer";
+
+import YavuliLogoAnimation from "@/components/YavuliLogoAnimation";
 
 const Welcome = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [searchParams] = useSearchParams();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [debugInfo, setDebugInfo] = useState('');
 
   useEffect(() => {
-    // OAuth Logic
-    const code = searchParams.get('code');
-    const sessionState = searchParams.get('state');
+    // Scroll to top on mount
+    window.scrollTo(0, 0);
+  }, []);
 
-    if (code || sessionState) {
-      setIsProcessing(true);
-      setDebugInfo('Processing OAuth...');
-
-      const handleOAuthCallback = async () => {
-        try {
-          await new Promise(resolve => setTimeout(resolve, 5000));
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            navigate('/explore', { replace: true });
-          } else {
-            navigate('/login', { replace: true });
-          }
-        } catch (error) {
-          navigate('/login', { replace: true });
-        }
-      };
-
-      const timeoutId = setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 10000);
-
-      handleOAuthCallback().finally(() => {
-        clearTimeout(timeoutId);
-        setIsProcessing(false);
-      });
-    }
-  }, [searchParams, navigate]);
-
-  if (isProcessing) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-white relative z-50">
-        <div className="text-center space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 animate-pulse">
-            <Sparkles className="w-8 h-8 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Processing your login...</h2>
-            <p className="text-slate-500 font-medium">Please wait while we verify your credentials.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative min-h-screen w-full bg-white overflow-x-hidden selection:bg-primary/20">
       <SEO
         title="Yavuli | The Ultimate Student Marketplace"
-        description="Yavuli is the smart, centralized marketplace for everything in your college life, founded by Kishlaya Mishra. Buy, sell, and connect with students."
-        keywords="Kishlaya Mishra, Kishlaya Mishra CEO, Yavuli founder, student marketplace, college buy sell, textbooks"
+        description="Yavuli is the smart, centralized marketplace for everything in your college life. Buy, sell, and connect with students."
+        keywords="student marketplace, college buy sell, textbooks, college essentials"
       />
       {/* Background layer */}
       <div className="fixed inset-0 z-0">
@@ -188,10 +145,9 @@ const Welcome = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-primary text-sm font-bold tracking-wide mb-4"
+            className="w-full flex justify-center"
           >
-            <Sparkles className="h-4 w-4" />
-            <span>EXCLUSIVELY FOR STUDENTS</span>
+            <YavuliLogoAnimation />
           </motion.div>
 
           <motion.div
@@ -216,10 +172,26 @@ const Welcome = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-6 pt-4"
           >
-            <Button size="lg" className="px-12 h-16 text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 active:scale-95" onClick={() => navigate('/explore')}>
+            <Button
+              size="lg"
+              className="px-12 h-16 text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 active:scale-95"
+              onClick={() => navigate('/explore')}
+            >
               Start Browsing <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button variant="outline" size="lg" className="px-12 h-16 text-lg font-bold rounded-2xl bg-white/50 backdrop-blur-sm border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors text-slate-600" onClick={() => navigate('/sell')}>
+            <Button
+              variant="outline"
+              size="lg"
+              className="px-12 h-16 text-lg font-bold rounded-2xl bg-white/50 backdrop-blur-sm border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors text-slate-600"
+              onClick={() => {
+                if (user) {
+                  navigate('/sell');
+                } else {
+                  toast.info("Please sign up or sign in to start selling");
+                  navigate('/login');
+                }
+              }}
+            >
               Start Selling
             </Button>
           </motion.div>
@@ -299,50 +271,7 @@ const Welcome = () => {
           </Button>
         </section>
 
-        {/* Footer */}
-        <footer className="relative z-20 border-t border-slate-100 py-20 px-6 bg-white/60 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
-            <div className="space-y-6">
-              <div className="text-3xl font-black tracking-tighter text-slate-900">YAVULI</div>
-              <p className="text-slate-400 font-medium max-w-xs uppercase text-xs tracking-[0.2em]">
-                The premier marketplace for the next generation of students.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-12 md:gap-24">
-              <div className="space-y-4">
-                <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Navigation</h4>
-                <ul className="space-y-2 text-sm text-slate-500 font-medium">
-                  <li><button onClick={() => navigate('/explore')} className="hover:text-primary transition-colors">Explore</button></li>
-                  <li><button onClick={() => navigate('/sell')} className="hover:text-primary transition-colors">Sell Items</button></li>
-                  <li><button onClick={() => navigate('/login')} className="hover:text-primary transition-colors">Sign In</button></li>
-                </ul>
-              </div>
-              <div className="space-y-4">
-                <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Policy</h4>
-                <ul className="space-y-2 text-sm text-slate-500 font-medium">
-                  <li><button onClick={() => toast.info("Safety Tips coming soon!")} className="hover:text-primary transition-colors">Safety Tips</button></li>
-                  <li><button onClick={() => toast.info("Privacy Policy coming soon!")} className="hover:text-primary transition-colors">Privacy</button></li>
-                  <li><button onClick={() => toast.info("Terms of Service coming soon!")} className="hover:text-primary transition-colors">Terms</button></li>
-                </ul>
-              </div>
-              <div className="space-y-4 col-span-2 lg:col-span-1">
-                <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Contact</h4>
-                <div className="space-y-2 text-sm text-slate-500 font-medium">
-                  <p className="flex items-center gap-2"><Phone className="h-3 w-3" /> +91 8000363769</p>
-                  <p className="flex items-center gap-2 max-w-[200px] break-all"><Mail className="h-3 w-3" /> founder@yavuli.app</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="max-w-7xl mx-auto pt-20 text-center">
-            <p className="text-xs text-slate-500 font-medium">
-                Founded by Kishlaya Mishra
-            </p>
-            <p className="text-[10px] text-slate-400 font-bold tracking-[0.5em] uppercase opacity-50 pt-4">
-              © 2026 Yavuli Marketplace • Built For Students
-            </p>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </div>
   );

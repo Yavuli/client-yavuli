@@ -1,6 +1,99 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { headerMonitor } from "./lib/headerMonitor";
+
+// ==========================================
+// GLOBAL ERROR HANDLERS
+// ==========================================
+
+// Initialize header monitor to detect cookie bloat early
+console.log('[main.tsx] Initializing header monitor...');
+if (import.meta.env.DEV) {
+  headerMonitor.logReport();
+  headerMonitor.startMonitoring(30000); // Check every 30 seconds in dev
+}
+
+// Handle runtime errors
+window.onerror = function (message, source, lineno, colno, error) {
+  console.error('[Global Error Handler]', {
+    message,
+    source,
+    lineno,
+    colno,
+    error
+  });
+
+  // Check if it's a localStorage quota error
+  if (message?.toString().includes('QuotaExceededError') ||
+    message?.toString().includes('quota')) {
+    console.warn('[Global Error Handler] localStorage quota exceeded, clearing...');
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.reload();
+    } catch (e) {
+      console.error('[Global Error Handler] Failed to clear storage:', e);
+    }
+  }
+
+  return false; // Let the error propagate to ErrorBoundary
+};
+
+// Handle unhandled promise rejections
+window.onunhandledrejection = function (event) {
+  console.error('[Unhandled Promise Rejection]', event.reason);
+
+  // Check for storage errors
+  if (event.reason?.message?.includes('QuotaExceededError') ||
+    event.reason?.message?.includes('quota')) {
+    console.warn('[Unhandled Rejection] localStorage quota exceeded, clearing...');
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.reload();
+    } catch (e) {
+      console.error('[Unhandled Rejection] Failed to clear storage:', e);
+    }
+  }
+
+  return false;
+};
+
+// Wrap localStorage operations with error handling
+const originalSetItem = localStorage.setItem;
+localStorage.setItem = function (key: string, value: string) {
+  try {
+    originalSetItem.call(localStorage, key, value);
+  } catch (e: any) {
+    console.error('[localStorage] Error setting item:', key, e);
+    if (e.name === 'QuotaExceededError') {
+      console.warn('[localStorage] Quota exceeded, attempting to clear old data...');
+      try {
+        // Try to clear non-essential data first
+        const keysToKeep = ['token', 'sb-', 'supabase'];
+        Object.keys(localStorage).forEach(k => {
+          if (!keysToKeep.some(prefix => k.startsWith(prefix))) {
+            localStorage.removeItem(k);
+          }
+        });
+        // Try again
+        originalSetItem.call(localStorage, key, value);
+      } catch (retryError) {
+        console.error('[localStorage] Failed to recover from quota error:', retryError);
+        // Last resort: clear everything
+        localStorage.clear();
+        throw retryError;
+      }
+    } else {
+      throw e;
+    }
+  }
+};
+
+// ==========================================
+// EXISTING CODE
+// ==========================================
 
 // this is to fix the console warning it was due to spline robot trying to throw a warning to browser that it needs to check user moovement and it should not scroll but this function filters that 
 const defaultAddEventListener = EventTarget.prototype.addEventListener;
@@ -48,4 +141,5 @@ window.addEventListener("load", () => {
 });
 
 createRoot(document.getElementById("root")!).render(<App />);
+
 

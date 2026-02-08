@@ -18,13 +18,16 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor is handled below at line 297 with consolidated logic
+
 // API endpoints
 export const authAPI = {
   login: (credentials: { email: string; password: string }) =>
     api.post("/auth/login", credentials),
   signup: (userData: any) => api.post("/auth/signup", userData),
   test: () => api.get("/auth"),
-  syncProfile: (profile: { full_name?: string; city?: string; college?: string; phone?: string }) =>
+  checkEmail: (email: string) => api.post("/auth/check-email", { email }),
+  syncProfile: (profile: { full_name?: string; city?: string; college?: string; college_email?: string; college_name?: string; phone?: string }) =>
     api.post("/auth/sync-user", profile),
 };
 
@@ -126,13 +129,13 @@ export const listingsAPI = {
       // Fetch the listing, which will automatically increment the view count on the server
       const response = await api.get(`/listings/${listingId}`);
       console.log(`[api] View increment response:`, response.data);
-      
+
       // Handle the response structure
       let listingData = response.data;
       if (response.data?.data) {
         listingData = response.data.data;
       }
-      
+
       const transformed = transformListing(listingData);
       console.log(`[api] Transformed listing with views: ${transformed.views}`);
       // Transform and return the listing with updated view count
@@ -248,23 +251,70 @@ function transformListing(listing: any) {
     seller_avatar: seller.profile_image_url || listing.seller_avatar || '',
   };
 }
-// Add response interceptor for debugging
+// Consolidate response interceptor for error handling and automatic token refresh
 api.interceptors.response.use(
-  (response) => {
-    console.log('[api] Response received:', {
-      status: response.status,
-      url: response.config.url,
-      data: response.data
-    });
-    return response;
-  },
-  (error) => {
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    const status = error.response?.status;
+
     console.error('[api] Response error:', {
       message: error.message,
       url: error.config?.url,
-      status: error.response?.status,
+      status: status,
       data: error.response?.data
     });
+
+    // Handle 401 (Unauthorized)
+    if (status === 401) {
+      const isAuthRequest = originalRequest.url?.includes('/auth/') || originalRequest.url?.includes('/login');
+      const errorCode = error.response?.data?.code;
+      const errorMessage = error.response?.data?.message || '';
+
+      // Check if it's a refreshable token error
+      if (
+        (errorCode === 'TOKEN_EXPIRED' || errorMessage.toLowerCase().includes('expired')) &&
+        !originalRequest._retry &&
+        !isAuthRequest
+      ) {
+        console.warn('[api] Token expired, attempting to refresh session...');
+        originalRequest._retry = true;
+
+        try {
+          const { supabase } = await import('@/integrations/supabase/client');
+          const { data, error: refreshError } = await supabase.auth.refreshSession();
+
+          if (!refreshError && data.session) {
+            const newToken = data.session.access_token;
+            localStorage.setItem('token', newToken);
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return api(originalRequest);
+          }
+          console.error('[api] Session refresh failed:', refreshError);
+        } catch (refreshError) {
+          console.error('[api] Error during token refresh:', refreshError);
+        }
+      }
+
+      // If refresh failed or was not possible, clear and redirect
+      console.error('[api] Unauthorized - Clearing auth and redirecting');
+      localStorage.removeItem('token');
+      sessionStorage.clear();
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+        window.location.href = '/login?session_expired=true';
+      }
+      return Promise.reject(error);
+    }
+
+    // Handle 431 (Request Header Fields Too Large)
+    if (status === 431) {
+      console.error('[api] Header too large (431) - Clearing storage and reloading');
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
+      return Promise.reject(error);
+    }
+
     return Promise.reject(error);
   }
 );

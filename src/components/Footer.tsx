@@ -1,127 +1,49 @@
-import { Link } from "react-router-dom";
-import { Facebook, Twitter, Instagram, Linkedin, Heart } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Phone, Mail } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Footer() {
+    const navigate = useNavigate();
+
     return (
-        <footer className="w-full bg-secondary/30 pt-16 pb-8 border-t border-border/50">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                    {/* Brand Column */}
+        <footer className="relative z-20 border-t border-slate-100 py-20 px-6 bg-white/60 backdrop-blur-sm">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+                <div className="space-y-6">
+                    <div className="text-3xl font-black tracking-tighter text-slate-900">YAVULI</div>
+                    <p className="text-slate-400 font-medium max-w-xs uppercase text-xs tracking-[0.2em]">
+                        The premier marketplace for the next generation of students.
+                    </p>
+                </div>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-12 md:gap-24">
                     <div className="space-y-4">
-                        <Link to="/" className="flex items-center gap-2 group">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white shadow-sm transition-transform group-hover:scale-105">
-                                <span className="text-lg font-bold">Y</span>
-                            </div>
-                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-                                Yavuli
-                            </span>
-                        </Link>
-                        <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-                            The trusted marketplace for students. Buy, sell, and connect with your campus community securely.
-                        </p>
-                        <div className="flex gap-4 pt-2">
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Facebook className="h-5 w-5" />
-                            </a>
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Twitter className="h-5 w-5" />
-                            </a>
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Instagram className="h-5 w-5" />
-                            </a>
-                            <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Linkedin className="h-5 w-5" />
-                            </a>
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Navigation</h4>
+                        <ul className="space-y-2 text-sm text-slate-500 font-medium">
+                            <li><button onClick={() => navigate('/explore')} className="hover:text-primary transition-colors">Explore</button></li>
+                            <li><button onClick={() => navigate('/sell')} className="hover:text-primary transition-colors">Sell Items</button></li>
+                            <li><button onClick={() => navigate('/login')} className="hover:text-primary transition-colors">Sign In</button></li>
+                        </ul>
+                    </div>
+                    <div className="space-y-4">
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Policy</h4>
+                        <ul className="space-y-2 text-sm text-slate-500 font-medium">
+                            <li><button onClick={() => toast.info("Safety Tips coming soon!")} className="hover:text-primary transition-colors">Safety Tips</button></li>
+                            <li><Link to="/policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                            <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
+                        </ul>
+                    </div>
+                    <div className="space-y-4 col-span-2 lg:col-span-1">
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Contact</h4>
+                        <div className="space-y-2 text-sm text-slate-500 font-medium">
+                            <p className="flex items-center gap-2"><Phone className="h-3 w-3" /> +91 8000363769</p>
+                            <p className="flex items-center gap-2 max-w-[200px] break-all"><Mail className="h-3 w-3" /> founder@yavuli.app</p>
                         </div>
                     </div>
-
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="font-semibold text-foreground mb-6">Marketplace</h3>
-                        <ul className="space-y-3">
-                            <li>
-                                <Link to="/explore" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Browse Items
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/sell" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Sell an Item
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/categories" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Categories
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/pricing" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Pricing
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Support */}
-                    <div>
-                        <h3 className="font-semibold text-foreground mb-6">Support</h3>
-                        <ul className="space-y-3">
-                            <li>
-                                <Link to="/help" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Help Center
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/safety" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Safety Guidelines
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Contact Us
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/feedback" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Give Feedback
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-
-                    {/* Legal */}
-                    <div>
-                        <h3 className="font-semibold text-foreground mb-6">Legal</h3>
-                        <ul className="space-y-3">
-                            <li>
-                                <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Terms of Service
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Privacy Policy
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to="/guidelines" className="text-muted-foreground hover:text-primary transition-colors text-sm">
-                                    Community Guidelines
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
-
-                <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-muted-foreground text-sm">
-                        © {new Date().getFullYear()} Yavuli. All rights reserved.
-                    </p>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <span>Made with</span>
-                        <Heart className="h-4 w-4 text-red-500 fill-current animate-pulse" />
-                        <span>for students</span>
-                    </div>
-                </div>
+            </div>
+            <div className="max-w-7xl mx-auto pt-20 text-center">
+                <p className="text-[10px] text-slate-400 font-bold tracking-[0.5em] uppercase opacity-50 pt-4">
+                    © {new Date().getFullYear()} Yavuli Marketplace • Built For Students
+                </p>
             </div>
         </footer>
     );

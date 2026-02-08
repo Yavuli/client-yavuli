@@ -9,12 +9,13 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { supabase } from "@/integrations/supabase/client";
 import { ShootingStars } from "@/components/ui/shooting-stars";
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import SEO from "@/components/SEO";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
@@ -23,15 +24,19 @@ const Login = () => {
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
+      setError('');
+      console.log('[LoginForm] Initiating Google OAuth Login');
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/explore',
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) throw error;
-    } catch (error: any) {
-      setError(error.message);
+      // We don't set loading false here because the whole page redirects
+    } catch (error: unknown) {
+      console.error('[LoginForm] Google login error:', error);
+      setError(error instanceof Error ? error.message : 'Failed to sign up with Google');
       setLoading(false);
     }
   };
@@ -42,19 +47,26 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await signIn(email, password);
-      if (error) throw error;
+      // Now attempt the new login with a timeout safety
+      console.log('[LoginForm] Attempting sign in with email:', email);
 
-      if (data?.user?.user_metadata?.full_name) {
-        toast.success(`Welcome back, ${data.user.user_metadata.full_name.split(' ')[0]}!`);
-      } else {
-        toast.success('Successfully logged in!');
+      const loginPromise = signIn(email, password);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Authentication timed out. Please check your connection.')), 15000)
+      );
+
+      const { data, error } = await Promise.race([loginPromise, timeoutPromise]) as any;
+
+      if (error) {
+        console.error('[LoginForm] Sign in error:', error);
+        throw error;
       }
 
-      navigate('/explore');
-    } catch (error) {
+      console.log('[LoginForm] Navigating to explore after success');
+      navigate('/explore', { replace: true });
+    } catch (error: unknown) {
+      console.error('[LoginForm] Login process caught error:', error);
       setError(error instanceof Error ? error.message : 'Failed to sign in');
-    } finally {
       setLoading(false);
     }
   };
@@ -160,16 +172,35 @@ const Login = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-400 ml-1 text-xs font-bold uppercase tracking-wider">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="flex items-center justify-between ml-1">
+                <Label htmlFor="password" className="text-slate-400 text-xs font-bold uppercase tracking-wider">Password</Label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-bold text-primary hover:text-primary/80 transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="h-14 bg-slate-50 border-slate-100 text-slate-900 placeholder:text-slate-300 rounded-2xl focus:ring-primary/20 pr-12"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 text-slate-400 hover:text-slate-900 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </Button>
+              </div>
             </div>
 
             <Button

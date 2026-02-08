@@ -1,10 +1,10 @@
 // src/types/supabase.ts
 import { Database } from './database.types';
 
-export type Tables<T extends keyof Database['public']['Tables']> = 
+export type Tables<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Row'];
 
-export type Enums<T extends keyof Database['public']['Enums']> = 
+export type Enums<T extends keyof Database['public']['Enums']> =
   Database['public']['Enums'][T];
 
 // Profile table type
@@ -15,6 +15,8 @@ export type Profile = {
   updated_at: string | null;
   city?: string | null;
   college?: string | null;
+  college_email?: string | null;
+  college_name?: string | null;
   phone?: string | null;
 };
 
@@ -27,6 +29,8 @@ export type User = {
     avatar_url?: string;
     city?: string;
     college?: string;
+    college_email?: string;
+    college_name?: string;
     phone?: string;
   };
   profile?: Profile;
@@ -48,4 +52,6 @@ export type AuthContextType = {
   signUp: (email: string, password: string, userData: SignUpProfileInput) => Promise<any>;
   signInWithGoogle: () => Promise<any>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<any>;
+  updatePassword: (password: string) => Promise<any>;
 };
