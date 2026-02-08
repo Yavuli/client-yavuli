@@ -94,135 +94,140 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-hero transition-transform group-hover:scale-105">
+          <Link to="/" className="flex items-center gap-2 group shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-hero transition-transform group-hover:scale-105 shadow-sm">
               <span className="text-lg font-bold text-white">Y</span>
             </div>
-            <span className="text-xl font-bold text-primary">Yavuli</span>
+            <span className="text-xl font-bold text-primary hidden sm:block">Yavuli</span>
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
+          <div className="hidden md:flex flex-1 max-w-lg mx-4">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Search products, books, services..."
-                className="pl-10 bg-muted/50 border-border focus:ring-accent"
+                className="pl-10 h-10 bg-muted/50 border-border focus:ring-accent transition-all"
               />
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link
-              to="/explore"
-              className={`text-sm font-medium transition-colors hover:text-violet-600 ${isActive('/explore') ? 'text-violet-600' : 'text-foreground'}`}
-            >
-              Explore
-            </Link>
-            <Link
-              to="/sell"
-              className={`text-sm font-medium transition-colors hover:text-violet-600 ${isActive('/sell') ? 'text-violet-600' : 'text-foreground'}`}
-            >
-              Sell
-            </Link>
-          </div>
-          <Link to="/inbox" className="relative p-2 hover:bg-gray-100 rounded-full transition">
-            <MessageCircle className="w-6 h-6 text-gray-700" />
-            {unreadCount > 0 && (
-              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full border-2 border-white">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </Link>
+          {/* Actions & Navigation */}
+          <div className="flex items-center gap-1 md:gap-2">
+            {/* Desktop Navigation Links */}
+            <div className="hidden lg:flex items-center gap-4 mr-2">
+              <Link
+                to="/explore"
+                className={`text-sm font-semibold px-3 py-2 rounded-lg transition-colors hover:bg-accent/5 ${isActive('/explore') ? 'text-accent bg-accent/10' : 'text-foreground/80 hover:text-accent'}`}
+              >
+                Explore
+              </Link>
+              <Link
+                to="/sell"
+                className={`text-sm font-semibold px-3 py-2 rounded-lg transition-colors hover:bg-accent/5 ${isActive('/sell') ? 'text-accent bg-accent/10' : 'text-foreground/80 hover:text-accent'}`}
+              >
+                Sell
+              </Link>
+            </div>
 
-          {/* Icons */}
-          <div className="flex items-center gap-2">
-            {user ? (
-              <>
-                <Link to="/cart">
-                  <Button variant="ghost" size="icon" className="relative hover:bg-accent/10 hover:text-accent">
-                    <ShoppingCart className="h-5 w-5" />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs text-white">
-                        {cartCount}
-                      </span>
-                    )}
-                  </Button>
-                </Link>
+            {/* Action Icons */}
+            <div className="flex items-center gap-1 md:gap-2">
+              <Link to="/inbox">
+                <Button variant="ghost" size="icon" className="relative h-10 w-10 hover:bg-accent/10 hover:text-accent rounded-full transition-all">
+                  <MessageCircle className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white ring-2 ring-card">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-full hover:bg-accent/10">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.user_metadata?.avatar_url} alt={user.user_metadata?.full_name} />
-                        <AvatarFallback className="bg-accent/10 text-accent">
-                          {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+              {user ? (
+                <>
+                  <Link to="/cart">
+                    <Button variant="ghost" size="icon" className="relative h-10 w-10 hover:bg-accent/10 hover:text-accent rounded-full transition-all">
+                      <ShoppingCart className="h-5 w-5" />
+                      {cartCount > 0 && (
+                        <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-white ring-2 ring-card">
+                          {cartCount}
+                        </span>
+                      )}
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                          {user.user_metadata?.full_name || 'User'}
-                        </p>
-                        <p className="text-xs leading-none text-muted-foreground">
-                          {user.email}
-                        </p>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <Link to="/profile">
-                      <DropdownMenuItem className="cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </DropdownMenuItem>
-                    </Link>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="cursor-pointer text-destructive focus:text-destructive"
-                      onClick={handleSignOut}
-                    >
-                      <LogIn className="mr-2 h-4 w-4" />
-                      <span>Sign out</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="hidden md:flex gap-2"
-                  onClick={() => navigate('/login')}
-                >
-                  <LogIn className="h-4 w-4" />
-                  Sign In
-                </Button>
-                <Button
-                  size="sm"
-                  className="hidden md:flex bg-gradient-hero text-white hover:shadow-glow"
-                  onClick={() => navigate('/signup')}
-                >
-                  Sign Up
-                </Button>
-              </>
-            )}
+                  </Link>
 
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full hover:bg-accent/10 ring-offset-background transition-all focus-visible:ring-2 focus-visible:ring-accent">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={user.user_metadata?.avatar_url} alt={user.user_metadata?.full_name} />
+                          <AvatarFallback className="bg-accent/10 text-accent font-semibold">
+                            {user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56 mt-2">
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-semibold leading-none">
+                            {user.user_metadata?.full_name || 'User'}
+                          </p>
+                          <p className="text-xs leading-none text-muted-foreground truncate">
+                            {user.email}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <Link to="/profile">
+                        <DropdownMenuItem className="cursor-pointer">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                        </DropdownMenuItem>
+                      </Link>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/5"
+                        onClick={handleSignOut}
+                      >
+                        <LogIn className="mr-2 h-4 w-4" />
+                        <span>Sign out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                <div className="flex items-center gap-2 ml-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hidden sm:flex font-semibold text-accent hover:bg-accent/10"
+                    onClick={() => navigate('/login')}
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-gradient-hero text-white hover:shadow-glow font-semibold px-4"
+                    onClick={() => navigate('/signup')}
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
+
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden h-10 w-10 rounded-full hover:bg-accent/10 transition-all"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
         </div>
 

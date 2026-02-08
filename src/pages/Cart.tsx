@@ -28,20 +28,25 @@ const Cart = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="flex flex-col min-h-screen bg-background">
         <Navbar />
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-md mx-auto text-center space-y-6 animate-fade-up">
+        <div className="flex-1 flex flex-col items-center justify-center p-4">
+          <div className="max-w-md w-full text-center space-y-8 animate-fade-up">
             <div className="flex justify-center">
-              <div className="h-24 w-24 rounded-full bg-muted flex items-center justify-center">
-                <ShoppingBag className="h-12 w-12 text-muted-foreground" />
+              <div className="h-32 w-32 rounded-full bg-muted/50 flex items-center justify-center ring-8 ring-muted/20">
+                <ShoppingBag className="h-16 w-16 text-muted-foreground/60" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold">Your cart is empty</h2>
-            <p className="text-muted-foreground">Discover amazing products from verified students</p>
+            <div className="space-y-3">
+              <h2 className="text-3xl font-bold tracking-tight">Your cart is empty</h2>
+              <p className="text-muted-foreground text-lg">
+                Discover amazing products from verified students
+              </p>
+            </div>
             <Link to="/explore">
-              <Button className="bg-gradient-hero text-white hover:shadow-glow">
+              <Button size="lg" className="bg-gradient-hero text-white hover:shadow-glow px-8 h-12 text-base font-semibold group transition-all">
                 Start Shopping
+                <Plus className="ml-2 h-5 w-5 group-hover:rotate-90 transition-transform" />
               </Button>
             </Link>
           </div>
@@ -55,7 +60,7 @@ const Cart = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
-        
+
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item) => (
@@ -81,7 +86,7 @@ const Cart = () => {
                       </Button>
                     </div>
                     <p className="text-lg font-bold text-primary mt-1">₹{item.price.toLocaleString()}</p>
-                    
+
                     <div className="flex items-center mt-2">
                       <Button
                         variant="outline"
@@ -101,7 +106,7 @@ const Cart = () => {
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
-                    
+
                     <div className="mt-2 text-sm text-muted-foreground">
                       Subtotal: ₹{(item.price * item.quantity).toLocaleString()}
                     </div>
@@ -109,7 +114,7 @@ const Cart = () => {
                 </div>
               </Card>
             ))}
-            
+
             <div className="flex justify-end">
               <Button
                 variant="ghost"
@@ -144,7 +149,7 @@ const Cart = () => {
                 <span>Total</span>
                 <span>₹{cartTotal.toLocaleString()}</span>
               </div>
-              <Button 
+              <Button
                 className="w-full bg-gradient-hero text-white hover:shadow-glow"
                 onClick={handleCheckout}
               >
