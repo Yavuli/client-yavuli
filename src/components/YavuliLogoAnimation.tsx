@@ -16,7 +16,7 @@ const YavuliLogoAnimation = () => {
 
                     <g className="shopping-bag">
                         <path d="M0,20 L50,20 L55,70 L-5,70 Z" fill="#EA580C" stroke="#0f172a" strokeWidth="3" />
-                        <path d="M10,20 C10,-20 40,-20 40,20" fill="none" stroke="#0f172a" strokeWidth="3" />
+                        <path d="M10,20 C10,-20 40,-20 40,20" fill="none" stroke="white" strokeWidth="3" />
                         <text x="13" y="55" fontSize="24">❤️</text>
                     </g>
                     <g className="grad-cap">
