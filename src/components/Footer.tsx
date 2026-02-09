@@ -1,9 +1,11 @@
 import { useNavigate, Link } from "react-router-dom";
 import { Phone, Mail } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Footer() {
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     return (
         <footer className="relative z-20 border-t border-slate-100 py-20 px-6 bg-white/60 backdrop-blur-sm">
@@ -20,7 +22,13 @@ export default function Footer() {
                         <ul className="space-y-2 text-sm text-slate-500 font-medium">
                             <li><button onClick={() => navigate('/explore')} className="hover:text-primary transition-colors">Explore</button></li>
                             <li><button onClick={() => navigate('/sell')} className="hover:text-primary transition-colors">Sell Items</button></li>
-                            <li><button onClick={() => navigate('/login')} className="hover:text-primary transition-colors">Sign In</button></li>
+                            <li>
+                                {user ? (
+                                    <button onClick={() => navigate('/profile')} className="hover:text-primary transition-colors">Profile</button>
+                                ) : (
+                                    <button onClick={() => navigate('/login')} className="hover:text-primary transition-colors">Sign In</button>
+                                )}
+                            </li>
                         </ul>
                     </div>
                     <div className="space-y-4">

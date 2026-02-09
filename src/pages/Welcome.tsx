@@ -140,7 +140,7 @@ const Welcome = () => {
       {/* Content wrapper */}
       <div className="relative z-10">
         {/* Hero Section */}
-        <section className="flex flex-col items-center justify-center text-center px-4 pt-48 pb-32 max-w-5xl mx-auto space-y-10">
+        <section className="flex flex-col items-center justify-center text-center px-4 min-h-[85vh] pt-32 pb-20 max-w-5xl mx-auto space-y-12">
 
 
           <motion.div
@@ -259,8 +259,15 @@ const Welcome = () => {
             <h2 className="text-5xl md:text-7xl font-black tracking-tighter italic text-slate-900">Ready to declutter?</h2>
             <p className="text-xl text-slate-500 font-medium">Join the thousands of students already trading on Yavuli.</p>
           </div>
-          <Button size="lg" className="px-16 h-20 text-xl font-black rounded-[2rem] shadow-2xl hover:shadow-primary/30 transition-all hover:-translate-y-2 active:scale-95 bg-primary text-primary-foreground" onClick={() => navigate('/signup')}>
-            Join Early Today <Sparkles className="ml-3 h-6 w-6" />
+          <Button size="lg" className="px-16 h-20 text-xl font-black rounded-[2rem] shadow-2xl hover:shadow-primary/30 transition-all hover:-translate-y-2 active:scale-95 bg-primary text-primary-foreground"
+            onClick={() => {
+              if (user) {
+                navigate('/sell');
+              } else {
+                navigate('/signup');
+              }
+            }}>
+            {user ? "Sell your item" : "Join Early Today"} <Sparkles className="ml-3 h-6 w-6" />
           </Button>
         </section>
 
