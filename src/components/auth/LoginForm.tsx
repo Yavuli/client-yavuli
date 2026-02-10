@@ -74,7 +74,7 @@ const Login = () => {
   return (
     <div className="relative min-h-screen w-full bg-slate-50 flex items-center justify-center p-4 overflow-hidden selection:bg-primary/30">
       <SEO
-        title="Login | Yavuli"
+        title="Yavuli – Login"
         description="Sign in to your Yavuli account to browse and buy campus essentials."
       />
       {/* Background with stars (Shooting stars already updated to blue/default light) */}

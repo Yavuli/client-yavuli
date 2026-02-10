@@ -112,7 +112,7 @@ const Signup = () => {
   return (
     <div className="relative min-h-screen w-full bg-slate-50 flex flex-col items-center justify-center p-4 overflow-hidden selection:bg-primary/30 py-20">
       <SEO
-        title="Sign Up | Yavuli"
+        title="Yavuli – Sign Up"
         description="Join Yavuli today and start trading with your campus community. Safe, secure, and exclusive for students."
       />
       {/* Background with stars */}

@@ -33,6 +33,8 @@ export type User = {
     college_name?: string;
     phone?: string;
   };
+  phone?: string;
+  created_at?: string;
   profile?: Profile;
 };
 

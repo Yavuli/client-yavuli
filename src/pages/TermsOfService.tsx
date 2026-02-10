@@ -7,7 +7,7 @@ const TermsOfService = () => {
     return (
         <div className="min-h-screen bg-white">
             <SEO
-                title="Terms of Service | Yavuli"
+                title="Yavuli – Terms of Service"
                 description="Terms of Service for Yavuli - The trusted student marketplace."
             />
             <Navbar />

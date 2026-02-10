@@ -146,7 +146,7 @@ const CompleteProfile = () => {
 
     return (
         <div className="relative min-h-screen w-full bg-slate-50 flex items-center justify-center p-4 selection:bg-primary/30">
-            <SEO title="Complete Your Profile | Yavuli" />
+            <SEO title="Yavuli – Complete Your Profile" />
 
             <div className="absolute inset-0 z-0">
                 <ShootingStars starColor="#3b82f6" trailColor="#93c5fd" />

@@ -11,15 +11,15 @@ interface SEOProps {
 }
 
 const SEO = ({
-    title = "Yavuli | The Student Marketplace",
-    description = "Yavuli is the smart, centralized marketplace for everything in your college life. Buy and sell textbooks, gear, and essentials within your campus community. Founder & CEO: Kishlaya Mishra.",
-    keywords = "Kishlaya Mishra, Kishlaya Mishra Yavuli, Yavuli CEO, student marketplace, college buy sell, textbooks, college life, campus gear, Yavuli, buy and sell",
+    title = "Yavuli – Student Marketplace for Projects, Mentors & Skills",
+    description = "Yavuli is the smart, centralized marketplace for everything in your college life. Buy and sell textbooks, gear, and essentials within your campus community.",
+    keywords = "student marketplace, college buy sell, textbooks, college life, campus gear, Yavuli, buy and sell",
     image = "https://yavuli.app/og-image.jpg", // Ensure absolute path for better social sharing
     url = "https://yavuli.app",
     type = "website",
     schema
 }: SEOProps) => {
-    const siteTitle = title.includes("Yavuli") ? title : `${title} | Yavuli`;
+    const siteTitle = title;
 
     // Default Structured Data (JSON-LD)
     const defaultSchema = {
@@ -34,13 +34,7 @@ const SEO = ({
                 "sameAs": [
                     "https://twitter.com/yavuli",
                     "https://instagram.com/yavuli"
-                ],
-                "founder": {
-                    "@type": "Person",
-                    "name": "Kishlaya Mishra",
-                    "jobTitle": "Founder & CEO",
-                    "url": "https://www.linkedin.com/in/kishlayamishra"
-                }
+                ]
             },
             {
                 "@type": "WebSite",
@@ -57,15 +51,6 @@ const SEO = ({
                   "query-input": "required name=search_term_string"
                 },
                 "inLanguage": "en-US"
-            },
-            {
-                "@type": "Person",
-                "name": "Kishlaya Mishra",
-                "jobTitle": "CEO",
-                "affiliation": {
-                    "@id": "https://yavuli.app/#organization"
-                },
-                "description": "Founder and CEO of Yavuli, the student marketplace."
             }
         ]
     };
