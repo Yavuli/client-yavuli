@@ -222,6 +222,15 @@ const Sell = () => {
         images: imageDataUrls
       };
 
+      console.log('--- SUBMITTING LISTING PAYLOAD ---');
+      console.log('Title:', payload.title);
+      console.log('Price:', payload.price);
+      console.log('Reason:', payload.reason);
+      console.log('Age:', payload.age);
+      console.log('Original Price:', payload.originalPrice);
+      console.log('City:', payload.city);
+      console.log('Full Payload:', payload);
+
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
       // Get the access token from Supabase session

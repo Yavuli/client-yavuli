@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         // Fetch profile
         const { data: profile, error } = await supabase
-          .from('profiles')
+          .from('users') // Updated from 'profiles' to 'users'
           .select('id, full_name, avatar_url, updated_at, city, college, college_email, college_name, phone')
           .eq('id', supabaseUser.id)
           .single();

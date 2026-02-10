@@ -295,16 +295,16 @@ const ProductDetails = () => {
               </Card>
               <Card className="p-4 bg-muted/30">
                 <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Age</h4>
-                <p className="font-medium">{product.age_of_item || "Not specified"}</p>
+                <p className="font-medium">{product.age_of_item && product.age_of_item !== "null" ? product.age_of_item : "Not specified"}</p>
               </Card>
               <Card className="p-4 bg-muted/30">
                 <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Original Price</h4>
-                <p className="font-medium">{originalPriceStr || "Not specified"}</p>
+                <p className="font-medium">{product.original_price ? `₹${Number(product.original_price).toLocaleString()}` : "Not specified"}</p>
               </Card>
               <Card className="p-4 bg-muted/30">
                 <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Reason for Selling</h4>
                 <p className="font-medium text-sm line-clamp-2" title={product.why_selling}>
-                  {product.why_selling || "Not specified"}
+                  {product.why_selling && product.why_selling !== "null" ? product.why_selling : "Not specified"}
                 </p>
               </Card>
             </div>

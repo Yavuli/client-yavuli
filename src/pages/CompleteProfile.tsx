@@ -33,7 +33,7 @@ const CompleteProfile = () => {
 
         const checkAlreadyVerified = async () => {
             const { data: profile } = await supabase
-                .from('profiles')
+                .from('users') // Updated from 'profiles' to 'users'
                 .select('*')
                 .eq('id', user.id)
                 .single();

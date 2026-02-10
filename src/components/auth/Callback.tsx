@@ -46,7 +46,7 @@ export default function AuthCallback() {
           if (provider === 'google') {
             // Get profile to check for missing fields
             const { data: profile } = await supabase
-              .from('profiles')
+              .from('users') // Updated from 'profiles' to 'users'
               .select('full_name, phone, college_name, college_email')
               .eq('id', user.id)
               .single();
