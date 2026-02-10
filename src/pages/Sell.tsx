@@ -291,9 +291,9 @@ const Sell = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Yavuli – Sell Your Items"
+        title="Sell Your Items on Yavuli | Student Marketplace"
         description="List your used textbooks, electronics, and other college items for sale on Yavuli. Reach thousands of students at your campus. Quick, easy, and secure."
-        keywords="sell on Yavuli, student marketplace, sell textbooks, make money in college, list items for sale"
+        keywords="sell on Yavuli, student marketplace, sell textbooks, make money in college, list items for sale, Kishlaya Mishra"
       />
       <Navbar />
 

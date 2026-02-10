@@ -50,7 +50,7 @@ export default function Footer() {
             </div>
             <div className="max-w-7xl mx-auto pt-20 text-center">
                 <p className="text-[10px] text-slate-400 font-bold tracking-[0.5em] uppercase opacity-50 pt-4">
-                    © {new Date().getFullYear()} Yavuli — The Ultimate Student Marketplace
+                    © {new Date().getFullYear()} Yavuli Marketplace • Built For Students
                 </p>
             </div>
         </footer>

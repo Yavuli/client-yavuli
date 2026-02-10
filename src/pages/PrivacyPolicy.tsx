@@ -7,7 +7,7 @@ const PrivacyPolicy = () => {
     return (
         <div className="min-h-screen bg-white">
             <SEO
-                title="Yavuli – Privacy Policy"
+                title="Privacy Policy | Yavuli"
                 description="Privacy Policy for Yavuli - The trusted student marketplace."
             />
             <Navbar />

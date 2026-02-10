@@ -46,7 +46,7 @@ const ResetPassword = () => {
     return (
         <div className="relative min-h-screen w-full bg-slate-50 flex items-center justify-center p-4 overflow-hidden selection:bg-primary/30">
             <SEO
-                title="Yavuli – Reset Password"
+                title="Reset Password | Yavuli"
                 description="Set a new password for your Yavuli account."
             />
 

@@ -46,7 +46,7 @@ const Welcome = () => {
   return (
     <div className="relative min-h-screen w-full bg-white overflow-x-hidden selection:bg-primary/20">
       <SEO
-        title="Yavuli – Student Marketplace for Projects, Mentors & Skills"
+        title="Yavuli | The Ultimate Student Marketplace"
         description="Yavuli is the smart, centralized marketplace for everything in your college life. Buy, sell, and connect with students."
         keywords="student marketplace, college buy sell, textbooks, college essentials"
       />

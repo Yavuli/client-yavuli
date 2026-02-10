@@ -43,7 +43,7 @@ const ForgotPassword = () => {
     return (
         <div className="relative min-h-screen w-full bg-slate-50 flex items-center justify-center p-4 overflow-hidden selection:bg-primary/30">
             <SEO
-                title="Yavuli – Forgot Password"
+                title="Forgot Password | Yavuli"
                 description="Reset your Yavuli account password."
             />
 
