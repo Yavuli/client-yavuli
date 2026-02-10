@@ -26,7 +26,7 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -208,7 +208,8 @@ const ProductDetails = () => {
             {/* Action Buttons */}
             <div className="flex gap-3">
               <Button
-                className="flex-1 bg-gradient-hero text-white hover:shadow-glow"
+                className="flex-1 bg-gradient-hero text-white hover:shadow-glow disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={cartItems.some(item => item.id === product?.id)}
                 onClick={() => {
                   if (!product) return;
                   addToCart({
@@ -222,7 +223,7 @@ const ProductDetails = () => {
                 }}
               >
                 <ShoppingCart className="h-4 w-4 mr-2" />
-                Add to Cart
+                {cartItems.some(item => item.id === product?.id) ? 'Already in Cart' : 'Add to Cart'}
               </Button>
               <Button
                 variant="outline"
