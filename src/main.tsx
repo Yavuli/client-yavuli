@@ -140,6 +140,10 @@ window.addEventListener("load", () => {
   });
 });
 
+
+console.log('🚀 APP VERSION: 2026-02-10-FIXED-PROFILES-V1 🚀');
+console.log('If you do not see the above line, you are running OLD code.');
+
 createRoot(document.getElementById("root")!).render(<App />);
 
 
