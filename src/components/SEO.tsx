@@ -11,9 +11,9 @@ interface SEOProps {
 }
 
 const SEO = ({
-    title = "Yavuli | The Student Marketplace",
-    description = "Yavuli is the smart, centralized marketplace for everything in your college life. Buy and sell textbooks, gear, and essentials within your campus community. Founder & CEO: Kishlaya Mishra.",
-    keywords = "Kishlaya Mishra, Kishlaya Mishra Yavuli, Yavuli CEO, student marketplace, college buy sell, textbooks, college life, campus gear, Yavuli, buy and sell",
+    title = "Yavuli | The Ultimate Student Marketplace",
+    description = "Yavuli is the smart, centralized marketplace for everything in your college life. Buy and sell textbooks, gear, and essentials within your campus community.",
+    keywords = "student marketplace, college buy sell, textbooks, college life, campus gear, Yavuli, buy and sell, university marketplace, peer to peer, campus trade",
     image = "https://yavuli.app/og-image.jpg", // Ensure absolute path for better social sharing
     url = "https://yavuli.app",
     type = "website",
@@ -52,20 +52,11 @@ const SEO = ({
                     "@id": "https://yavuli.app/#organization"
                 },
                 "potentialAction": {
-                  "@type": "SearchAction",
-                  "target": "https://yavuli.app/explore?q={search_term_string}",
-                  "query-input": "required name=search_term_string"
+                    "@type": "SearchAction",
+                    "target": "https://yavuli.app/explore?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
                 },
                 "inLanguage": "en-US"
-            },
-            {
-                "@type": "Person",
-                "name": "Kishlaya Mishra",
-                "jobTitle": "CEO",
-                "affiliation": {
-                    "@id": "https://yavuli.app/#organization"
-                },
-                "description": "Founder and CEO of Yavuli, the student marketplace."
             }
         ]
     };
