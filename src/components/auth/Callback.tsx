@@ -46,8 +46,8 @@ export default function AuthCallback() {
           if (provider === 'google') {
             // Get profile to check for missing fields
             const { data: profile } = await supabase
-              .from('users') // Updated from 'profiles' to 'users'
-              .select('full_name, phone, college_name, college_email')
+              .from('users')
+              .select('full_name, phone, college_name, college_email') // NOTE: avatar_url/profile_image_url is not selected here, so no change needed to query, but good to check.
               .eq('id', user.id)
               .single();
 

@@ -91,12 +91,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         // Fetch profile
         const { data: profile, error } = await supabase
-          .from('users') // Updated from 'profiles' to 'users'
-          .select('id, full_name, avatar_url, updated_at, city, college, college_email, college_name, phone')
+          .from('users')
+          .select('id, full_name, profile_image_url, updated_at, city, college, college_email, college_name, phone')
           .eq('id', supabaseUser.id)
           .single();
 
-        const profileRecord = profile || buildProfileFallback(supabaseUser);
+        const profileRecord = profile ? {
+          ...profile,
+          avatar_url: profile.profile_image_url // Map back to avatar_url for app compatibility if needed
+        } : buildProfileFallback(supabaseUser);
 
         if (mounted) {
           setUser({
