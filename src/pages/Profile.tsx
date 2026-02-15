@@ -29,6 +29,7 @@ import {
 import { toast } from "sonner";
 import { listingsAPI, paymentsAPI, usersAPI } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
+import HighlightText from "@/components/HighlightText";
 
 interface Transaction {
   id: string;
@@ -493,10 +494,10 @@ const Profile = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <p className="text-sm text-muted-foreground mb-1">
-                          Transaction ID: {purchase.id.substring(0, 8)}...
+                          Transaction ID: <HighlightText text={purchase.id.substring(0, 8)} query={searchQuery} />...
                         </p>
                         <p className="font-semibold text-lg">
-                          ₹{purchase.amount.toLocaleString()}
+                          ₹<HighlightText text={purchase.amount.toLocaleString()} query={searchQuery} />
                         </p>
                         <p className="text-sm text-muted-foreground mt-2">
                           {new Date(
@@ -517,8 +518,7 @@ const Profile = () => {
                               : ""
                           }
                         >
-                          {purchase.status.charAt(0).toUpperCase() +
-                            purchase.status.slice(1)}
+                          <HighlightText text={purchase.status.charAt(0).toUpperCase() + purchase.status.slice(1)} query={searchQuery} />
                         </Badge>
                       </div>
                     </div>
@@ -566,10 +566,10 @@ const Profile = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <p className="text-sm text-muted-foreground mb-1">
-                          Transaction ID: {sale.id.substring(0, 8)}...
+                          Transaction ID: <HighlightText text={sale.id.substring(0, 8)} query={searchQuery} />...
                         </p>
                         <p className="font-semibold text-lg text-green-600">
-                          +₹{sale.amount.toLocaleString()}
+                          +₹<HighlightText text={sale.amount.toLocaleString()} query={searchQuery} />
                         </p>
                         <p className="text-sm text-muted-foreground mt-2">
                           {new Date(
@@ -590,8 +590,7 @@ const Profile = () => {
                               : ""
                           }
                         >
-                          {sale.status.charAt(0).toUpperCase() +
-                            sale.status.slice(1)}
+                          <HighlightText text={sale.status.charAt(0).toUpperCase() + sale.status.slice(1)} query={searchQuery} />
                         </Badge>
                       </div>
                     </div>
@@ -643,9 +642,9 @@ const Profile = () => {
                         className="h-20 w-20 rounded-xl object-cover"
                       />
                       <div>
-                        <h3 className="font-semibold text-lg">{listing.title}</h3>
+                        <h3 className="font-semibold text-lg"><HighlightText text={listing.title} query={searchQuery} /></h3>
                         <p className="text-muted-foreground text-sm">
-                          ₹{Number(listing.price).toLocaleString()} · {listing.condition}
+                          ₹<HighlightText text={Number(listing.price).toLocaleString()} query={searchQuery} /> · <HighlightText text={listing.condition || ''} query={searchQuery} />
                         </p>
                         <p className="text-xs text-muted-foreground">
                           Posted on {new Date(listing.created_at).toLocaleDateString()}

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ShoppingCart, User, Menu, X, LogIn, MessageCircle, Settings } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, LogIn, MessageCircle, Settings, ArrowRight } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from '@/lib/supabase'
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,22 +27,42 @@ const Navbar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Search state — synced with URL on profile/explore
+  // Detect whether we're on a searchable page
+  const isProfilePage = location.pathname === '/profile';
+  const isExplorePage = location.pathname === '/explore';
+  const isProductPage = location.pathname.startsWith('/product/');
+  const isSearchablePage = isProfilePage || isExplorePage || isProductPage;
+
+  // Search state — synced with URL on searchable pages
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Sync search input from URL when on profile or explore
+  // Sync search input from URL when on a searchable page
   useEffect(() => {
-    if (location.pathname === '/profile' || location.pathname === '/explore') {
+    if (isSearchablePage) {
       setSearchQuery(searchParams.get('search') || '');
     } else {
       setSearchQuery('');
     }
-  }, [location.pathname, searchParams]);
+  }, [location.pathname, searchParams, isSearchablePage]);
+
+  // Live search: update URL params as user types on searchable pages
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (isSearchablePage) {
+      const params = new URLSearchParams(searchParams);
+      if (value.trim()) {
+        params.set('search', value.trim());
+      } else {
+        params.delete('search');
+      }
+      setSearchParams(params, { replace: true });
+    }
+  };
 
   const handleSearch = (query: string) => {
     const trimmed = query.trim();
-    if (location.pathname === '/profile') {
-      // Update search param on profile page
+    if (isProfilePage || isProductPage) {
+      // Update search param in-place
       const params = new URLSearchParams(searchParams);
       if (trimmed) {
         params.set('search', trimmed);
@@ -50,15 +70,13 @@ const Navbar = () => {
         params.delete('search');
       }
       setSearchParams(params);
-    } else if (location.pathname === '/explore') {
-      // Already on explore — just update URL param, Explore page reads it
+    } else if (isExplorePage) {
       if (trimmed) {
         navigate(`/explore?search=${encodeURIComponent(trimmed)}`);
       } else {
         navigate('/explore');
       }
     } else {
-      // Navigate to explore with search
       if (trimmed) {
         navigate(`/explore?search=${encodeURIComponent(trimmed)}`);
       }
@@ -70,6 +88,12 @@ const Navbar = () => {
       handleSearch(searchQuery);
     }
   };
+
+  const searchPlaceholder = isProfilePage
+    ? 'Search your purchases, sales, listings...'
+    : isProductPage
+      ? 'Search in this product...'
+      : 'Search products, books, services...';
 
   useEffect(() => {
     if (!user) return;
@@ -152,20 +176,30 @@ const Navbar = () => {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder={location.pathname === '/profile' ? 'Search your purchases, sales, listings...' : 'Search products, books, services...'}
-                className="pl-10 pr-9 h-10 bg-muted/50 border-border focus:ring-accent transition-all"
+                placeholder={searchPlaceholder}
+                className="pl-10 pr-16 h-10 bg-muted/50 border-border focus:ring-accent transition-all"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
               />
-              {searchQuery && (
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                {searchQuery && (
+                  <button
+                    onClick={() => { setSearchQuery(''); handleSearch(''); }}
+                    className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
                 <button
-                  onClick={() => { setSearchQuery(''); handleSearch(''); }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() => handleSearch(searchQuery)}
+                  className="p-1 rounded text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors"
+                  aria-label="Search"
                 >
-                  <X className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4" />
                 </button>
-              )}
+              </div>
             </div>
           </div>
 
@@ -306,20 +340,30 @@ const Navbar = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder={location.pathname === '/profile' ? 'Search profile...' : 'Search products...'}
-              className="pl-10 pr-9 bg-muted/50"
+              placeholder={searchPlaceholder}
+              className="pl-10 pr-16 bg-muted/50"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               onKeyDown={handleSearchKeyDown}
             />
-            {searchQuery && (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+              {searchQuery && (
+                <button
+                  onClick={() => { setSearchQuery(''); handleSearch(''); }}
+                  className="p-1 rounded text-muted-foreground hover:text-foreground"
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
               <button
-                onClick={() => { setSearchQuery(''); handleSearch(''); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                onClick={() => handleSearch(searchQuery)}
+                className="p-1 rounded text-muted-foreground hover:text-accent hover:bg-accent/10 transition-colors"
+                aria-label="Search"
               >
-                <X className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" />
               </button>
-            )}
+            </div>
           </div>
         </div>
       </div>

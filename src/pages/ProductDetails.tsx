@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { listingsAPI } from "@/lib/api";
 import SEO from "@/components/SEO";
+import HighlightText from "@/components/HighlightText";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +30,8 @@ const ProductDetails = () => {
   const { addToCart, cartItems } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
 
   // 1. Fetch Product Data
   useEffect(() => {
@@ -137,11 +140,11 @@ const ProductDetails = () => {
           <div className="space-y-6 animate-fade-in">
             <div>
               <div className="flex items-start justify-between mb-2">
-                <h1 className="text-3xl font-bold text-primary">{product.title}</h1>
+                <h1 className="text-3xl font-bold text-primary"><HighlightText text={product.title} query={searchQuery} /></h1>
               </div>
 
               <div className="flex items-center gap-2 mb-4">
-                {product.condition && <Badge className="bg-accent text-white">{product.condition}</Badge>}
+                {product.condition && <Badge className="bg-accent text-white"><HighlightText text={product.condition} query={searchQuery} /></Badge>}
                 {product.verified && (
                   <Badge variant="outline" className="border-accent text-accent">
                     ✓ Verified Seller
@@ -163,15 +166,14 @@ const ProductDetails = () => {
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <span>
-                      {product.location_city}
-                      {product.location_state ? `, ${product.location_state}` : ""}
+                      <HighlightText text={product.location_city + (product.location_state ? `, ${product.location_state}` : '')} query={searchQuery} />
                     </span>
                   </div>
                 )}
                 {product.college_name && (
                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4 text-muted-foreground" />
-                    <span>{product.college_name}</span>
+                    <span><HighlightText text={product.college_name} query={searchQuery} /></span>
                   </div>
                 )}
                 {product.created_at && (
@@ -285,18 +287,18 @@ const ProductDetails = () => {
 
             <div>
               <h3 className="font-semibold text-lg mb-3">Description</h3>
-              <p className="text-muted-foreground leading-relaxed">{product.description || "No description provided."}</p>
+              <p className="text-muted-foreground leading-relaxed"><HighlightText text={product.description || 'No description provided.'} query={searchQuery} /></p>
             </div>
 
             {/* Product Details Grid */}
             <div className="grid grid-cols-2 gap-4">
               <Card className="p-4 bg-muted/30">
                 <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Condition</h4>
-                <p className="font-medium capitalize">{product.condition}</p>
+                <p className="font-medium capitalize"><HighlightText text={product.condition} query={searchQuery} /></p>
               </Card>
               <Card className="p-4 bg-muted/30">
                 <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Age</h4>
-                <p className="font-medium">{product.age_of_item && product.age_of_item !== "null" ? product.age_of_item : "Not specified"}</p>
+                <p className="font-medium"><HighlightText text={product.age_of_item && product.age_of_item !== 'null' ? product.age_of_item : 'Not specified'} query={searchQuery} /></p>
               </Card>
               <Card className="p-4 bg-muted/30">
                 <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Original Price</h4>
@@ -305,7 +307,7 @@ const ProductDetails = () => {
               <Card className="p-4 bg-muted/30">
                 <h4 className="font-semibold text-sm mb-1 text-muted-foreground">Reason for Selling</h4>
                 <p className="font-medium text-sm line-clamp-2" title={product.why_selling}>
-                  {product.why_selling && product.why_selling !== "null" ? product.why_selling : "Not specified"}
+                  <HighlightText text={product.why_selling && product.why_selling !== 'null' ? product.why_selling : 'Not specified'} query={searchQuery} />
                 </p>
               </Card>
             </div>
