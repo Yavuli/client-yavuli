@@ -22,9 +22,13 @@ import {
   Settings,
   Landmark,
   CheckCircle2,
+  Pencil,
+  Lock,
+  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { listingsAPI, paymentsAPI, usersAPI } from "@/lib/api";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Transaction {
   id: string;
@@ -81,6 +85,13 @@ const Profile = () => {
   const [loadingBank, setLoadingBank] = useState(false);
   const [savingBank, setSavingBank] = useState(false);
   const [bankFetched, setBankFetched] = useState(false);
+
+  // Edit security state
+  const [bankLocked, setBankLocked] = useState(false);
+  const [showReauthDialog, setShowReauthDialog] = useState(false);
+  const [reauthPassword, setReauthPassword] = useState("");
+  const [reauthLoading, setReauthLoading] = useState(false);
+  const [reauthError, setReauthError] = useState("");
 
   // Fetch purchases
   useEffect(() => {
@@ -178,6 +189,10 @@ const Profile = () => {
       setBankAccount(data.bank_account_number || "");
       setIfscCode(data.bank_ifsc || "");
       setHolderName(data.bank_holder_name || "");
+      // If details exist, lock them
+      if (data.bank_account_number) {
+        setBankLocked(true);
+      }
       setBankFetched(true);
     } catch (err: any) {
       // 404 means no details saved yet — that's fine
@@ -230,12 +245,57 @@ const Profile = () => {
         holderName: holderName.trim(),
       });
       setIfscCode((prev) => prev.toUpperCase());
+      // Clear banner cache so it re-checks
+      sessionStorage.removeItem('payoutBannerState');
+      setBankLocked(true);
       toast.success("Bank details saved successfully!");
     } catch (error) {
       console.error("Error saving bank details:", error);
       toast.error("Failed to save bank details. Please try again.");
     } finally {
       setSavingBank(false);
+    }
+  };
+
+  // Mask a value showing only last 4 chars
+  const maskValue = (val: string, showLast = 4) => {
+    if (!val || val.length <= showLast) return val;
+    return "X".repeat(val.length - showLast) + val.slice(-showLast);
+  };
+
+  // Re-authenticate before allowing edit
+  const handleReauth = async () => {
+    if (!reauthPassword.trim()) {
+      setReauthError("Please enter your password");
+      return;
+    }
+    if (!user?.email) {
+      setReauthError("Could not determine your email");
+      return;
+    }
+
+    try {
+      setReauthLoading(true);
+      setReauthError("");
+      const { error } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: reauthPassword,
+      });
+
+      if (error) {
+        setReauthError("Incorrect password. Please try again.");
+        return;
+      }
+
+      // Success — unlock the form
+      setBankLocked(false);
+      setShowReauthDialog(false);
+      setReauthPassword("");
+      toast.success("Identity verified. You can now edit your bank details.");
+    } catch {
+      setReauthError("Verification failed. Please try again.");
+    } finally {
+      setReauthLoading(false);
     }
   };
 
@@ -567,7 +627,9 @@ const Profile = () => {
                 <div>
                   <h2 className="text-xl font-bold">Bank Details</h2>
                   <p className="text-sm text-muted-foreground">
-                    Add your bank account for receiving payouts from sales
+                    {bankLocked
+                      ? "Your bank details are securely saved"
+                      : "Add your bank account for receiving payouts from sales"}
                   </p>
                 </div>
               </div>
@@ -579,7 +641,101 @@ const Profile = () => {
                   <Loader2 className="h-8 w-8 animate-spin text-accent" />
                   <p className="ml-3 text-muted-foreground">Loading bank details…</p>
                 </div>
+              ) : bankLocked ? (
+                /* ===== LOCKED / MASKED VIEW ===== */
+                <div className="space-y-5 max-w-lg">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Account Holder</p>
+                        <p className="font-medium">{holderName}</p>
+                      </div>
+                      <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Account Number</p>
+                        <p className="font-mono font-medium">{maskValue(bankAccount)}</p>
+                      </div>
+                      <Lock className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <div>
+                        <p className="text-xs text-muted-foreground">IFSC Code</p>
+                        <p className="font-mono font-medium">{maskValue(ifscCode, 5)}</p>
+                      </div>
+                      <Lock className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowReauthDialog(true);
+                      setReauthPassword("");
+                      setReauthError("");
+                    }}
+                    className="mt-2"
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit Bank Details
+                  </Button>
+
+                  {/* Re-auth dialog */}
+                  {showReauthDialog && (
+                    <Card className="p-5 mt-4 border-amber-500/30 bg-amber-500/5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Lock className="h-4 w-4 text-amber-600" />
+                        <p className="text-sm font-medium">Verify your identity</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        For security, please enter your password to edit bank details.
+                      </p>
+                      <div className="space-y-3">
+                        <Input
+                          type="password"
+                          placeholder="Enter your password"
+                          value={reauthPassword}
+                          onChange={(e) => {
+                            setReauthPassword(e.target.value);
+                            setReauthError("");
+                          }}
+                          onKeyDown={(e) => e.key === "Enter" && handleReauth()}
+                          className={reauthError ? "border-destructive" : ""}
+                        />
+                        {reauthError && (
+                          <p className="text-xs text-destructive flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            {reauthError}
+                          </p>
+                        )}
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={handleReauth}
+                            disabled={reauthLoading}
+                          >
+                            {reauthLoading ? (
+                              <><Loader2 className="h-3 w-3 mr-1.5 animate-spin" /> Verifying…</>
+                            ) : (
+                              "Verify & Edit"
+                            )}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowReauthDialog(false)}
+                            disabled={reauthLoading}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+                </div>
               ) : (
+                /* ===== EDITABLE FORM ===== */
                 <div className="space-y-5 max-w-lg">
                   {/* Account Number */}
                   <div className="space-y-2">

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { Upload, Plus, X, Loader2 } from "lucide-react";
 import SEO from "@/components/SEO";
+import { usersAPI } from "@/lib/api";
 
 interface FormData {
   title: string;
@@ -265,10 +266,27 @@ const Sell = () => {
       // Reset form and redirect on successful publication
       if (status === 'published') {
         resetForm();
-        // Redirect to explore page after 2 seconds
-        setTimeout(() => {
-          navigate('/explore');
-        }, 2000);
+
+        // Check if bank details exist — if not, redirect to payout setup
+        try {
+          const bankData = await usersAPI.getBankDetails();
+          if (bankData?.bank_account_number) {
+            // Bank details exist → go straight to explore
+            setTimeout(() => {
+              navigate('/explore');
+            }, 1500);
+          } else {
+            // No bank details → redirect to payout setup
+            setTimeout(() => {
+              navigate('/payout-setup');
+            }, 1500);
+          }
+        } catch {
+          // If the check fails (e.g. 404 = no details), redirect to payout setup
+          setTimeout(() => {
+            navigate('/payout-setup');
+          }, 1500);
+        }
       }
 
     } catch (error) {

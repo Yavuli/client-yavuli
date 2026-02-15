@@ -27,6 +27,8 @@ import TermsOfService from "./pages/TermsOfService";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CompleteProfile from "./pages/CompleteProfile";
+import PayoutSetup from "./pages/PayoutSetup";
+import PayoutBanner from "./components/PayoutBanner";
 
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -46,6 +48,7 @@ const App = () => (
                 v7_startTransition: true,
                 v7_relativeSplatPath: true,
               }}>
+                <PayoutBanner />
                 <Routes>
                   <Route path="/" element={<Welcome />} />
                   <Route path="/explore" element={<Explore />} />
@@ -67,6 +70,7 @@ const App = () => (
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/complete-profile" element={<CompleteProfile />} />
+                  <Route path="/payout-setup" element={<PayoutSetup />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
