@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -71,8 +71,17 @@ const Profile = () => {
   const tabFromUrl = searchParams.get("tab") || "purchases";
   const activeTab = validTabs.includes(tabFromUrl) ? tabFromUrl : "purchases";
 
+  // Search query from URL
+  const searchQuery = searchParams.get("search") || "";
+
   const handleTabChange = (tab: string) => {
-    setSearchParams(tab === "purchases" ? {} : { tab });
+    const params = new URLSearchParams(searchParams);
+    if (tab === "purchases") {
+      params.delete("tab");
+    } else {
+      params.set("tab", tab);
+    }
+    setSearchParams(params);
     if (tab === "settings") {
       fetchBankDetails();
     }
@@ -105,6 +114,39 @@ const Profile = () => {
   const [reauthPassword, setReauthPassword] = useState("");
   const [reauthLoading, setReauthLoading] = useState(false);
   const [reauthError, setReauthError] = useState("");
+
+  // Filtered data based on search
+  const filteredPurchases = useMemo(() => {
+    if (!searchQuery) return purchases;
+    const q = searchQuery.toLowerCase();
+    return purchases.filter(p =>
+      p.id.toLowerCase().includes(q) ||
+      p.status.toLowerCase().includes(q) ||
+      String(p.amount).includes(q)
+    );
+  }, [purchases, searchQuery]);
+
+  const filteredSales = useMemo(() => {
+    if (!searchQuery) return sales;
+    const q = searchQuery.toLowerCase();
+    return sales.filter(s =>
+      s.id.toLowerCase().includes(q) ||
+      s.status.toLowerCase().includes(q) ||
+      String(s.amount).includes(q)
+    );
+  }, [sales, searchQuery]);
+
+  const filteredListings = useMemo(() => {
+    if (!searchQuery) return myListings;
+    const q = searchQuery.toLowerCase();
+    return myListings.filter((l: any) =>
+      l.title?.toLowerCase().includes(q) ||
+      l.description?.toLowerCase().includes(q) ||
+      l.condition?.toLowerCase().includes(q) ||
+      l.category?.toLowerCase().includes(q) ||
+      String(l.price).includes(q)
+    );
+  }, [myListings, searchQuery]);
 
   // Fetch purchases
   useEffect(() => {
@@ -430,20 +472,20 @@ const Profile = () => {
                   </div>
                 </div>
               </Card>
-            ) : purchases.length === 0 ? (
+            ) : filteredPurchases.length === 0 ? (
               <Card className="p-8 text-center">
                 <ShoppingBag className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                <h3 className="text-lg font-semibold mb-2">No purchases yet</h3>
+                <h3 className="text-lg font-semibold mb-2">{searchQuery ? 'No matching purchases' : 'No purchases yet'}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Start shopping by exploring our listings
+                  {searchQuery ? 'Try a different search term' : 'Start shopping by exploring our listings'}
                 </p>
-                <Button onClick={() => navigate("/explore")}>
+                {!searchQuery && <Button onClick={() => navigate("/explore")}>
                   Browse Listings
-                </Button>
+                </Button>}
               </Card>
             ) : (
               <div className="space-y-4">
-                {purchases.map((purchase) => (
+                {filteredPurchases.map((purchase) => (
                   <Card
                     key={purchase.id}
                     className="p-6 hover:shadow-md transition-shadow"
@@ -505,10 +547,10 @@ const Profile = () => {
                   </div>
                 </div>
               </Card>
-            ) : sales.length === 0 ? (
+            ) : filteredSales.length === 0 ? (
               <Card className="p-8 text-center">
                 <TrendingUp className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                <h3 className="text-lg font-semibold mb-2">No sales yet</h3>
+                <h3 className="text-lg font-semibold mb-2">{searchQuery ? 'No matching sales' : 'No sales yet'}</h3>
                 <p className="text-muted-foreground mb-6">
                   Create listings and start selling your items
                 </p>
@@ -516,7 +558,7 @@ const Profile = () => {
               </Card>
             ) : (
               <div className="space-y-4">
-                {sales.map((sale) => (
+                {filteredSales.map((sale) => (
                   <Card
                     key={sale.id}
                     className="p-6 hover:shadow-md transition-shadow"
@@ -578,18 +620,18 @@ const Profile = () => {
                   </div>
                 </div>
               </Card>
-            ) : myListings.length === 0 ? (
+            ) : filteredListings.length === 0 ? (
               <Card className="p-8 text-center">
                 <Package className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                <h3 className="text-lg font-semibold mb-2">No listings yet</h3>
+                <h3 className="text-lg font-semibold mb-2">{searchQuery ? 'No matching listings' : 'No listings yet'}</h3>
                 <p className="text-muted-foreground mb-6">
-                  Create your first listing to start selling
+                  {searchQuery ? 'Try a different search term' : 'Create your first listing to start selling'}
                 </p>
-                <Button onClick={() => navigate("/sell")}>Create Listing</Button>
+                {!searchQuery && <Button onClick={() => navigate("/sell")}>Create Listing</Button>}
               </Card>
             ) : (
               <div className="space-y-4">
-                {myListings.map((listing) => (
+                {filteredListings.map((listing) => (
                   <Card
                     key={listing.id}
                     className="p-4 md:p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"

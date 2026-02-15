@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ShoppingCart, User, Menu, X, LogIn, MessageCircle, Settings } from "lucide-react";
@@ -24,7 +24,52 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { cartCount } = useCart();
-  const [unreadCount, setUnreadCount] = useState(0)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Search state — synced with URL on profile/explore
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Sync search input from URL when on profile or explore
+  useEffect(() => {
+    if (location.pathname === '/profile' || location.pathname === '/explore') {
+      setSearchQuery(searchParams.get('search') || '');
+    } else {
+      setSearchQuery('');
+    }
+  }, [location.pathname, searchParams]);
+
+  const handleSearch = (query: string) => {
+    const trimmed = query.trim();
+    if (location.pathname === '/profile') {
+      // Update search param on profile page
+      const params = new URLSearchParams(searchParams);
+      if (trimmed) {
+        params.set('search', trimmed);
+      } else {
+        params.delete('search');
+      }
+      setSearchParams(params);
+    } else if (location.pathname === '/explore') {
+      // Already on explore — just update URL param, Explore page reads it
+      if (trimmed) {
+        navigate(`/explore?search=${encodeURIComponent(trimmed)}`);
+      } else {
+        navigate('/explore');
+      }
+    } else {
+      // Navigate to explore with search
+      if (trimmed) {
+        navigate(`/explore?search=${encodeURIComponent(trimmed)}`);
+      }
+    }
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch(searchQuery);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -107,9 +152,20 @@ const Navbar = () => {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search products, books, services..."
-                className="pl-10 h-10 bg-muted/50 border-border focus:ring-accent transition-all"
+                placeholder={location.pathname === '/profile' ? 'Search your purchases, sales, listings...' : 'Search products, books, services...'}
+                className="pl-10 pr-9 h-10 bg-muted/50 border-border focus:ring-accent transition-all"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
               />
+              {searchQuery && (
+                <button
+                  onClick={() => { setSearchQuery(''); handleSearch(''); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
 
@@ -250,9 +306,20 @@ const Navbar = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
-              className="pl-10 bg-muted/50"
+              placeholder={location.pathname === '/profile' ? 'Search profile...' : 'Search products...'}
+              className="pl-10 pr-9 bg-muted/50"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
             />
+            {searchQuery && (
+              <button
+                onClick={() => { setSearchQuery(''); handleSearch(''); }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>
