@@ -394,6 +394,35 @@ export const paymentsAPI = {
   },
 };
 
+// Users API (Bank Details, etc.)
+export const usersAPI = {
+  // Get saved bank details
+  getBankDetails: async () => {
+    try {
+      const response = await api.get("/users/bank-details");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching bank details:", error);
+      throw error;
+    }
+  },
+
+  // Save / update bank details
+  saveBankDetails: async (data: {
+    bankAccount: string;
+    ifscCode: string;
+    holderName: string;
+  }) => {
+    try {
+      const response = await api.put("/users/bank-details", data);
+      return response.data;
+    } catch (error) {
+      console.error("Error saving bank details:", error);
+      throw error;
+    }
+  },
+};
+
 export const reportsAPI = {
   submitReport: (reportData: any) => api.post("/reports", reportData),
 };
