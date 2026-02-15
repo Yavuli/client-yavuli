@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { listingsAPI } from '@/lib/api';
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
@@ -13,7 +14,8 @@ const Explore = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = [
@@ -78,7 +80,15 @@ const Explore = () => {
               className="h-16 pl-14 pr-6 bg-slate-50 border-slate-100 rounded-[2rem] text-lg font-medium shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 transition-all text-slate-900 placeholder:text-slate-300"
               placeholder="Search anything..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                const params = new URLSearchParams(searchParams);
+                if (e.target.value) {
+                  params.set('search', e.target.value);
+                } else {
+                  params.delete('search');
+                }
+                setSearchParams(params, { replace: true });
+              }}
             />
           </div>
         </header>
@@ -106,7 +116,12 @@ const Explore = () => {
           {(searchQuery || activeCategory !== "all") && (
             <Button
               variant="link"
-              onClick={() => { setSearchQuery(""); setActiveCategory("all") }}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams);
+                params.delete('search');
+                setSearchParams(params, { replace: true });
+                setActiveCategory("all");
+              }}
               className="h-auto p-0 text-primary font-bold"
             >
               Reset Filters
@@ -139,7 +154,12 @@ const Explore = () => {
               <p className="text-slate-500 font-medium">Try adjusting your search or category.</p>
             </div>
             <Button
-              onClick={() => { setSearchQuery(""); setActiveCategory("all") }}
+              onClick={() => {
+                const params = new URLSearchParams(searchParams);
+                params.delete('search');
+                setSearchParams(params, { replace: true });
+                setActiveCategory("all");
+              }}
               className="rounded-xl px-10 h-14 font-bold"
             >
               Show all items
