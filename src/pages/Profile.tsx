@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -64,6 +64,19 @@ interface SalesResponse {
 const Profile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Controlled tab — reads ?tab= from URL, defaults to "purchases"
+  const validTabs = ["purchases", "sales", "listings", "settings"];
+  const tabFromUrl = searchParams.get("tab") || "purchases";
+  const activeTab = validTabs.includes(tabFromUrl) ? tabFromUrl : "purchases";
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams(tab === "purchases" ? {} : { tab });
+    if (tab === "settings") {
+      fetchBankDetails();
+    }
+  };
 
   // State for purchases and sales
   const [purchases, setPurchases] = useState<Transaction[]>([]);
@@ -387,12 +400,12 @@ const Profile = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="purchases" className="space-y-6 animate-fade-up">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-6 animate-fade-up">
           <TabsList className="grid w-full max-w-4xl grid-cols-4">
             <TabsTrigger value="purchases">My Purchases</TabsTrigger>
             <TabsTrigger value="sales">My Sales</TabsTrigger>
             <TabsTrigger value="listings">My Listings</TabsTrigger>
-            <TabsTrigger value="settings" onClick={fetchBankDetails}>
+            <TabsTrigger value="settings">
               <Settings className="h-4 w-4 mr-1.5" />
               Settings
             </TabsTrigger>

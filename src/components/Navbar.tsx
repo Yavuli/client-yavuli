@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ShoppingCart, User, Menu, X, LogIn, MessageCircle } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, LogIn, MessageCircle, Settings } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from '@/lib/supabase'
 import { useAuth } from "@/contexts/AuthContext";
@@ -187,10 +187,18 @@ const Navbar = () => {
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <Link to="/profile">
+                      {!isActive('/profile') && (
+                        <Link to="/profile">
+                          <DropdownMenuItem className="cursor-pointer">
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Profile</span>
+                          </DropdownMenuItem>
+                        </Link>
+                      )}
+                      <Link to="/profile?tab=settings">
                         <DropdownMenuItem className="cursor-pointer">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Profile</span>
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Settings</span>
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuSeparator />
@@ -279,12 +287,21 @@ const Navbar = () => {
             {user ? (
               <>
                 <div className="border-t border-border pt-3 space-y-2">
+                  {!isActive('/profile') && (
+                    <Link
+                      to="/profile"
+                      className="block py-2 text-sm hover:text-accent transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      My Profile
+                    </Link>
+                  )}
                   <Link
-                    to="/profile"
+                    to="/profile?tab=settings"
                     className="block py-2 text-sm hover:text-accent transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    My Profile
+                    Settings
                   </Link>
                   <Link
                     to="/cart"
