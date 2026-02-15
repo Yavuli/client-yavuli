@@ -31,7 +31,7 @@ const Navbar = () => {
   const isProfilePage = location.pathname === '/profile';
   const isExplorePage = location.pathname === '/explore';
   const isProductPage = location.pathname.startsWith('/product/');
-  const isSearchablePage = isProfilePage || isExplorePage || isProductPage;
+  const isSearchablePage = isProfilePage || isProductPage;
 
   // Search state — synced with URL on searchable pages
   const [searchQuery, setSearchQuery] = useState("");
