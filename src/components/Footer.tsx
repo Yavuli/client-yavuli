@@ -29,6 +29,7 @@ export default function Footer() {
                                     <button onClick={() => navigate('/login')} className="hover:text-primary transition-colors">Sign In</button>
                                 )}
                             </li>
+                            <li><button onClick={() => navigate('/how-to-use')} className="hover:text-primary transition-colors">How to Use</button></li>
                         </ul>
                     </div>
                     <div className="space-y-4">
