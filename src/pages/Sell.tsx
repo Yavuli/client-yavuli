@@ -488,23 +488,23 @@ const Sell = () => {
               {/* Location */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">City *</Label>
+                  <Label htmlFor="city">Campus Location or your desired place for meeting *</Label>
                   <Input
                     id="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="e.g., Delhi"
+                    placeholder="e.g., Delhi | Gandi Bhavan, BITS Pilani | NIAT Gate 2"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="college">College Name *</Label>
+                  <Label htmlFor="college">College Name with Campus Location you based on *</Label>
                   <Input
                     id="college"
                     value={formData.college}
                     onChange={handleInputChange}
-                    placeholder="e.g., IIT Delhi"
+                    placeholder="e.g., IIT Delhi | BITS Pilani (Goa) | NIAT (Hyderabad Campus)"
                     required
                   />
                 </div>
