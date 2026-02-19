@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ShoppingCart, User, Menu, X, LogIn, MessageCircle, Settings, ArrowRight } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, LogIn, MessageCircle, Settings, ArrowRight, HelpCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from '@/lib/supabase'
 import { useAuth } from "@/contexts/AuthContext";
@@ -226,6 +226,12 @@ const Navbar = () => {
               >
                 Sell
               </button>
+              <Link
+                to="/how-to-use"
+                className={`text-sm font-semibold px-3 py-2 rounded-lg transition-colors hover:bg-accent/5 ${isActive('/how-to-use') ? 'text-accent bg-accent/10' : 'text-foreground/80 hover:text-accent'}`}
+              >
+                How to Use
+              </Link>
             </div>
 
             {/* Action Icons */}

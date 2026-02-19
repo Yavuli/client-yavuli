@@ -62,6 +62,20 @@ const Welcome = () => {
             <YavuliLogoAnimation />
           </div>
           <div className="flex items-center gap-2 md:gap-4">
+            {/* Nav Links */}
+            <div className="hidden md:flex items-center gap-1">
+              <Button variant="ghost" className="text-slate-500 hover:text-slate-900 hover:bg-transparent font-semibold" onClick={() => navigate('/explore')}>
+                Explore
+              </Button>
+              <Button variant="ghost" className="text-slate-500 hover:text-slate-900 hover:bg-transparent font-semibold" onClick={() => {
+                if (user) { navigate('/sell'); } else { toast.info("Please sign in to start selling"); navigate('/login'); }
+              }}>
+                Sell
+              </Button>
+              <Button variant="ghost" className="text-slate-500 hover:text-slate-900 hover:bg-transparent font-semibold" onClick={() => navigate('/how-to-use')}>
+                How to Use
+              </Button>
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="hidden sm:inline-flex text-slate-500 hover:text-slate-900 hover:bg-transparent transition-colors">
@@ -70,21 +84,25 @@ const Welcome = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64 p-3 border-slate-100 bg-white/90 backdrop-blur-xl shadow-2xl rounded-2xl">
                 <div className="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Contact Us</div>
-                <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-default rounded-xl hover:bg-slate-50 focus:bg-slate-50 focus:text-slate-900 transition-colors">
-                  <div className="flex items-center gap-2 text-primary font-semibold">
-                    <Phone className="h-4 w-4" />
-                    <span>Call Support</span>
-                  </div>
-                  <span className="text-sm font-bold text-slate-900">+91 8000363769</span>
-                </DropdownMenuItem>
+                <a href="tel:+918000363769" className="block">
+                  <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer rounded-xl hover:bg-slate-50 focus:bg-slate-50 focus:text-slate-900 transition-colors">
+                    <div className="flex items-center gap-2 text-primary font-semibold">
+                      <Phone className="h-4 w-4" />
+                      <span>Call Support</span>
+                    </div>
+                    <span className="text-sm font-bold text-slate-900">+91 8000363769</span>
+                  </DropdownMenuItem>
+                </a>
                 <div className="h-px bg-slate-100 my-2 mx-1" />
-                <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-default rounded-xl hover:bg-slate-50 focus:bg-slate-50 focus:text-slate-900 transition-colors">
-                  <div className="flex items-center gap-2 text-primary font-semibold">
-                    <Mail className="h-4 w-4" />
-                    <span>Email Us</span>
-                  </div>
-                  <span className="text-sm font-bold text-slate-900 break-all">founder@yavuli.app</span>
-                </DropdownMenuItem>
+                <a href="mailto:founder@yavuli.app" className="block">
+                  <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer rounded-xl hover:bg-slate-50 focus:bg-slate-50 focus:text-slate-900 transition-colors">
+                    <div className="flex items-center gap-2 text-primary font-semibold">
+                      <Mail className="h-4 w-4" />
+                      <span>Email Us</span>
+                    </div>
+                    <span className="text-sm font-bold text-slate-900 break-all">founder@yavuli.app</span>
+                  </DropdownMenuItem>
+                </a>
               </DropdownMenuContent>
             </DropdownMenu>
             {user ? (
