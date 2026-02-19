@@ -26,6 +26,7 @@ const ProductDetails = () => {
   const [product, setProduct] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState(0);
 
   const { addToCart, cartItems } = useCart();
   const { user } = useAuth();
@@ -126,14 +127,31 @@ const ProductDetails = () => {
         <div className="grid lg:grid-cols-2 gap-8">
 
           {/* Image Section */}
-          <div className="space-y-4 animate-fade-in">
+          <div className="space-y-3 animate-fade-in">
             <div className="aspect-square rounded-xl overflow-hidden bg-muted">
               <img
-                src={(product.images && product.images[0]) || "/placeholder.jpg"}
+                src={(product.images && product.images[selectedImage]) || "/placeholder.jpg"}
                 alt={product.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-all duration-300"
               />
             </div>
+            {/* Thumbnail strip */}
+            {product.images && product.images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {product.images.map((img: string, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(idx)}
+                    className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${selectedImage === idx
+                      ? 'border-accent ring-2 ring-accent/30 scale-105'
+                      : 'border-border opacity-60 hover:opacity-100'
+                      }`}
+                  >
+                    <img src={img} alt={`${product.title} ${idx + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Info Section */}
