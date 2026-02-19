@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Upload, Plus, X, Loader2 } from "lucide-react";
+import { Upload, Plus, X, Loader2, Camera } from "lucide-react";
 import SEO from "@/components/SEO";
 import { usersAPI } from "@/lib/api";
 
@@ -33,6 +33,7 @@ const Sell = () => {
   const [images, setImages] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState<FormData>({
@@ -348,25 +349,43 @@ const Sell = () => {
 
                   {/* Upload button */}
                   {images.length < 5 && (
-                    <label
-                      htmlFor="image-upload"
-                      className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-accent transition-colors cursor-pointer flex items-center justify-center bg-muted/30"
-                    >
-                      <div className="text-center p-4">
-                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-xs text-muted-foreground">Upload (max 5)</p>
-                        <p className="text-xs text-muted-foreground mt-1">{images.length}/5</p>
+                    <div className="aspect-square rounded-lg border-2 border-dashed border-border hover:border-accent transition-colors bg-muted/30 flex flex-col items-center justify-center gap-2 p-3">
+                      <p className="text-xs text-muted-foreground font-medium">{images.length}/5 images</p>
+                      <div className="flex gap-2">
+                        <label
+                          htmlFor="image-upload"
+                          className="cursor-pointer flex flex-col items-center gap-1 px-3 py-2 rounded-lg bg-background hover:bg-accent/10 transition-colors border border-border"
+                        >
+                          <Upload className="h-5 w-5 text-muted-foreground" />
+                          <span className="text-[10px] font-semibold text-muted-foreground">Upload</span>
+                          <input
+                            id="image-upload"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                            ref={fileInputRef}
+                          />
+                        </label>
+                        <label
+                          htmlFor="camera-capture"
+                          className="cursor-pointer flex flex-col items-center gap-1 px-3 py-2 rounded-lg bg-background hover:bg-accent/10 transition-colors border border-border"
+                        >
+                          <Camera className="h-5 w-5 text-muted-foreground" />
+                          <span className="text-[10px] font-semibold text-muted-foreground">Camera</span>
+                          <input
+                            id="camera-capture"
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                            ref={cameraInputRef}
+                          />
+                        </label>
                       </div>
-                      <input
-                        id="image-upload"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                        ref={fileInputRef}
-                      />
-                    </label>
+                    </div>
                   )}
                 </div>
               </div>
