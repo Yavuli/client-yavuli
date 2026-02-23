@@ -305,7 +305,21 @@ const ProductDetails = () => {
 
             <div>
               <h3 className="font-semibold text-lg mb-3">Description</h3>
-              <p className="text-muted-foreground leading-relaxed"><HighlightText text={product.description || 'No description provided.'} query={searchQuery} /></p>
+              {product.description && /^<[a-z]/i.test(product.description.trim()) ? (
+                <div
+                  className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground
+                    [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-foreground [&_h1]:mb-1
+                    [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:mb-1
+                    [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mb-1
+                    [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+                    [&_strong]:text-foreground [&_em]:italic"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
+              ) : (
+                <p className="text-muted-foreground leading-relaxed">
+                  <HighlightText text={product.description || 'No description provided.'} query={searchQuery} />
+                </p>
+              )}
             </div>
 
             {/* Product Details Grid */}
